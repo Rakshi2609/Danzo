@@ -59,6 +59,7 @@ export const generateRecurringTasksCore = async (now = new Date()) => {
           startTime: recurringTask.taskTemplate.startTime || null,
           endTime: recurringTask.taskTemplate.endTime || null,
           tags: recurringTask.taskTemplate.tags || [],
+          subtasks: recurringTask.taskTemplate.subtasks || [],
           dueDate: new Date(currentDate),
           status: 'Pending',
         });
@@ -131,7 +132,8 @@ export const createRecurringTask = async (req, res) => {
       taskTemplate: {
         priority,
         startTime,
-        endTime
+        endTime,
+        subtasks: req.body.subtasks || []
       }
     });
 

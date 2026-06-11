@@ -20,8 +20,10 @@ export default function CreateRecurringTask() {
     startDate: '',
     endDate: '',
     assignedTo: '',
-    priority: 'Medium'
+    priority: 'Medium',
+    subtasks: []
   });
+  const [subtaskInput, setSubtaskInput] = useState('');
 
   useEffect(() => {
     loadUsers();
@@ -44,6 +46,23 @@ export default function CreateRecurringTask() {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleAddSubtask = () => {
+    if (subtaskInput.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        subtasks: [...prev.subtasks, { title: subtaskInput.trim(), isCompleted: false }]
+      }));
+      setSubtaskInput('');
+    }
+  };
+
+  const handleRemoveSubtask = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      subtasks: prev.subtasks.filter((_, i) => i !== index)
     }));
   };
 
@@ -288,6 +307,52 @@ export default function CreateRecurringTask() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Subtasks */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Follow-up Subtasks Template
+              </label>
+              <div className="flex gap-2 mb-3">
+                <input
+                  type="text"
+                  value={subtaskInput}
+                  onChange={(e) => setSubtaskInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddSubtask();
+                    }
+                  }}
+                  placeholder="Add a subtask to be included in all recurrences..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSubtask}
+                  disabled={!subtaskInput.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50"
+                >
+                  Add
+                </button>
+              </div>
+              {formData.subtasks.length > 0 && (
+                <ul className="space-y-2">
+                  {formData.subtasks.map((subtask, index) => (
+                    <li key={index} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                      <span className="text-gray-700 text-sm">{subtask.title}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSubtask(index)}
+                        className="text-red-500 hover:text-red-700 text-sm font-semibold"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Action Buttons */}

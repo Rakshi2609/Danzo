@@ -33,7 +33,11 @@ const recurringTaskSchema = new mongoose.Schema({
     },
     startTime: String,
     endTime: String,
-    tags: [String]
+    tags: [String],
+    subtasks: [{
+      title: { type: String, required: true },
+      isCompleted: { type: Boolean, default: false }
+    }]
   },
   isActive: {
     type: Boolean,
