@@ -12,7 +12,10 @@ import {
   addComment,
   completeTask,
   deleteTaskByBody,
-  toggleReaction
+  toggleReaction,
+  addSubtask,
+  toggleSubtask,
+  deleteSubtask
 } from '../controllers/task.controller.js';
 import { verifyToken } from '../middleware/auth.js';
 import { canEditTask, canUpdateStatus, canComment } from '../middleware/taskPermissions.js';
@@ -32,5 +35,10 @@ router.delete('/:id', verifyToken, canEditTask, deleteTask);
 router.get('/:taskId/updates', verifyToken, getTaskUpdates);
 router.post('/:taskId/updates', verifyToken, canComment, addComment);
 router.post('/:taskId/updates/:updateId/react', verifyToken, toggleReaction);
+
+// Subtask routes
+router.post('/:taskId/subtasks', verifyToken, addSubtask);
+router.patch('/:taskId/subtasks/:subtaskId', verifyToken, toggleSubtask);
+router.delete('/:taskId/subtasks/:subtaskId', verifyToken, deleteSubtask);
 
 export default router;

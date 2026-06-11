@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { taskService } from '../services/taskService';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { FiArrowLeft, FiCalendar, FiUser, FiClock, FiMessageSquare, FiEdit } from 'react-icons/fi';
+import { FiArrowLeft, FiCalendar, FiUser, FiClock, FiMessageSquare, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 import confetti from 'canvas-confetti';
@@ -19,6 +19,7 @@ export default function TaskDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [timeData, setTimeData] = useState({ startTime: '', endTime: '' });
+  const [newSubtask, setNewSubtask] = useState('');
 
   useEffect(() => {
     loadTaskDetails();
@@ -56,6 +57,38 @@ export default function TaskDetail() {
       toast.error('Failed to add comment');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleAddSubtask = async (e) => {
+    e.preventDefault();
+    if (!newSubtask.trim()) return;
+    try {
+      const { data } = await taskService.addSubtask(id, newSubtask);
+      setTask(data);
+      setNewSubtask('');
+      toast.success('Subtask added');
+    } catch (error) {
+      toast.error('Failed to add subtask');
+    }
+  };
+
+  const handleToggleSubtask = async (subtaskId) => {
+    try {
+      const { data } = await taskService.toggleSubtask(id, subtaskId);
+      setTask(data);
+    } catch (error) {
+      toast.error('Failed to toggle subtask');
+    }
+  };
+
+  const handleDeleteSubtask = async (subtaskId) => {
+    try {
+      const { data } = await taskService.deleteSubtask(id, subtaskId);
+      setTask(data);
+      toast.success('Subtask deleted');
+    } catch (error) {
+      toast.error('Failed to delete subtask');
     }
   };
 
@@ -432,6 +465,66 @@ export default function TaskDetail() {
               Description
             </h3>
             <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-lg border border-gray-100">{task.description}</p>
+          </div>
+        )}
+
+        {/* Subtasks */}
+        {(task.subtasks?.length > 0 || isAssignedToMe || isCreatedByMe) && (
+          <div className="border-t pt-4 mt-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
+              Follow-up Subtasks
+            </h3>
+            
+            <div className="space-y-2 mb-4">
+              {task.subtasks?.map((st) => (
+                <div key={st._id} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <input 
+                      type="checkbox" 
+                      checked={st.isCompleted} 
+                      onChange={() => handleToggleSubtask(st._id)}
+                      disabled={!isAssignedToMe && !isCreatedByMe}
+                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <span className={`text-sm sm:text-base text-gray-800 truncate ${st.isCompleted ? 'line-through text-gray-500' : ''}`}>
+                      {st.title}
+                    </span>
+                  </div>
+                  {(isAssignedToMe || isCreatedByMe) && (
+                    <button 
+                      onClick={() => handleDeleteSubtask(st._id)}
+                      className="ml-2 text-gray-400 hover:text-red-500 p-1"
+                    >
+                      <FiTrash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              
+              {task.subtasks?.length === 0 && (
+                <p className="text-sm text-gray-500 italic p-2">No subtasks added yet.</p>
+              )}
+            </div>
+
+            {(isAssignedToMe || isCreatedByMe) && task.status !== 'Completed' && (
+              <form onSubmit={handleAddSubtask} className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSubtask}
+                  onChange={(e) => setNewSubtask(e.target.value)}
+                  placeholder="Add a new subtask..."
+                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <button
+                  type="submit"
+                  disabled={!newSubtask.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  Add
+                </button>
+              </form>
+            )}
           </div>
         )}
       </motion.div>

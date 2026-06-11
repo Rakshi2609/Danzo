@@ -156,6 +156,13 @@ export const updateTaskStatus = async (req, res) => {
       return res.status(403).json({ error: 'Cannot update tasks with future dates' });
     }
 
+    if (status === 'Completed') {
+      const pendingSubtasks = task.subtasks?.filter(st => !st.isCompleted);
+      if (pendingSubtasks && pendingSubtasks.length > 0) {
+        return res.status(400).json({ error: 'Cannot complete task until all subtasks are completed' });
+      }
+    }
+
     task.status = status;
 
     if (status === 'Completed') {
@@ -247,6 +254,11 @@ export const completeTask = async (req, res) => {
     today.setHours(23, 59, 59, 999);
     if (task.dueDate && new Date(task.dueDate) > today) {
       return res.status(403).json({ error: 'Cannot complete tasks with future dates' });
+    }
+
+    const pendingSubtasks = task.subtasks?.filter(st => !st.isCompleted);
+    if (pendingSubtasks && pendingSubtasks.length > 0) {
+      return res.status(400).json({ error: 'Cannot complete task until all subtasks are completed' });
     }
 
     const oldStatus = task.status;
@@ -352,6 +364,119 @@ export const toggleReaction = async (req, res) => {
       message: 'Reaction updated', 
       reactions: Object.fromEntries(update.reactions) 
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const addSubtask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { title } = req.body;
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Check permissions
+    const isCreator = task.createdBy.toString() === req.user._id.toString();
+    const isAssignee = task.assignedTo.toString() === req.user._id.toString();
+    if (!isCreator && !isAssignee) {
+      return res.status(403).json({ error: 'Only creator or assignee can add subtasks' });
+    }
+
+    task.subtasks.push({ title });
+    await task.save();
+
+    await TaskUpdate.create({
+      taskId: task._id,
+      userId: req.user._id,
+      type: 'Update',
+      content: `Added subtask: "${title}"`
+    });
+
+    const populatedTask = await Task.findById(task._id)
+      .populate('assignedTo', 'displayName email')
+      .populate('createdBy', 'displayName email');
+
+    res.json(populatedTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const toggleSubtask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.params;
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const isCreator = task.createdBy.toString() === req.user._id.toString();
+    const isAssignee = task.assignedTo.toString() === req.user._id.toString();
+    if (!isCreator && !isAssignee) {
+      return res.status(403).json({ error: 'Only creator or assignee can update subtasks' });
+    }
+
+    const subtask = task.subtasks.id(subtaskId);
+    if (!subtask) {
+      return res.status(404).json({ error: 'Subtask not found' });
+    }
+
+    subtask.isCompleted = !subtask.isCompleted;
+    subtask.completedAt = subtask.isCompleted ? new Date() : null;
+
+    // Check if task needs to be uncompleted
+    if (!subtask.isCompleted && task.status === 'Completed') {
+       task.status = 'In Progress'; // Fallback to In Progress if a subtask is unchecked
+       task.completedAt = null;
+    }
+
+    await task.save();
+
+    await TaskUpdate.create({
+      taskId: task._id,
+      userId: req.user._id,
+      type: 'Update',
+      content: `${subtask.isCompleted ? 'Completed' : 'Unchecked'} subtask: "${subtask.title}"`
+    });
+
+    const populatedTask = await Task.findById(task._id)
+      .populate('assignedTo', 'displayName email')
+      .populate('createdBy', 'displayName email');
+
+    res.json(populatedTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteSubtask = async (req, res) => {
+  try {
+    const { taskId, subtaskId } = req.params;
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const isCreator = task.createdBy.toString() === req.user._id.toString();
+    const isAssignee = task.assignedTo.toString() === req.user._id.toString();
+    if (!isCreator && !isAssignee) {
+      return res.status(403).json({ error: 'Only creator or assignee can delete subtasks' });
+    }
+
+    task.subtasks.pull({ _id: subtaskId });
+    await task.save();
+
+    const populatedTask = await Task.findById(task._id)
+      .populate('assignedTo', 'displayName email')
+      .populate('createdBy', 'displayName email');
+
+    res.json(populatedTask);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

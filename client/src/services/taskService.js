@@ -36,6 +36,11 @@ export const taskService = {
   
   // Toggle reaction on comment
   toggleReaction: (taskId, updateId, emoji) => api.post(`/tasks/${taskId}/updates/${updateId}/react`, { emoji }),
+  
+  // Follow-up subtasks
+  addSubtask: (taskId, title) => api.post(`/tasks/${taskId}/subtasks`, { title }),
+  toggleSubtask: (taskId, subtaskId) => api.patch(`/tasks/${taskId}/subtasks/${subtaskId}`),
+  deleteSubtask: (taskId, subtaskId) => api.delete(`/tasks/${taskId}/subtasks/${subtaskId}`),
 };
 
 export const recurringTaskService = {
