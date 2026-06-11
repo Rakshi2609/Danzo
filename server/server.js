@@ -34,7 +34,7 @@ app.use(helmet({
 // 2. CORS Configuration
 app.use(cors({
   // Ensure this matches your Render URL exactly (no trailing slash)
-  origin: ['https://denzo.onrender.com', 'http://localhost:5173'],
+  origin: ['https://denzo.onrender.com', 'http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
 
