@@ -75,7 +75,7 @@ export const getTaskById = async (req, res) => {
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description, dueDate, startTime, endTime, priority, assignedTo } = req.body;
+    const { title, description, dueDate, startTime, endTime, priority, assignedTo, subtasks } = req.body;
 
     const task = await Task.create({
       title,
@@ -85,6 +85,7 @@ export const createTask = async (req, res) => {
       endTime,
       priority,
       assignedTo,
+      subtasks: subtasks || [],
       createdBy: req.user._id
     });
 
@@ -107,7 +108,7 @@ export const createTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   try {
-    const { title, description, dueDate, startTime, endTime, priority, assignedTo } = req.body;
+    const { title, description, dueDate, startTime, endTime, priority, assignedTo, subtasks } = req.body;
 
     let task = await Task.findById(req.params.id);
     if (!task) {
@@ -121,9 +122,14 @@ export const updateTask = async (req, res) => {
       return res.status(403).json({ error: 'Cannot update tasks with future dates' });
     }
 
+    const updateData = { title, description, dueDate, startTime, endTime, priority, assignedTo };
+    if (subtasks !== undefined) {
+      updateData.subtasks = subtasks;
+    }
+
     task = await Task.findByIdAndUpdate(
       req.params.id,
-      { title, description, dueDate, startTime, endTime, priority, assignedTo },
+      updateData,
       { new: true, runValidators: true }
     )
       .populate('assignedTo', 'displayName email')
