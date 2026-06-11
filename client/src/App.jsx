@@ -13,6 +13,7 @@ import TaskDetail from './pages/TaskDetail';
 import CreateTask from './pages/CreateTask';
 import EditTask from './pages/EditTask';
 import CreateRecurringTask from './pages/CreateRecurringTask';
+import Home from './pages/Home';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <AuthProvider>
         <Toaster position="top-right" />
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/*"
@@ -36,7 +38,6 @@ function App() {
                     <Route path="/create-recurring-task" element={<CreateRecurringTask />} />
                     <Route path="/tasks/:id" element={<TaskDetail />} />
                     <Route path="/admin" element={<AdminPanel />} />
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>
