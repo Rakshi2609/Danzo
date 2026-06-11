@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { FaTasks, FaUserCircle, FaSignOutAlt, FaHome } from "react-icons/fa";
 import { HiOutlineMenu } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
+import InstallPWA from "../InstallPWA";
 
 const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
   const { user } = useAuth();
@@ -103,6 +104,8 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                   </div>
                 </div>
                 
+                <InstallPWA />
+
                 <motion.button
                   onClick={handleLogout}
                   className={`${navLinkClasses} bg-red-500 hover:bg-red-600`}
@@ -176,6 +179,10 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                     </div>
                   </div>
                   
+                  <div className="px-4 mb-3">
+                    <InstallPWA />
+                  </div>
+
                   <motion.button
                     onClick={() => {
                       handleLogout();
