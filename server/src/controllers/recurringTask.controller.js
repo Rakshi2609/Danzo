@@ -16,17 +16,12 @@ export const generateRecurringTasksCore = async (now = new Date()) => {
   for (const recurringTask of recurringTasks) {
     if (!recurringTask.startDate) continue;
 
-    // Start generating from startDate or today, whichever is later
+    // Start generating from startDate
     let currentDate = new Date(recurringTask.startDate);
     currentDate.setHours(12, 0, 0, 0);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    if (currentDate < today) {
-      currentDate = new Date(today);
-      currentDate.setHours(12, 0, 0, 0);
-    }
 
     // Determine the end boundary
     let endBoundary = new Date(today);
