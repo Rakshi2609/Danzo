@@ -12,16 +12,23 @@ router.post('/login', async (req, res) => {
     
     const decodedToken = await admin.auth().verifyIdToken(token);
     
-    let user = await User.findOne({ firebaseUid: decodedToken.uid });
+    const userEmail = email || decodedToken.email;
+    let user = await User.findOne({
+      $or: [
+        { firebaseUid: decodedToken.uid },
+        { email: userEmail }
+      ]
+    });
 
     if (!user) {
       user = await User.create({
         firebaseUid: decodedToken.uid,
-        email: email || decodedToken.email,
+        email: userEmail,
         displayName: displayName || decodedToken.name || 'User',
         photoURL: photoURL || decodedToken.picture
       });
     } else {
+      user.firebaseUid = decodedToken.uid; // Update UID in case it was missing or changed
       if (displayName) user.displayName = displayName;
       if (photoURL) user.photoURL = photoURL;
       await user.save();
