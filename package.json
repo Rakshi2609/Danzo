@@ -8,10 +8,17 @@
     "start": "NODE_ENV=production node server/server.js",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
   },
-  "keywords": ["mern", "firebase", "denzo"],
+  "keywords": [
+    "mern",
+    "firebase",
+    "denzo"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "concurrently": "^8.2.2"
+  },
+  "optionalDependencies": {
+    "nodemon": "^3.0.3"
   }
 }
