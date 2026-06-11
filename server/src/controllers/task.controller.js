@@ -109,17 +109,25 @@ export const updateTask = async (req, res) => {
   try {
     const { title, description, dueDate, startTime, endTime, priority, assignedTo } = req.body;
 
-    const task = await Task.findByIdAndUpdate(
+    let task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Prevent future task updates
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (task.dueDate && new Date(task.dueDate) > today) {
+      return res.status(403).json({ error: 'Cannot update tasks with future dates' });
+    }
+
+    task = await Task.findByIdAndUpdate(
       req.params.id,
       { title, description, dueDate, startTime, endTime, priority, assignedTo },
       { new: true, runValidators: true }
     )
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email');
-
-    if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
 
     await TaskUpdate.create({
       taskId: task._id,
@@ -140,6 +148,14 @@ export const updateTaskStatus = async (req, res) => {
     const task = req.task;
 
     const oldStatus = task.status;
+
+    // Prevent future task updates
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (task.dueDate && new Date(task.dueDate) > today) {
+      return res.status(403).json({ error: 'Cannot update tasks with future dates' });
+    }
+
     task.status = status;
 
     if (status === 'Completed') {
@@ -224,6 +240,13 @@ export const completeTask = async (req, res) => {
     // Check if user is assigned to this task
     if (task.assignedTo.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'You can only complete tasks assigned to you' });
+    }
+
+    // Prevent future task updates
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (task.dueDate && new Date(task.dueDate) > today) {
+      return res.status(403).json({ error: 'Cannot complete tasks with future dates' });
     }
 
     const oldStatus = task.status;

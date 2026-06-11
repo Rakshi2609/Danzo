@@ -3,93 +3,90 @@ import Task from '../models/Task.js';
 
 /**
  * Core recurring-task generator
- * Used by both Agenda + manual trigger
+ * Generates tasks from startDate up to endDate (or up to 1 year if no endDate)
  */
-export const generateRecurringTasksCore = async (now) => {
-  // ⛔ Do not generate before 9 PM
-  if (now.getHours() < 21) {
-    return { generated: 0, skipped: 0 };
-  }
-
+export const generateRecurringTasksCore = async (now = new Date()) => {
   const recurringTasks = await RecurringTask.find({
     isActive: true,
-    startDate: { $lte: now },
-    $or: [
-      { endDate: { $exists: false } },
-      { endDate: null },
-      { endDate: { $gte: now } }
-    ]
   }).populate('assignedTo createdBy');
 
   let generated = 0;
   let skipped = 0;
 
   for (const recurringTask of recurringTasks) {
-    // Base date = today @ 00:00
-    const baseDate = new Date();
-    baseDate.setHours(0, 0, 0, 0);
+    if (!recurringTask.startDate) continue;
 
-    // Always generate for NEXT day
-    let dueDate = new Date(baseDate);
-    dueDate.setDate(dueDate.getDate() + 1);
+    // Start generating from startDate or today, whichever is later
+    let currentDate = new Date(recurringTask.startDate);
+    currentDate.setHours(12, 0, 0, 0);
 
-    // Frequency handling
-    if (recurringTask.frequency === 'Weekly') {
-      dueDate.setDate(dueDate.getDate() + 6);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (currentDate < today) {
+      currentDate = new Date(today);
+      currentDate.setHours(12, 0, 0, 0);
     }
 
-    if (recurringTask.frequency === 'Monthly') {
-      dueDate.setMonth(dueDate.getMonth() + 1);
+    // Determine the end boundary
+    let endBoundary = new Date(today);
+    endBoundary.setFullYear(endBoundary.getFullYear() + 1); // Max 1 year ahead
+    if (recurringTask.endDate && recurringTask.endDate < endBoundary) {
+      endBoundary = new Date(recurringTask.endDate);
+      endBoundary.setHours(23, 59, 59, 999);
     }
 
-    // Skip Sundays
-    while (dueDate.getDay() === 0) {
-      dueDate.setDate(dueDate.getDate() + 1);
+    while (currentDate <= endBoundary) {
+      // Skip Sundays
+      if (currentDate.getDay() === 0) {
+        skipped++;
+        currentDate.setDate(currentDate.getDate() + 1);
+        continue;
+      }
+
+      // Prevent duplicates
+      const existingTask = await Task.findOne({
+        recurringTaskId: recurringTask._id,
+        dueDate: {
+          $gte: new Date(currentDate.getTime() - 43200000), // start of day approx
+          $lt: new Date(currentDate.getTime() + 43200000), // end of day approx
+        },
+      });
+
+      if (!existingTask) {
+        await Task.create({
+          title: recurringTask.title,
+          description: recurringTask.description,
+          assignedTo: recurringTask.assignedTo._id || recurringTask.assignedTo,
+          createdBy: recurringTask.createdBy._id || recurringTask.createdBy,
+          recurringTaskId: recurringTask._id,
+          priority: recurringTask.taskTemplate.priority,
+          startTime: recurringTask.taskTemplate.startTime || null,
+          endTime: recurringTask.taskTemplate.endTime || null,
+          tags: recurringTask.taskTemplate.tags || [],
+          dueDate: new Date(currentDate),
+          status: 'Pending',
+        });
+        generated++;
+      } else {
+        skipped++;
+      }
+
+      // Increment date based on frequency
+      if (recurringTask.frequency === 'Daily') {
+        currentDate.setDate(currentDate.getDate() + 1);
+      } else if (recurringTask.frequency === 'Weekly') {
+        currentDate.setDate(currentDate.getDate() + 7);
+      } else if (recurringTask.frequency === 'Monthly') {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      } else {
+        // Fallback
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
-
-    // Normalize time
-    dueDate.setHours(12, 0, 0, 0);
-
-    // Respect startDate
-    if (recurringTask.startDate && dueDate < recurringTask.startDate) {
-      skipped++;
-      continue;
-    }
-
-    // Prevent duplicates
-    const existingTask = await Task.findOne({
-      recurringTaskId: recurringTask._id,
-      dueDate: {
-        $gte: dueDate,
-        $lt: new Date(dueDate.getTime() + 86400000),
-      },
-    });
-
-    if (existingTask) {
-      skipped++;
-      continue;
-    }
-
-    // Create task
-    await Task.create({
-      title: recurringTask.title,
-      description: recurringTask.description,
-      assignedTo: recurringTask.assignedTo._id || recurringTask.assignedTo,
-      createdBy: recurringTask.assignedTo._id || recurringTask.assignedTo,
-      recurringTaskId: recurringTask._id,
-      priority: recurringTask.taskTemplate.priority,
-      startTime: recurringTask.taskTemplate.startTime || null,
-      endTime: recurringTask.taskTemplate.endTime || null,
-      tags: recurringTask.taskTemplate.tags || [],
-      dueDate,
-      status: 'Pending',
-    });
 
     recurringTask.lastGeneratedAt = new Date();
-    recurringTask.nextRunAt = dueDate;
     await recurringTask.save();
-
-    generated++;
   }
 
   return { generated, skipped };
@@ -146,6 +143,9 @@ export const createRecurringTask = async (req, res) => {
     const populated = await RecurringTask.findById(recurringTask._id)
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email');
+
+    // Trigger generation for this new task immediately
+    await generateRecurringTasksCore();
 
     res.status(201).json(populated);
   } catch (error) {
