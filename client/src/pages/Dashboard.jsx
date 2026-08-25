@@ -12,6 +12,7 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import toast from 'react-hot-toast';
+import WhatsAppPhoneCard from "../components/WhatsAppPhoneCard";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -296,6 +297,11 @@ const Dashboard = () => {
         >
           <FaTasks className="text-blue-600 text-xl sm:text-2xl lg:text-3xl" /> Your Dashboard
         </motion.h2>
+
+        {/* WhatsApp phone number settings */}
+        <div className="mb-3 sm:mb-4 relative z-10">
+          <WhatsAppPhoneCard user={user} />
+        </div>
 
         {/* TODAY'S TASKS & OVERDUE TASKS AT TOP - Side by side on larger screens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 relative z-10">

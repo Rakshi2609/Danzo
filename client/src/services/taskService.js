@@ -56,6 +56,7 @@ export const userService = {
   getAllUsers: () => api.get('/users'),
   updateRole: (id, role) => api.patch(`/users/${id}/role`, { role }),
   getCurrentUser: () => api.get('/auth/me'),
+  updateProfile: (data) => api.patch('/users/profile', data),
 };
 
 export const dashboardService = {
