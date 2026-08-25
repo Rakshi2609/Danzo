@@ -12,7 +12,7 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
   // Always fetch fresh profile — AuthContext user may be stale (saved before phone was set)
   useEffect(() => {
     userService.getCurrentUser()
-      .then((res) => setPhone(res.data?.phone || ""))
+      .then((res) => setPhone(res.data?.user?.phone || res.data?.phone || ""))
       .catch(() => setPhone(user?.phone || ""));
   }, []);
 
