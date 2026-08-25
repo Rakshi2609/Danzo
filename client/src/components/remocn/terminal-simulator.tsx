@@ -1,141 +1,291 @@
-import React, { useState, useEffect } from "react";
-import { Check, Copy, Terminal as TerminalIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+"use client";
+
+import {
+  interpolate,
+  Sequence,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+
+export type TerminalLineType = "command" | "log" | "success" | "error";
 
 export interface TerminalLine {
   text: string;
-  type?: "command" | "success" | "error" | "info" | "warning" | "output";
+  type: TerminalLineType;
   delay?: number;
+  /**
+   * Extra freeze-frame pause AFTER this line finishes typing, in frames.
+   * Use this to build dramatic tension before the next batch of logs.
+   * If omitted, lines whose text ends in "..." auto-freeze for 18 frames.
+   */
+  pause?: number;
 }
 
 export interface TerminalSimulatorProps {
   lines?: TerminalLine[];
-  className?: string;
+  prompt?: string;
   title?: string;
+  background?: string;
+  chromeColor?: string;
+  fontSize?: number;
+  /**
+   * Reveal speed. Despite the name, the reveal is now CHUNKED — each
+   * `1 / charsPerFrame` frames bumps the cursor by `chunkSize` characters,
+   * so output appears in bursts instead of dripping char-by-char.
+   */
+  charsPerFrame?: number;
+  /** Characters revealed per step. */
+  chunkSize?: number;
+  speed?: number;
+  className?: string;
+}
+
+const DEFAULT_LINES: TerminalLine[] = [
+  { text: "npm run build", type: "command", delay: 0 },
+  { text: "Resolving dependencies...", type: "log", delay: 6 },
+  { text: "> remocn@1.0.0 build", type: "log", delay: 4 },
+  { text: "> next build", type: "log", delay: 4 },
+  { text: "Compiling...", type: "log", delay: 12 },
+  { text: "Compiled successfully in 4.2s", type: "success", delay: 14 },
+  { text: "Generating static pages (24/24)", type: "log", delay: 10 },
+  { text: "Build completed without errors", type: "success", delay: 12 },
+];
+
+const TYPE_COLORS: Record<TerminalLineType, string> = {
+  command: "#fafafa",
+  log: "#a1a1aa",
+  success: "#22c55e",
+  error: "#ef4444",
+};
+
+/** Auto freeze-frame heuristic: any line ending in "..." holds the camera. */
+function autoPause(line: TerminalLine): number {
+  if (line.pause !== undefined) return line.pause;
+  if (line.text.trimEnd().endsWith("...")) return 18;
+  return 0;
 }
 
 export function TerminalSimulator({
-  lines = [
-    { text: "git clone https://github.com/danzo-app/danzo.git", type: "command" },
-    { text: "cd danzo && npm install", type: "command", delay: 10 },
-    { text: "npm run dev", type: "command", delay: 20 },
-    { text: "✓ MongoDB & Firebase Admin connected", type: "success", delay: 30 },
-    { text: "✓ Vite ready on http://localhost:5173", type: "success", delay: 40 },
-  ],
+  lines = DEFAULT_LINES,
+  prompt = "$",
+  title = "~/projects/remocn",
+  background = "#0a0a0a",
+  chromeColor = "#1a1a1a",
+  fontSize = 18,
+  charsPerFrame = 1,
+  chunkSize = 1,
+  speed = 1,
   className,
-  title = "bash - danzo-workspace",
 }: TerminalSimulatorProps) {
-  const [copied, setCopied] = useState(false);
-  const [visibleLinesCount, setVisibleLinesCount] = useState<number>(0);
+  const frame = useCurrentFrame() * speed;
+  const { fps } = useVideoConfig();
 
-  useEffect(() => {
-    setVisibleLinesCount(0);
-    const timers: NodeJS.Timeout[] = [];
+  const lineHeight = Math.round(fontSize * 1.6);
+  const visibleLines = 8;
+  const windowWidth = 900;
+  const windowHeight = 480;
 
-    lines.forEach((line, index) => {
-      const delayMs = (line.delay ?? index * 10) * 40;
-      const timer = setTimeout(() => {
-        setVisibleLinesCount((prev) => Math.max(prev, index + 1));
-      }, delayMs);
-      timers.push(timer);
-    });
+  // Compute cumulative start frames for each line, including auto/explicit
+  // pauses AFTER a line finishes typing.
+  const starts: number[] = [];
+  let acc = 10;
+  for (let i = 0; i < lines.length; i++) {
+    const delay = lines[i].delay ?? 8;
+    acc += delay;
+    starts.push(acc);
+    // Approximate typing duration (in frames) for chunked output.
+    const typingFrames = Math.ceil(
+      lines[i].text.length / (chunkSize * charsPerFrame),
+    );
+    acc += typingFrames + autoPause(lines[i]);
+  }
 
-    return () => {
-      timers.forEach(clearTimeout);
-    };
-  }, [lines]);
-
-  const copyToClipboard = () => {
-    const textToCopy = lines
-      .filter((l) => l.type === "command")
-      .map((l) => l.text)
-      .join(" && ");
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // STEP-FUNCTION scroll. Each overflowing line snaps the buffer up by
+  // exactly one lineHeight on the frame it begins. No interpolation, no
+  // easing — terminals do not glide.
+  let translateY = 0;
+  for (let i = visibleLines; i < lines.length; i++) {
+    if (frame >= starts[i]) {
+      translateY -= lineHeight;
+    }
+  }
 
   return (
     <div
-      className={cn(
-        "rounded-2xl border shadow-2xl overflow-hidden font-mono text-xs sm:text-sm text-left transition-all duration-300",
-        "bg-neutral-950 text-neutral-100 border-neutral-800 shadow-black/40",
-        "dark:bg-black dark:border-neutral-800 dark:text-neutral-100",
-        className
-      )}
+      className={className}
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      {/* Terminal Title Bar */}
-      <div className="h-10 px-4 border-b border-neutral-800 bg-neutral-900/90 flex items-center justify-between select-none">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-neutral-700 hover:bg-red-500/80 transition-colors"></span>
-            <span className="w-3 h-3 rounded-full bg-neutral-700 hover:bg-yellow-500/80 transition-colors"></span>
-            <span className="w-3 h-3 rounded-full bg-neutral-700 hover:bg-green-500/80 transition-colors"></span>
-          </div>
-          <div className="h-3 w-px bg-neutral-800 mx-1"></div>
-          <div className="flex items-center gap-1.5 text-neutral-400 text-xs font-semibold">
-            <TerminalIcon className="w-3.5 h-3.5 text-neutral-400" />
-            <span>{title}</span>
+      <div
+        style={{
+          width: windowWidth,
+          height: windowHeight,
+          background,
+          borderRadius: 12,
+          overflow: "hidden",
+          boxShadow:
+            "0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily:
+            "var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace",
+        }}
+      >
+        {/* Chrome */}
+        <div
+          style={{
+            height: 40,
+            background: chromeColor,
+            display: "flex",
+            alignItems: "center",
+            padding: "0 16px",
+            gap: 8,
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <Light color="#ff5f57" />
+          <Light color="#febc2e" />
+          <Light color="#28c840" />
+          <div
+            style={{
+              flex: 1,
+              textAlign: "center",
+              color: "#71717a",
+              fontSize: 13,
+            }}
+          >
+            {title}
           </div>
         </div>
 
-        {/* Copy command button */}
-        <button
-          onClick={copyToClipboard}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-          title="Copy commands"
+        {/* Content */}
+        <div
+          style={{
+            flex: 1,
+            padding: 20,
+            overflow: "hidden",
+            position: "relative",
+          }}
         >
-          {copied ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400">Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3.5 h-3.5" />
-              <span>Copy</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Terminal Content */}
-      <div className="p-4 sm:p-6 space-y-2 min-h-[160px] max-h-[380px] overflow-y-auto bg-neutral-950/95">
-        {lines.slice(0, visibleLinesCount).map((line, idx) => {
-          const isCommand = line.type === "command";
-          const isSuccess = line.type === "success";
-          const isError = line.type === "error";
-
-          return (
-            <div key={idx} className="flex items-start gap-2.5 leading-relaxed">
-              {isCommand ? (
-                <span className="text-neutral-500 select-none font-bold">$</span>
-              ) : (
-                <span className="text-neutral-600 select-none">›</span>
-              )}
-              <span
-                className={cn(
-                  "flex-1 font-mono tracking-tight",
-                  isCommand && "text-white font-medium",
-                  isSuccess && "text-emerald-400 font-semibold",
-                  isError && "text-rose-400 font-semibold",
-                  !isCommand && !isSuccess && !isError && "text-neutral-300"
-                )}
+          <div
+            style={{
+              position: "absolute",
+              left: 20,
+              right: 20,
+              top: 20,
+              translate: `0 ${translateY}px`,
+            }}
+          >
+            {lines.map((line, index) => (
+              <Sequence
+                key={index}
+                from={Math.round(starts[index] / speed)}
+                layout="none"
               >
-                {line.text}
-              </span>
-            </div>
-          );
-        })}
-
-        {/* Blinking Cursor */}
-        <div className="flex items-center gap-2.5 pt-1">
-          <span className="text-neutral-500 select-none font-bold">$</span>
-          <span className="inline-block w-2 h-4 bg-white animate-pulse"></span>
+                <TerminalLineRow
+                  line={line}
+                  prompt={prompt}
+                  fontSize={fontSize}
+                  lineHeight={lineHeight}
+                  charsPerFrame={charsPerFrame}
+                  chunkSize={chunkSize}
+                  fps={fps}
+                  speed={speed}
+                />
+              </Sequence>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default TerminalSimulator;
+function Light({ color }: { color: string }) {
+  return (
+    <div
+      style={{
+        width: 12,
+        height: 12,
+        borderRadius: "50%",
+        background: color,
+        opacity: 0.85,
+      }}
+    />
+  );
+}
+
+function TerminalLineRow({
+  line,
+  prompt,
+  fontSize,
+  lineHeight,
+  charsPerFrame,
+  chunkSize,
+  fps,
+  speed,
+}: {
+  line: TerminalLine;
+  prompt: string;
+  fontSize: number;
+  lineHeight: number;
+  charsPerFrame: number;
+  chunkSize: number;
+  fps: number;
+  speed: number;
+}) {
+  const localFrame = useCurrentFrame() * speed;
+  const totalChars = line.text.length;
+
+  // Chunked reveal: Math.floor of an interpolated count, then snapped to the
+  // nearest multiple of `chunkSize`. This is what gives the bursty terminal
+  // feel — text doesn't drip, it lurches.
+  const linearRevealed = Math.floor(
+    interpolate(localFrame, [0, totalChars / charsPerFrame], [0, totalChars], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }),
+  );
+  const revealed = Math.min(
+    totalChars,
+    Math.ceil(linearRevealed / chunkSize) * chunkSize,
+  );
+  const visible = line.text.substring(0, revealed);
+  const typingDone = revealed >= totalChars;
+  // 2 Hz blink at any framerate.
+  const cursorVisible = Math.floor((localFrame / fps) * 2) % 2 === 0;
+
+  return (
+    <div
+      style={{
+        height: lineHeight,
+        fontSize,
+        color: TYPE_COLORS[line.type],
+        display: "flex",
+        alignItems: "center",
+        whiteSpace: "pre",
+      }}
+    >
+      {line.type === "command" && (
+        <span style={{ color: "#22c55e", marginRight: 8 }}>{prompt}</span>
+      )}
+      <span>{visible}</span>
+      {!typingDone && cursorVisible && (
+        <span
+          style={{
+            display: "inline-block",
+            width: fontSize * 0.55,
+            height: fontSize,
+            background: TYPE_COLORS[line.type],
+            marginLeft: 2,
+          }}
+        />
+      )}
+    </div>
+  );
+}

@@ -27,6 +27,7 @@ import InstallPWA from '../components/InstallPWA';
 import { useAuth } from '../contexts/AuthContext';
 import KineticGrid from '@/components/ui/kinetic-grid';
 import { TerminalSimulator } from '@/components/remocn/terminal-simulator';
+import { CheckList } from '@/components/remocn/check-list';
 
 const features = [
   {
@@ -364,8 +365,8 @@ export default function Home() {
             {/* Matrix Body */}
             <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-neutral-200 dark:divide-neutral-800">
               
-              {/* Task Items List */}
-              <div className="lg:col-span-8 p-5 sm:p-6 space-y-3.5">
+              {/* Task Items Animated CheckList */}
+              <div className="lg:col-span-8 p-5 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between pb-1">
                   <span className="text-xs font-bold tracking-wider uppercase text-neutral-600 dark:text-neutral-400">
                     Active Deliverables ({mockTasks.length})
@@ -375,58 +376,23 @@ export default function Home() {
                   </span>
                 </div>
 
-                {mockTasks.map((task) => (
-                  <div 
-                    key={task.id}
-                    className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
-                      isDarkMode 
-                        ? "bg-neutral-900/60 border-neutral-800 hover:border-neutral-600" 
-                        : "bg-white border-neutral-300 hover:border-black hover:shadow-md"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 cursor-pointer ${
-                        task.completed 
-                          ? "bg-black text-white dark:bg-white dark:text-black border-transparent" 
-                          : "border-neutral-400 dark:border-neutral-600 bg-neutral-100 dark:bg-neutral-800"
-                      }`}>
-                        {task.completed && <CheckCircle2 className="w-3.5 h-3.5 fill-current" />}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div className={`text-sm font-semibold truncate ${
-                          task.completed 
-                            ? "line-through text-neutral-400 dark:text-neutral-500" 
-                            : "text-neutral-950 dark:text-white"
-                        }`}>
-                          {task.title}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[11px] font-bold text-neutral-600 dark:text-neutral-400">
-                            {task.tag}
-                          </span>
-                          <span className="text-neutral-300 dark:text-neutral-700">•</span>
-                          <span className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {task.due}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200">
-                        {task.priority}
-                      </span>
-                      <img 
-                        src={task.assignee} 
-                        alt={task.assigneeName}
-                        title={task.assigneeName} 
-                        className="w-7 h-7 rounded-full object-cover border border-neutral-300 dark:border-neutral-700" 
-                      />
-                    </div>
-                  </div>
-                ))}
+                <CheckList
+                  items={mockTasks.map((t) => ({
+                    text: t.title,
+                    checked: t.completed,
+                    tag: t.tag,
+                    priority: t.priority,
+                    due: t.due,
+                    assignee: t.assignee,
+                    assigneeName: t.assigneeName,
+                  }))}
+                  itemGap={12}
+                  closeGap={8}
+                  perStep={1.2}
+                  strokeWidth={2.5}
+                  tickColor={isDarkMode ? "#ffffff" : "#000000"}
+                  interactive={true}
+                />
               </div>
 
               {/* Metrics & Velocity Column */}
