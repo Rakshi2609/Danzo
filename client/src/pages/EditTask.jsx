@@ -143,7 +143,7 @@ export default function EditTask() {
       case 'High': return 'bg-orange-100 text-orange-800 border-orange-300';
       case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'Low': return 'bg-green-100 text-green-800 border-green-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      default: return 'bg-gray-100 text-foreground border-gray-300';
     }
   };
 
@@ -151,7 +151,7 @@ export default function EditTask() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-accent mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading task details...</p>
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function EditTask() {
         {/* Back Button */}
         <button
           onClick={() => navigate(`/tasks/${id}`)}
-          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors font-medium group"
+          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-accent transition-colors font-medium group"
         >
           <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
           Back to Task Details
@@ -178,10 +178,10 @@ export default function EditTask() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl">
+            <div className="bg-gradient-to-br from-zinc-700 to-zinc-900 p-3 rounded-xl">
               <FaEdit className="text-white text-2xl" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
               Edit Task
             </h1>
           </div>
@@ -193,18 +193,18 @@ export default function EditTask() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+          className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+          <div className="bg-gradient-to-r from-zinc-700 to-zinc-900 p-6">
             <h2 className="text-white text-xl font-semibold">Task Information</h2>
-            <p className="text-blue-100 text-sm mt-1">Modify the fields you want to update</p>
+            <p className="text-zinc-300 text-sm mt-1">Modify the fields you want to update</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             
             {/* Title Field */}
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-semibold text-muted-foreground mb-2">
                 Task Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -215,13 +215,13 @@ export default function EditTask() {
                 onChange={handleChange}
                 placeholder="Enter task title..."
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
               />
             </div>
 
             {/* Description Field */}
             <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-semibold text-muted-foreground mb-2">
                 Description
               </label>
               <textarea
@@ -231,7 +231,7 @@ export default function EditTask() {
                 onChange={handleChange}
                 placeholder="Enter task description..."
                 rows="5"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none resize-none"
               />
             </div>
 
@@ -240,8 +240,8 @@ export default function EditTask() {
               
               {/* Due Date */}
               <div>
-                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaCalendar className="text-blue-500" />
+                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                  <FaCalendar className="text-accent" />
                   Due Date
                 </label>
                 <input
@@ -250,13 +250,13 @@ export default function EditTask() {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
                 />
               </div>
 
               {/* Priority */}
               <div>
-                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
                   <FaFlag className="text-orange-500" />
                   Priority
                 </label>
@@ -266,14 +266,14 @@ export default function EditTask() {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
                     <option value="High">High</option>
                     <option value="Urgent">Urgent</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                       <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                     </svg>
@@ -285,8 +285,8 @@ export default function EditTask() {
 
             {/* Assign To */}
             <div>
-              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                <FaUser className="text-purple-500" />
+              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                <FaUser className="text-muted-foreground" />
                 Assign To <span className="text-red-500">*</span>
               </label>
               <select
@@ -295,7 +295,7 @@ export default function EditTask() {
                 value={formData.assignedTo}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer"
               >
                 <option value="">Select a user...</option>
                 {users.map(user => (
@@ -308,7 +308,7 @@ export default function EditTask() {
 
             {/* Subtasks */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-muted-foreground mb-2">
                 Follow-up Subtasks
               </label>
               <div className="flex gap-2 mb-3">
@@ -323,13 +323,13 @@ export default function EditTask() {
                     }
                   }}
                   placeholder="Add a subtask..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleAddSubtask}
                   disabled={!subtaskInput.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50"
+                  className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-zinc-800 transition-all disabled:opacity-50"
                 >
                   Add
                 </button>
@@ -340,7 +340,7 @@ export default function EditTask() {
                     <li key={index} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
                       <div className="flex items-center gap-2">
                         {subtask.isCompleted && <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Completed</span>}
-                        <span className={`text-gray-700 text-sm ${subtask.isCompleted ? 'line-through text-gray-400' : ''}`}>{subtask.title}</span>
+                        <span className={`text-muted-foreground text-sm ${subtask.isCompleted ? 'line-through text-gray-400' : ''}`}>{subtask.title}</span>
                       </div>
                       <button
                         type="button"
@@ -362,7 +362,7 @@ export default function EditTask() {
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm sm:text-base font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -383,7 +383,7 @@ export default function EditTask() {
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-muted-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300"
               >
                 <FaTimes />
                 Cancel
@@ -398,16 +398,16 @@ export default function EditTask() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl"
+          className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-purple-50 border border-border rounded-xl"
         >
           <div className="flex items-start gap-3">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <div className="bg-muted p-2 rounded-lg">
+              <svg className="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-800 font-medium mb-1">
+              <p className="text-sm text-foreground font-medium mb-1">
                 <strong>Note:</strong> Only the task creator can edit task details.
               </p>
               <p className="text-xs text-gray-600">

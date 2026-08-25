@@ -23,7 +23,7 @@ const Pagination = ({ page, pageSize, total, onPageChange }) => {
                 className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 ${
                     page === 1
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                        : "bg-primary text-primary-foreground hover:bg-zinc-800"
                 }`}
                 whileHover={page !== 1 ? { scale: 1.05 } : {}}
                 whileTap={page !== 1 ? { scale: 0.95 } : {}}
@@ -33,7 +33,7 @@ const Pagination = ({ page, pageSize, total, onPageChange }) => {
             </motion.button>
 
             <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-muted-foreground">
                     Page {page} of {totalPages}
                 </span>
                 <span className="text-xs text-gray-500">
@@ -47,7 +47,7 @@ const Pagination = ({ page, pageSize, total, onPageChange }) => {
                 className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 ${
                     page === totalPages
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600 shadow-md"
+                        : "bg-primary text-primary-foreground hover:bg-zinc-800"
                 }`}
                 whileHover={page !== totalPages ? { scale: 1.05 } : {}}
                 whileTap={page !== totalPages ? { scale: 0.95 } : {}}

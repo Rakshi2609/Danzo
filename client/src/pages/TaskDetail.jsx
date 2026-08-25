@@ -214,8 +214,8 @@ export default function TaskDetail() {
 
   const getAvatarColor = (str) => {
     const colors = [
-      'bg-gradient-to-br from-blue-400 to-blue-600',
-      'bg-gradient-to-br from-purple-400 to-purple-600',
+      'bg-gradient-to-br from-zinc-500 to-zinc-700',
+      'bg-gradient-to-br from-indigo-400 to-indigo-600',
       'bg-gradient-to-br from-green-400 to-green-600',
       'bg-gradient-to-br from-orange-400 to-orange-600',
       'bg-gradient-to-br from-pink-400 to-pink-600',
@@ -239,10 +239,10 @@ export default function TaskDetail() {
   const getStatusColor = (status) => {
     const colors = {
       Pending: 'bg-yellow-100 text-yellow-800',
-      'In Progress': 'bg-blue-100 text-blue-800',
+      'In Progress': 'bg-muted text-foreground',
       Completed: 'bg-green-100 text-green-800'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-100 text-foreground';
   };
 
   const getUpdateIcon = (type) => {
@@ -273,7 +273,7 @@ export default function TaskDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
@@ -281,10 +281,10 @@ export default function TaskDetail() {
   if (!task) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Task not found</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-4">Task not found</h2>
         <button
           onClick={() => navigate(-1)}
-          className="text-blue-600 hover:text-blue-800"
+          className="text-accent hover:text-foreground"
         >
           Go Back
         </button>
@@ -314,7 +314,7 @@ export default function TaskDetail() {
       >
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm sm:text-base"
+          className="flex items-center gap-2 text-gray-600 hover:text-foreground text-sm sm:text-base"
         >
           <FiArrowLeft size={20} />
           Back
@@ -335,11 +335,11 @@ export default function TaskDetail() {
       {/* Task Details Card */}
       <motion.div 
         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-        className="bg-white rounded-xl shadow-lg border-t-4 border-blue-500 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300"
+        className="bg-white rounded-xl shadow-xs border-t-2 border-border p-4 sm:p-6 hover:shadow-xs transition-shadow duration-300"
       >
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
           <div className="flex-1 w-full">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3">{task.title}</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">{task.title}</h1>
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-sm ${getPriorityColor(task.priority)}`}>
                 {task.priority} Priority
@@ -356,7 +356,7 @@ export default function TaskDetail() {
               {task.status === 'Pending' && (
                 <button
                   onClick={() => handleStatusChange('In Progress')}
-                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm sm:text-base rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200 flex-1 sm:flex-initial whitespace-nowrap font-medium"
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 transition-colors flex-1 sm:flex-initial whitespace-nowrap font-medium"
                 >
                   Start Task
                 </button>
@@ -375,13 +375,13 @@ export default function TaskDetail() {
 
         {/* Task Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FiCalendar className="text-blue-600" size={18} />
+          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-border">
+            <div className="bg-muted p-2 rounded-lg">
+              <FiCalendar className="text-accent" size={18} />
             </div>
             <div>
               <p className="text-xs sm:text-sm text-gray-500">Due Date</p>
-              <p className="text-sm sm:text-base text-gray-800 font-medium">
+              <p className="text-sm sm:text-base text-foreground font-medium">
                 {moment(task.dueDate).format('MMM DD, YYYY')}
                 <span className={`ml-2 text-xs sm:text-sm ${moment(task.dueDate).isBefore(moment(), 'day') && task.status !== 'Completed' ? 'text-red-600' : 'text-gray-500'}`}>
                   ({moment(task.dueDate).fromNow()})
@@ -394,9 +394,9 @@ export default function TaskDetail() {
             <FiUser className="text-gray-400" size={18} />
             <div>
               <p className="text-xs sm:text-sm text-gray-500">Assigned To</p>
-              <p className="text-sm sm:text-base text-gray-800 font-medium">
+              <p className="text-sm sm:text-base text-foreground font-medium">
                 {task.assignedTo?.displayName || task.assignedTo?.email}
-                {isAssignedToMe && <span className="ml-2 text-blue-600 text-xs sm:text-sm">(You)</span>}
+                {isAssignedToMe && <span className="ml-2 text-accent text-xs sm:text-sm">(You)</span>}
               </p>
             </div>
           </div>
@@ -407,9 +407,9 @@ export default function TaskDetail() {
             </div>
             <div>
               <p className="text-xs sm:text-sm text-gray-500">Created By</p>
-              <p className="text-sm sm:text-base text-gray-800 font-medium">
+              <p className="text-sm sm:text-base text-foreground font-medium">
                 {task.createdBy?.displayName || task.createdBy?.email}
-                {isCreatedByMe && <span className="ml-2 text-blue-600 text-xs sm:text-sm">(You)</span>}
+                {isCreatedByMe && <span className="ml-2 text-accent text-xs sm:text-sm">(You)</span>}
               </p>
             </div>
           </div>
@@ -420,7 +420,7 @@ export default function TaskDetail() {
             </div>
             <div>
               <p className="text-xs sm:text-sm text-gray-500">Created</p>
-              <p className="text-sm sm:text-base text-gray-800 font-medium">{moment(task.createdAt).format('MMM DD, YYYY')}</p>
+              <p className="text-sm sm:text-base text-foreground font-medium">{moment(task.createdAt).format('MMM DD, YYYY')}</p>
             </div>
           </div>
 
@@ -434,7 +434,7 @@ export default function TaskDetail() {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-gray-500">Work Started</p>
-                    <p className="text-sm sm:text-base text-gray-800 font-medium">
+                    <p className="text-sm sm:text-base text-foreground font-medium">
                       {moment(task.actualStartTime).format('MMM DD, YYYY h:mm A')}
                     </p>
                   </div>
@@ -447,7 +447,7 @@ export default function TaskDetail() {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-gray-500">Work Finished</p>
-                    <p className="text-sm sm:text-base text-gray-800 font-medium">
+                    <p className="text-sm sm:text-base text-foreground font-medium">
                       {moment(task.actualEndTime).format('MMM DD, YYYY h:mm A')}
                     </p>
                   </div>
@@ -460,19 +460,19 @@ export default function TaskDetail() {
         {/* Description */}
         {task.description && (
           <div className="border-t pt-4 mt-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+              <div className="w-1 h-5 bg-gradient-to-b bg-accent rounded-full"></div>
               Description
             </h3>
-            <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-lg border border-gray-100">{task.description}</p>
+            <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-lg border border-gray-100">{task.description}</p>
           </div>
         )}
 
         {/* Subtasks */}
         {(task.subtasks?.length > 0 || isAssignedToMe || isCreatedByMe) && (
           <div className="border-t pt-4 mt-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+              <div className="w-1 h-5 bg-gradient-to-b bg-accent rounded-full"></div>
               Follow-up Subtasks
             </h3>
             
@@ -485,9 +485,9 @@ export default function TaskDetail() {
                       checked={st.isCompleted} 
                       onChange={() => handleToggleSubtask(st._id)}
                       disabled={!isAssignedToMe && !isCreatedByMe}
-                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                      className="w-5 h-5 text-accent rounded border-gray-300 focus:ring-accent/40 cursor-pointer"
                     />
-                    <span className={`text-sm sm:text-base text-gray-800 truncate ${st.isCompleted ? 'line-through text-gray-500' : ''}`}>
+                    <span className={`text-sm sm:text-base text-foreground truncate ${st.isCompleted ? 'line-through text-gray-500' : ''}`}>
                       {st.title}
                     </span>
                   </div>
@@ -514,12 +514,12 @@ export default function TaskDetail() {
                   value={newSubtask}
                   onChange={(e) => setNewSubtask(e.target.value)}
                   placeholder="Add a new subtask..."
-                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60"
                 />
                 <button
                   type="submit"
                   disabled={!newSubtask.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors"
                 >
                   Add
                 </button>
@@ -532,11 +532,11 @@ export default function TaskDetail() {
       {/* Comments Section */}
       <motion.div 
         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-        className="bg-white rounded-xl shadow-lg border-t-4 border-indigo-500 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300"
+        className="bg-white rounded-xl shadow-xs border-t-2 border-border p-4 sm:p-6 hover:shadow-xs transition-shadow duration-300"
       >
-        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <div className="bg-indigo-100 p-2 rounded-lg">
-            <FiMessageSquare className="text-indigo-600" size={20} />
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+          <div className="bg-muted p-2 rounded-lg">
+            <FiMessageSquare className="text-accent" size={20} />
           </div>
           Activity & Comments
         </h2>
@@ -548,14 +548,14 @@ export default function TaskDetail() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={isAssignedToMe ? "Add a comment or update..." : "Add a follow-up comment..."}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all"
               rows="3"
             />
             <div className="flex justify-end mt-2 sm:mt-3">
               <button
                 type="submit"
                 disabled={submitting || !comment.trim()}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm sm:text-base rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 {submitting ? 'Posting...' : 'Post Comment'}
               </button>
@@ -593,22 +593,22 @@ export default function TaskDetail() {
                 </motion.div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                    <span className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                    <span className="font-semibold text-foreground text-sm sm:text-base truncate">
                       {update.userId?.displayName || update.userId?.email}
                     </span>
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                       {update.userId?._id === task.assignedTo?._id && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">Assignee</span>
+                        <span className="text-xs bg-muted text-foreground px-2 py-0.5 rounded-full font-medium">Assignee</span>
                       )}
                       {update.userId?._id === task.createdBy?._id && (
-                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-medium">Creator</span>
+                        <span className="text-xs bg-muted text-foreground px-2 py-0.5 rounded-full font-medium">Creator</span>
                       )}
                       <span className="text-xs sm:text-sm text-gray-500">
                         {moment(update.createdAt).fromNow()}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm sm:text-base text-gray-700 break-words leading-relaxed">{formatUpdateMessage(update)}</p>
+                  <p className="text-sm sm:text-base text-muted-foreground break-words leading-relaxed">{formatUpdateMessage(update)}</p>
                   
                   {/* Reactions */}
                   <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -625,13 +625,13 @@ export default function TaskDetail() {
                             onClick={() => handleReaction(update._id, emoji)}
                             className={`px-2 py-1 rounded-full text-sm transition-all ${
                               hasReacted 
-                                ? 'bg-blue-100 border-2 border-blue-500 shadow-sm' 
+                                ? 'bg-muted border-2 border-accent/60' 
                                 : 'bg-gray-100 border border-gray-200 hover:bg-gray-200'
                             }`}
                           >
                             {emoji}
                             {reactors.length > 0 && (
-                              <span className={`ml-1 text-xs font-medium ${hasReacted ? 'text-blue-700' : 'text-gray-600'}`}>
+                              <span className={`ml-1 text-xs font-medium ${hasReacted ? 'text-accent' : 'text-gray-600'}`}>
                                 {reactors.length}
                               </span>
                             )}
@@ -654,41 +654,41 @@ export default function TaskDetail() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+            className="bg-white rounded-xl shadow-xs max-w-md w-full p-6"
           >
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Track Your Time</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-4">Track Your Time</h3>
             <p className="text-gray-600 mb-4">
               Record what time you started and finished this task today.
             </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-              <p className="text-sm text-blue-800 flex items-center gap-2">
-                <FiCalendar className="text-blue-600" />
+            <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6">
+              <p className="text-sm text-foreground flex items-center gap-2">
+                <FiCalendar className="text-accent" />
                 <span className="font-semibold">Date: {new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
               </p>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Start Time (Optional)
                 </label>
                 <input
                   type="time"
                   value={timeData.startTime}
                   onChange={(e) => setTimeData({ ...timeData, startTime: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
                   End Time (Optional)
                 </label>
                 <input
                   type="time"
                   value={timeData.endTime}
                   onChange={(e) => setTimeData({ ...timeData, endTime: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   If you don't provide an end time, it will be set to now.
@@ -699,13 +699,13 @@ export default function TaskDetail() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleTimeModalCancel}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-muted-foreground hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCompleteWithTime}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-zinc-800 font-medium transition-colors"
               >
                 Complete Task
               </button>

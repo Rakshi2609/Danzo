@@ -23,118 +23,79 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
     }
   };
 
-  const buttonVariants = {
-    hover: {
-      scale: 1.05,
-      boxShadow: "0px 4px 15px rgba(59, 130, 246, 0.3)",
-      transition: { duration: 0.2 },
-    },
-    tap: {
-      scale: 0.95,
-    },
-  };
-
-  const mobileMenuVariants = {
-    hidden: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.2,
-      }
-    },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-      }
-    }
-  };
-
   const navLinkClasses =
-    "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-blue-600 hover:shadow-md";
+    "inline-flex items-center gap-2 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
 
-  const mobileNavLinkClasses = 
-    "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-blue-600 active:bg-blue-700 w-full text-left";
+  const mobileNavLinkClasses =
+    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-muted active:bg-muted w-full text-left text-foreground";
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-xl sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+        <div className="flex justify-between items-center h-14">
+          {/* Logo + sidebar toggle */}
           <div className="flex items-center gap-2">
             {showMenu && user && (
               <button
-                className="inline-flex items-center justify-center w-10 h-10 rounded-md hover:bg-blue-800/40"
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 onClick={onMenuClick}
                 aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
                 aria-expanded={isSidebarOpen}
               >
-                {isSidebarOpen ? <IoClose className="text-2xl" /> : <HiOutlineMenu className="text-2xl" />}
+                {isSidebarOpen ? <IoClose className="text-xl" /> : <HiOutlineMenu className="text-xl" />}
               </button>
             )}
-            <Link to={user ? "/dashboard" : "/"} className="flex items-center space-x-2 group">
-              <motion.div
-                initial={{ rotate: 0 }}
-                whileHover={{ rotate: 10 }}
-                transition={{ duration: 0.3 }}
-                className="text-2xl sm:text-3xl text-blue-300 group-hover:text-white"
-              >
-                <FaTasks />
-              </motion.div>
-              <div className="text-xl sm:text-2xl font-extrabold text-white tracking-wide">
+            <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <FaTasks className="text-sm" />
+              </span>
+              <span className="text-lg font-semibold tracking-tight text-foreground">
                 Danzo
-              </div>
+              </span>
             </Link>
           </div>
 
-          {/* Desktop Nav - Hidden on mobile */}
-          <div className="hidden md:flex items-center space-x-2">
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1.5">
             {user ? (
               <>
-                <div className="flex items-center gap-3 px-4 py-2 mr-2">
-                  <FaUserCircle className="text-2xl" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold">{user.displayName || 'User'}</span>
-                    <span className="text-xs bg-blue-500 px-2 py-0.5 rounded-full">
+                <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg border border-border bg-muted/50 mr-1">
+                  <FaUserCircle className="text-lg text-muted-foreground" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground">{user.displayName || 'User'}</span>
+                    <span className="text-[10px] font-medium uppercase tracking-wide bg-accent/10 text-accent px-1.5 py-0.5 rounded-full">
                       {user.role || 'Member'}
                     </span>
                   </div>
                 </div>
-                
+
                 <InstallPWA />
 
                 <motion.button
                   onClick={handleLogout}
-                  className={`${navLinkClasses} bg-red-500 hover:bg-red-600`}
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
+                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
+                  whileTap={{ scale: 0.97 }}
                 >
-                  <FaSignOutAlt /> Logout
+                  <FaSignOutAlt className="text-xs" /> Logout
                 </motion.button>
               </>
             ) : (
               <>
                 <Link to="/">
                   <motion.button
-                    className={`${navLinkClasses} bg-transparent`}
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
+                    className={navLinkClasses}
+                    whileTap={{ scale: 0.97 }}
                   >
                     <FaHome /> Home
                   </motion.button>
                 </Link>
-                
+
                 <Link to="/login">
                   <motion.button
-                    className="px-5 py-2 bg-white text-blue-700 rounded-lg font-semibold hover:bg-blue-50 transition"
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
+                    className="inline-flex items-center h-9 px-4 rounded-lg text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
+                    whileTap={{ scale: 0.97 }}
                   >
                     Login
                   </motion.button>
@@ -145,12 +106,12 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md hover:bg-blue-800/40"
+            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <IoClose className="text-2xl" /> : <HiOutlineMenu className="text-2xl" />}
+            {mobileMenuOpen ? <IoClose className="text-xl" /> : <HiOutlineMenu className="text-xl" />}
           </button>
         </div>
       </div>
@@ -159,27 +120,27 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="md:hidden bg-blue-800 border-t border-blue-700"
-            variants={mobileMenuVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
+            className="md:hidden border-t border-border bg-white"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="px-4 py-4 space-y-2">
+            <div className="px-4 py-4 space-y-1.5">
               {user ? (
                 <>
-                  <div className="flex items-center gap-3 px-4 py-3 mb-3 border-b border-blue-700">
-                    <FaUserCircle className="text-3xl" />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{user.displayName || 'User'}</span>
-                      <span className="text-xs">{user.email}</span>
-                      <span className="text-xs bg-blue-500 px-2 py-0.5 rounded-full mt-1 inline-block w-fit">
+                  <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-lg border border-border bg-muted/50">
+                    <FaUserCircle className="text-2xl text-muted-foreground" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-medium text-foreground truncate">{user.displayName || 'User'}</span>
+                      <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+                      <span className="text-[10px] font-medium uppercase tracking-wide bg-accent/10 text-accent px-1.5 py-0.5 rounded-full mt-1 inline-block w-fit">
                         {user.role || 'Member'}
                       </span>
                     </div>
                   </div>
-                  
-                  <div className="px-4 mb-3">
+
+                  <div className="px-1 py-1">
                     <InstallPWA />
                   </div>
 
@@ -188,10 +149,10 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                       handleLogout();
                       closeMobileMenu();
                     }}
-                    className={`${mobileNavLinkClasses} bg-red-500 hover:bg-red-600`}
+                    className={`${mobileNavLinkClasses} text-red-600 hover:bg-red-50 active:bg-red-50`}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <FaSignOutAlt className="text-xl" /> Logout
+                    <FaSignOutAlt className="text-base" /> Logout
                   </motion.button>
                 </>
               ) : (
@@ -201,13 +162,13 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                       className={mobileNavLinkClasses}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <FaHome className="text-xl" /> Home
+                      <FaHome className="text-base" /> Home
                     </motion.button>
                   </Link>
-                  
+
                   <Link to="/login" onClick={closeMobileMenu}>
                     <motion.button
-                      className="w-full px-4 py-3 bg-white text-blue-700 rounded-lg font-semibold active:bg-blue-50 transition"
+                      className="w-full h-10 px-4 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-xs active:bg-zinc-950 transition-colors"
                       whileTap={{ scale: 0.98 }}
                     >
                       Login

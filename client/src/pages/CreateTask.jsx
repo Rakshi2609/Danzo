@@ -102,14 +102,14 @@ export default function CreateTask() {
       case 'High': return 'bg-orange-100 text-orange-800 border-orange-300';
       case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'Low': return 'bg-green-100 text-green-800 border-green-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      default: return 'bg-gray-100 text-foreground border-gray-300';
     }
   };
 
   if (loadingUsers) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
@@ -124,7 +124,7 @@ export default function CreateTask() {
       >
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r text-foreground mb-2">
             Create New Task
           </h1>
           <p className="text-gray-600">Fill in the details to create a new task for your team</p>
@@ -135,13 +135,13 @@ export default function CreateTask() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+          className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden"
         >
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             
             {/* Title Field */}
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-semibold text-muted-foreground mb-2">
                 Task Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -152,13 +152,13 @@ export default function CreateTask() {
                 onChange={handleChange}
                 placeholder="Enter task title..."
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
               />
             </div>
 
             {/* Description Field */}
             <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-semibold text-muted-foreground mb-2">
                 Description
               </label>
               <textarea
@@ -168,7 +168,7 @@ export default function CreateTask() {
                 onChange={handleChange}
                 placeholder="Enter task description..."
                 rows="4"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none resize-none"
               />
             </div>
 
@@ -177,8 +177,8 @@ export default function CreateTask() {
               
               {/* Due Date */}
               <div>
-                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaCalendar className="text-blue-500" />
+                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                  <FaCalendar className="text-accent" />
                   Due Date
                 </label>
                 <input
@@ -187,13 +187,13 @@ export default function CreateTask() {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
                 />
               </div>
 
               {/* Priority */}
               <div>
-                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
                   <FaFlag className="text-orange-500" />
                   Priority
                 </label>
@@ -203,14 +203,14 @@ export default function CreateTask() {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
                     <option value="High">High</option>
                     <option value="Urgent">Urgent</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                       <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                     </svg>
@@ -222,8 +222,8 @@ export default function CreateTask() {
 
             {/* Assign To */}
             <div>
-              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                <FaUser className="text-purple-500" />
+              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                <FaUser className="text-muted-foreground" />
                 Assign To <span className="text-red-500">*</span>
               </label>
               <select
@@ -232,7 +232,7 @@ export default function CreateTask() {
                 value={formData.assignedTo}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer"
               >
                 <option value="">Select a user...</option>
                 {users.map(user => (
@@ -245,7 +245,7 @@ export default function CreateTask() {
 
             {/* Subtasks */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-muted-foreground mb-2">
                 Follow-up Subtasks
               </label>
               <div className="flex gap-2 mb-3">
@@ -260,13 +260,13 @@ export default function CreateTask() {
                     }
                   }}
                   placeholder="Add a subtask..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleAddSubtask}
                   disabled={!subtaskInput.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50"
+                  className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-zinc-800 transition-all disabled:opacity-50"
                 >
                   Add
                 </button>
@@ -275,7 +275,7 @@ export default function CreateTask() {
                 <ul className="space-y-2">
                   {formData.subtasks.map((subtask, index) => (
                     <li key={index} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                      <span className="text-gray-700 text-sm">{subtask.title}</span>
+                      <span className="text-muted-foreground text-sm">{subtask.title}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveSubtask(index)}
@@ -296,7 +296,7 @@ export default function CreateTask() {
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -317,7 +317,7 @@ export default function CreateTask() {
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-muted-foreground font-semibold rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FaTimes />
                 Cancel
@@ -332,9 +332,9 @@ export default function CreateTask() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+          className="mt-6 p-4 bg-muted/50 border border-border rounded-lg"
         >
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-foreground">
             <strong>Tip:</strong> The actual work time will be tracked when the assignee completes the task.
           </p>
         </motion.div>

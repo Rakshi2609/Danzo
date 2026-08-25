@@ -208,18 +208,18 @@ const Dashboard = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4 text-center">
         <motion.div
-          className="bg-white p-8 rounded-2xl shadow-xl border border-red-200"
+          className="bg-white p-8 rounded-xl shadow-xs border border-border max-w-sm"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <FaExclamationTriangle className="text-red-500 text-5xl mb-4 mx-auto" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">
             Error Loading Dashboard
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {error}
           </p>
           <motion.button
@@ -227,7 +227,7 @@ const Dashboard = () => {
               setError(null);
               loadDashboardData();
             }}
-            className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:bg-blue-700 transition-all duration-200"
+            className="inline-flex h-10 items-center bg-primary text-primary-foreground font-medium py-2.5 px-5 rounded-lg text-sm shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -241,23 +241,23 @@ const Dashboard = () => {
   // Conditional rendering for unauthenticated user
   if (!user && !authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4 text-center">
         <motion.div
-          className="bg-white p-8 rounded-2xl shadow-xl border border-blue-200"
+          className="bg-white p-8 rounded-xl shadow-xs border border-border max-w-sm"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <FaInfoCircle className="text-red-500 text-5xl mb-4 mx-auto" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">
             Access Denied
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             You need to be logged in to view this page.
           </p>
           <Link to="/login">
             <motion.button
-              className="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:bg-blue-700 transition-all duration-200"
+              className="inline-flex h-10 items-center bg-primary text-primary-foreground font-medium py-2.5 px-5 rounded-lg text-sm shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -271,31 +271,28 @@ const Dashboard = () => {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-zinc-900 mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-1 sm:p-2 lg:p-3">
+    <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
       <motion.div
-        className="max-w-7xl mx-auto mt-2 sm:mt-3 p-3 sm:p-4 lg:p-5 bg-white rounded-2xl shadow-2xl border border-blue-200 relative overflow-hidden"
+        className="max-w-7xl mx-auto p-3 sm:p-5 lg:p-6 bg-white rounded-xl border border-border shadow-xs relative"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* Decorative background element */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-indigo-100/50 opacity-60 rounded-3xl pointer-events-none"></div>
-
-        <motion.h2
-          className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-center text-gray-900 drop-shadow-md flex items-center justify-center gap-2 relative z-10"
+                <motion.h2
+          className="text-xl sm:text-2xl font-semibold tracking-tight mb-4 sm:mb-5 text-foreground flex items-center gap-2 relative z-10"
           variants={itemVariants}
         >
-          <FaTasks className="text-blue-600 text-xl sm:text-2xl lg:text-3xl" /> Your Dashboard
+          <FaTasks className="text-accent text-lg sm:text-xl" /> Your Dashboard
         </motion.h2>
 
         {/* WhatsApp phone number settings */}
@@ -304,20 +301,20 @@ const Dashboard = () => {
         </div>
 
         {/* TODAY'S TASKS & OVERDUE TASKS AT TOP - Side by side on larger screens */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4 relative z-10">
           {/* Today's Due Tasks Section */}
           <motion.div
-            className="p-2 sm:p-3 bg-white rounded-lg shadow-md border border-gray-200"
+            className="p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs"
             variants={itemVariants}
           >
-            <h3 className="text-sm sm:text-base font-bold mb-2 text-blue-800 flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
               <span className="flex items-center gap-1">
                 <FaCalendarDay className="text-xs" /> Today's Due Tasks
               </span>
-              <Link to="/my-tasks" className="text-[10px] sm:text-xs font-semibold text-blue-700 hover:underline">View all</Link>
+              <Link to="/my-tasks" className="text-xs font-medium text-accent hover:underline">View all</Link>
             </h3>
             {todayTasks.length === 0 ? (
-              <p className="text-gray-500 italic text-center py-2 text-xs sm:text-sm">
+              <p className="text-muted-foreground text-center py-4 text-xs sm:text-sm">
                 No tasks are due today. Enjoy your day!
               </p>
             ) : (
@@ -326,20 +323,20 @@ const Dashboard = () => {
                   {(showAllToday ? todayTasks : todayTasks.slice(0, 3)).map((task, index) => (
                   <motion.li
                     key={task._id || index}
-                    className="border border-gray-200 p-1.5 sm:p-2 rounded-md shadow-sm bg-white hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                     onClick={() => task?._id && navigate(`/tasks/${task._id}`)}
                   >
-                    <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-0.5">
+                    <p className="text-xs sm:text-sm font-medium text-foreground mb-1">
                       {task.title}
                     </p>
-                    <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-gray-600">
+                    <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-muted-foreground">
                       <p>
                         <strong>By:</strong>{" "}
-                        <span className="font-medium text-blue-700">
+                        <span className="font-medium text-foreground">
                           {task.createdBy && typeof task.createdBy === 'object'
                             ? (task.createdBy.displayName || task.createdBy.email || 'Unknown')
                             : (task.createdBy || 'Unknown')}
@@ -369,7 +366,7 @@ const Dashboard = () => {
                 {todayTasks.length > 3 && (
                   <button
                     onClick={() => setShowAllToday(!showAllToday)}
-                    className="w-full mt-2 py-1 text-[10px] sm:text-xs text-blue-700 font-semibold hover:text-blue-900 transition-colors"
+                    className="w-full mt-2 py-1.5 text-xs text-accent font-medium hover:bg-muted rounded-md transition-colors"
                   >
                     {showAllToday ? "Show Less" : `Load More (${todayTasks.length - 3} more)`}
                   </button>
@@ -380,17 +377,17 @@ const Dashboard = () => {
 
           {/* Overdue Tasks Section */}
           <motion.div
-            className="p-2 sm:p-3 bg-white rounded-lg shadow-md border border-gray-200"
+            className="p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs"
             variants={itemVariants}
           >
-            <h3 className="text-sm sm:text-base font-bold mb-2 text-red-700 flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
               <span className="flex items-center gap-1">
                 <FaExclamationTriangle className="text-xs" /> Overdue Tasks
               </span>
-              <Link to="/my-tasks" className="text-[10px] sm:text-xs font-semibold text-red-700 hover:underline">View all</Link>
+              <Link to="/my-tasks" className="text-xs font-medium text-accent hover:underline">View all</Link>
             </h3>
             {overdueTasks.length === 0 ? (
-              <p className="text-gray-500 italic text-center py-2 text-xs sm:text-sm">
+              <p className="text-muted-foreground text-center py-4 text-xs sm:text-sm">
                 No overdue tasks. Great job!
               </p>
             ) : (
@@ -399,20 +396,20 @@ const Dashboard = () => {
                   {(showAllOverdue ? overdueTasks : overdueTasks.slice(0, 3)).map((task, index) => (
                   <motion.li
                     key={task._id || index}
-                    className="border border-gray-200 p-1.5 sm:p-2 rounded-md shadow-sm bg-white hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                     onClick={() => task?._id && navigate(`/tasks/${task._id}`)}
                   >
-                    <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-0.5">
+                    <p className="text-xs sm:text-sm font-medium text-foreground mb-1">
                       {task.title}
                     </p>
-                    <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-gray-600">
+                    <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-muted-foreground">
                       <p>
                         <strong>By:</strong>{" "}
-                        <span className="font-medium text-blue-700">
+                        <span className="font-medium text-foreground">
                           {task.createdBy && typeof task.createdBy === 'object'
                             ? (task.createdBy.displayName || task.createdBy.email || 'Unknown')
                             : (task.createdBy || 'Unknown')}
@@ -441,7 +438,7 @@ const Dashboard = () => {
                 {overdueTasks.length > 3 && (
                   <button
                     onClick={() => setShowAllOverdue(!showAllOverdue)}
-                    className="w-full mt-2 py-1 text-[10px] sm:text-xs text-red-700 font-semibold hover:text-red-900 transition-colors"
+                    className="w-full mt-2 py-1.5 text-xs text-accent font-medium hover:bg-muted rounded-md transition-colors"
                   >
                     {showAllOverdue ? "Show Less" : `Load More (${overdueTasks.length - 3} more)`}
                   </button>
@@ -453,10 +450,10 @@ const Dashboard = () => {
 
         {/* CALENDAR SECTION */}
         <motion.div
-          className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 rounded-lg shadow-md border border-blue-100 relative z-10"
+          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs relative z-10"
           variants={itemVariants}
         >
-          <h3 className="text-sm sm:text-base font-bold mb-2 text-blue-800 flex items-center gap-1">
+          <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center gap-2">
             <FaCalendarDay className="text-xs" /> Calendar
           </h3>
           
@@ -464,12 +461,12 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             <div className="relative w-16 h-16 sm:w-20 sm:h-20">
               <svg className="w-16 h-16 sm:w-20 sm:h-20 -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="42" stroke="#e5e7eb" strokeWidth="12" fill="none" />
+                <circle cx="50" cy="50" r="42" stroke="hsl(240 5.9% 90%)" strokeWidth="12" fill="none" />
                 <circle
                   cx="50"
                   cy="50"
                   r="42"
-                  stroke="#3b82f6"
+                  stroke="hsl(238 55% 60%)"
                   strokeWidth="12"
                   strokeLinecap="round"
                   fill="none"
@@ -478,28 +475,28 @@ const Dashboard = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs sm:text-sm font-bold text-blue-700">{completedPct}%</span>
+                <span className="text-xs sm:text-sm font-semibold text-foreground">{completedPct}%</span>
               </div>
             </div>
             <div className="text-center sm:text-left">
-              <p className="text-[10px] sm:text-xs text-gray-600">Overall completion</p>
-              <p className="text-sm sm:text-base font-extrabold text-gray-900">{stats?.completed || 0} / {totalTasks}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Overall completion</p>
+              <p className="text-sm sm:text-base font-semibold text-foreground">{stats?.completed || 0} / {totalTasks}</p>
             </div>
           </div>
 
           {/* Month selector */}
           <div className="flex items-center justify-between mb-3">
             <button
-              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-white border border-blue-200 rounded-lg hover:bg-blue-50"
+              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))}
             >
               Prev
             </button>
-            <div className="font-semibold text-sm sm:text-base text-blue-900">
+            <div className="font-medium text-sm sm:text-base text-foreground">
               {monthCursor.toLocaleString(undefined, { month: 'long', year: 'numeric' })}
             </div>
             <button
-              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-white border border-blue-200 rounded-lg hover:bg-blue-50"
+              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))}
             >
               Next
@@ -507,7 +504,7 @@ const Dashboard = () => {
           </div>
 
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs text-gray-600 mb-1">
+          <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1.5">
             {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
               <div key={d} className="py-1">{d}</div>
             ))}
@@ -528,15 +525,15 @@ const Dashboard = () => {
                   key={idx}
                   onClick={() => navigate(`/my-tasks?date=${key}`)}
                   className={`relative h-10 sm:h-12 rounded-md border text-left p-0.5 sm:p-1 flex flex-col justify-between transition-colors
-                    ${isCurrentMonth ? 'bg-white border-blue-100' : 'bg-gray-50 border-gray-200 text-gray-400'}
-                    ${isToday ? 'ring-2 ring-blue-400' : ''}
-                    hover:bg-blue-50`}
+                    ${isCurrentMonth ? 'bg-white border-border text-foreground' : 'bg-muted/40 border-border/60 text-muted-foreground/50'}
+                    ${isToday ? 'ring-2 ring-accent/50 border-accent/40' : ''}
+                    hover:bg-muted/70`}
                   title={`${pending.length} pending, ${completed.length} completed`}
                 >
                   <div className="text-[10px] sm:text-xs font-semibold">{d.getDate()}</div>
                   <div className="flex items-center gap-1 flex-wrap">
                     {pending.length > 0 && (
-                      <span className={`inline-flex items-center justify-center text-[8px] sm:text-[10px] min-w-[14px] sm:min-w-[16px] h-3 sm:h-4 px-0.5 sm:px-1 rounded-full ${isOverdueDay ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}>{pending.length}</span>
+                      <span className={`inline-flex items-center justify-center text-[8px] sm:text-[10px] min-w-[14px] sm:min-w-[16px] h-3 sm:h-4 px-0.5 sm:px-1 rounded-full ${isOverdueDay ? 'bg-red-500 text-white' : 'bg-accent text-white'}`}>{pending.length}</span>
                     )}
                     {completed.length > 0 && (
                       <span className="inline-flex items-center justify-center text-[8px] sm:text-[10px] min-w-[14px] sm:min-w-[16px] h-3 sm:h-4 px-0.5 sm:px-1 rounded-full bg-green-500 text-white">{completed.length}</span>
@@ -548,8 +545,8 @@ const Dashboard = () => {
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap justify-center text-[10px] sm:text-xs mt-3 sm:mt-4 text-gray-700 gap-2 sm:gap-3">
-            <div className="flex items-center gap-1"><span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500 inline-block"></span> Pending</div>
+          <div className="flex flex-wrap justify-center text-[10px] sm:text-xs mt-3 sm:mt-4 text-muted-foreground gap-2 sm:gap-4">
+            <div className="flex items-center gap-1"><span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-accent inline-block"></span> Pending</div>
             <div className="flex items-center gap-1"><span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 inline-block"></span> Completed</div>
             <div className="flex items-center gap-1"><span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 inline-block"></span> Overdue pending</div>
           </div>
@@ -558,7 +555,7 @@ const Dashboard = () => {
           <div className="mt-2 sm:mt-3 grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2">
             <Link to="/my-tasks">
               <motion.button
-                className="w-full bg-white border border-green-200 text-blue-700 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-50"
+                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -568,7 +565,7 @@ const Dashboard = () => {
             </Link>
             <Link to="/recurring-tasks">
               <motion.button
-                className="w-full bg-white border border-green-200 text-green-700 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-green-50"
+                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -578,7 +575,7 @@ const Dashboard = () => {
             </Link>
             <Link to="/follow-ups">
               <motion.button
-                className="w-full bg-white border border-indigo-200 text-indigo-700 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-indigo-50"
+                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -589,7 +586,7 @@ const Dashboard = () => {
             {user?.role === 'Admin' && (
               <Link to="/admin">
                 <motion.button
-                  className="w-full bg-white border border-red-200 text-red-700 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-red-50"
+                  className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
                   variants={linkButtonVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -603,17 +600,17 @@ const Dashboard = () => {
 
         {/* FOLLOWUPS - TASKS ASSIGNED BY ME */}
         <motion.div
-          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl shadow-2xl border border-orange-300 relative z-10 transform hover:-translate-y-1 transition-transform duration-200"
+          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs relative z-10"
           variants={itemVariants}
         >
-          <h3 className="text-sm sm:text-base font-bold mb-2 text-orange-800 flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
             <span className="flex items-center gap-1">
               <FaUserCheck className="text-xs" /> Follow Ups
             </span>
-            <Link to="/follow-ups" className="text-[10px] sm:text-xs font-semibold text-orange-700 hover:underline">View all</Link>
+            <Link to="/follow-ups" className="text-xs font-medium text-accent hover:underline">View all</Link>
           </h3>
           {assignedByMeTasks.length === 0 ? (
-            <p className="text-gray-500 italic text-center py-2 text-xs sm:text-sm">
+            <p className="text-muted-foreground text-center py-4 text-xs sm:text-sm">
               You haven't assigned any tasks yet.
             </p>
           ) : (
@@ -622,17 +619,17 @@ const Dashboard = () => {
                 {(showAllFollowups ? assignedByMeTasks : assignedByMeTasks.slice(0, 3)).map((task, index) => (
                 <motion.li
                   key={task._id || index}
-                  className="border border-orange-200 p-2 sm:p-3 rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                  className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   whileHover={{ scale: 1.02 }}
                   onClick={() => task?._id && navigate(`/tasks/${task._id}`)}
                 >
-                  <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-0.5">
+                  <p className="text-xs sm:text-sm font-medium text-foreground mb-1">
                     {task.title}
                   </p>
-                  <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-gray-600">
+                  <div className="grid grid-cols-2 gap-y-0.5 text-[10px] sm:text-xs text-muted-foreground">
                     <p>
                       <strong>To:</strong> {typeof task.assignedTo === 'object' 
                         ? (task.assignedTo?.displayName || task.assignedTo?.email || 'Unknown')
@@ -676,7 +673,7 @@ const Dashboard = () => {
             {assignedByMeTasks.length > 3 && (
               <button
                 onClick={() => setShowAllFollowups(!showAllFollowups)}
-                className="w-full mt-2 py-1 text-[10px] sm:text-xs text-orange-700 font-semibold hover:text-orange-900 transition-colors"
+                className="w-full mt-2 py-1.5 text-xs text-accent font-medium hover:bg-muted rounded-md transition-colors"
               >
                 {showAllFollowups ? "Show Less" : `Load More (${assignedByMeTasks.length - 3} more)`}
               </button>

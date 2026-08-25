@@ -36,13 +36,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-200 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-100 via-zinc-50 to-indigo-50 relative overflow-hidden">
       {/* Decorative blurred background shape */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.5, scale: 1 }}
         transition={{ duration: 1.2, ease: 'easeOut' }}
-        className="absolute -top-32 -left-32 w-[32rem] h-[32rem] bg-gradient-to-tr from-blue-300 via-purple-200 to-indigo-200 rounded-full filter blur-3xl opacity-60 z-0"
+        className="absolute -top-32 -left-32 w-[32rem] h-[32rem] bg-gradient-to-tr from-zinc-200 via-zinc-100 to-indigo-100 rounded-full filter blur-3xl opacity-60 z-0"
       />
       <motion.div
         className="relative z-10 w-full max-w-md mx-auto"
@@ -50,17 +50,17 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-blue-100">
+        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-xl shadow-xs border border-border">
           <div className="flex flex-col items-center mb-8">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.2, type: 'spring', stiffness: 120 }}
-              className="bg-gradient-to-tr from-blue-400 to-purple-400 p-4 rounded-full shadow-lg mb-3"
+              className="bg-gradient-to-tr bg-primary p-4 rounded-full shadow-xs mb-3"
             >
               <FaTasks className="text-white text-4xl drop-shadow" />
             </motion.div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-1 drop-shadow-md tracking-tight">Denzo</h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1 drop-shadow-md tracking-tight">Denzo</h1>
             <p className="text-gray-600 text-base font-medium">Sign in to manage your tasks</p>
           </div>
 
@@ -68,7 +68,7 @@ export default function Login() {
             onClick={handleGoogleLogin}
             whileHover={{ scale: 1.04, boxShadow: '0px 4px 24px rgba(59,130,246,0.15)' }}
             whileTap={{ scale: 0.97 }}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-blue-200 text-blue-700 px-6 py-3 rounded-xl hover:bg-blue-50 hover:border-blue-400 transition-all font-semibold text-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-border text-accent px-6 py-3 rounded-xl hover:bg-muted/50 hover:bg-muted transition-colors font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-accent/40"
           >
             <FcGoogle size={28} />
             Sign in with Google

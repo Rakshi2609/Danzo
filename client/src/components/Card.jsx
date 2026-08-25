@@ -14,7 +14,7 @@ export function CardHeader({ title, subtitle, action, className = '' }) {
   return (
     <div className={`flex justify-between items-center mb-4 ${className}`}>
       <div>
-        <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
       </div>
       {action && <div>{action}</div>}
@@ -36,7 +36,7 @@ export function CardFooter({ children, className = '' }) {
 
 export function InfoCard({ icon, title, message, type = 'info', className = '' }) {
   const typeClasses = {
-    info: 'bg-blue-50 border-blue-500 text-blue-800',
+    info: 'bg-muted/50 border-l-4 border-accent text-foreground',
     success: 'bg-green-50 border-green-500 text-green-800',
     warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
     error: 'bg-red-50 border-red-500 text-red-800',

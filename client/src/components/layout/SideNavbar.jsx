@@ -30,8 +30,8 @@ const SideNavbar = ({ isOpen, onClose }) => {
   };
 
   const linkBaseClasses =
-    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors";
-  const activeClasses = "bg-blue-100 text-blue-700";
+    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium hover:bg-muted/50 transition-colors";
+  const activeClasses = "bg-muted text-accent";
 
   const navGroups = useMemo(
     () => {
@@ -90,7 +90,7 @@ const SideNavbar = ({ isOpen, onClose }) => {
           }`}
       >
         <div className="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
-          <span className="font-semibold text-gray-800">Navigation</span>
+          <span className="font-semibold text-foreground">Navigation</span>
           {onClose && (
             <button
               className="inline-flex items-center px-2 py-1 text-sm rounded hover:bg-gray-100"
@@ -106,7 +106,7 @@ const SideNavbar = ({ isOpen, onClose }) => {
             <div key={groupIndex} className="border-b border-gray-100 pb-2 last:border-b-0">
               <button
                 onClick={() => toggleGroup(groupIndex)}
-                className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <span className="uppercase tracking-wider">{group.title}</span>
                 {openGroups[groupIndex] ? (
@@ -122,7 +122,7 @@ const SideNavbar = ({ isOpen, onClose }) => {
                       key={to}
                       to={to}
                       className={({ isActive }) =>
-                        `${linkBaseClasses} ${isActive ? activeClasses : "text-gray-700"}`
+                        `${linkBaseClasses} ${isActive ? activeClasses : "text-muted-foreground"}`
                       }
                       onClick={onClose}
                     >

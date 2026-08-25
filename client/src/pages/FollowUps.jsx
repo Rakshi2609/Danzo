@@ -43,10 +43,10 @@ export default function FollowUps() {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'In Progress': return 'bg-blue-100 text-blue-800';
+      case 'In Progress': return 'bg-muted text-foreground';
       case 'Completed': return 'bg-green-100 text-green-800';
       case 'Cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-foreground';
     }
   };
 
@@ -159,35 +159,35 @@ export default function FollowUps() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <FaSpinner className="animate-spin text-6xl text-blue-600 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-gray-700">Loading follow ups...</p>
+          <FaSpinner className="animate-spin text-6xl text-accent mx-auto mb-4" />
+          <p className="text-xl font-semibold text-muted-foreground">Loading follow ups...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-3 lg:p-4">
+    <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
       <motion.div
-        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-3xl shadow-2xl border border-blue-200 relative overflow-hidden"
+        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-indigo-100/50 opacity-60 rounded-3xl pointer-events-none"></div>
+        <div className="absolute inset-0 "></div>
 
         <motion.div className="flex items-center justify-center gap-3 mb-6" variants={itemVariants}>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900 drop-shadow-md flex items-center gap-2">
-            <FaTasks className="text-blue-600 text-2xl sm:text-3xl" /> Follow Ups
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-foreground drop-shadow-md flex items-center gap-2">
+            <FaTasks className="text-accent text-2xl sm:text-3xl" /> Follow Ups
           </h2>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors duration-200"
+            className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200"
             title="Toggle Filters"
           >
-            <FaFilter className="text-blue-600 text-lg" />
+            <FaFilter className="text-accent text-lg" />
           </button>
         </motion.div>
 
@@ -200,7 +200,7 @@ export default function FollowUps() {
 
         {showFilters && (
         <motion.div
-          className="bg-blue-50 p-3 rounded-xl shadow-md border border-blue-100 mb-4 space-y-3 relative z-10"
+          className="bg-muted/50 p-3 rounded-xl shadow-md border border-border mb-4 space-y-3 relative z-10"
           variants={itemVariants}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,14 +209,14 @@ export default function FollowUps() {
         >
           {/* Search Section */}
           <div className="flex items-center gap-2 w-full">
-            <FaSearch className="text-lg sm:text-xl text-blue-600 flex-shrink-0" />
+            <FaSearch className="text-lg sm:text-xl text-accent flex-shrink-0" />
             <div className="flex-1 flex items-center gap-2">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by task name, assignee name or email..."
-                className="flex-1 border border-blue-300 px-3 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white hover:border-blue-400 transition-all duration-200"
+                className="flex-1 border border-zinc-300 px-3 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
               />
               {searchTerm && (
                 <motion.button
@@ -233,11 +233,11 @@ export default function FollowUps() {
 
           {/* Sort Section */}
           <div className="flex items-center gap-2 w-full">
-            <FaSort className="text-lg sm:text-xl text-blue-600 flex-shrink-0" />
+            <FaSort className="text-lg sm:text-xl text-accent flex-shrink-0" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 border border-blue-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white hover:border-blue-400 transition-all duration-200"
+              className="flex-1 border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
             >
               <option value="none">Sort: Default</option>
               <option value="dueDate">Due Date</option>
@@ -249,13 +249,13 @@ export default function FollowUps() {
 
           {/* Date Filter */}
           <div className="flex items-center gap-2 w-full">
-            <FaCalendarAlt className="text-lg sm:text-xl text-blue-600 flex-shrink-0" />
+            <FaCalendarAlt className="text-lg sm:text-xl text-accent flex-shrink-0" />
             <div className="flex-1 flex items-center gap-2">
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 placeholderText="Filter by Due Date"
-                className="flex-1 border border-blue-300 px-2 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white hover:border-blue-400 transition-all duration-200"
+                className="flex-1 border border-zinc-300 px-2 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
                 wrapperClassName="flex-1"
               />
               {selectedDate && (
@@ -276,7 +276,7 @@ export default function FollowUps() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="border border-blue-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 bg-white"
+              className="border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-muted-foreground bg-white"
             >
               <option value="all">All Status</option>
               <option value="Pending">Pending</option>
@@ -288,7 +288,7 @@ export default function FollowUps() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="border border-blue-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 bg-white"
+              className="border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-muted-foreground bg-white"
             >
               <option value="all">All Priority</option>
               <option value="Urgent">Urgent</option>
@@ -306,7 +306,7 @@ export default function FollowUps() {
             variants={itemVariants}
           >
             <FaTasks className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Follow Ups Found</h3>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No Follow Ups Found</h3>
             <p className="text-gray-600">You haven't assigned any tasks yet</p>
           </motion.div>
         ) : (
@@ -327,7 +327,7 @@ export default function FollowUps() {
                         to={`/tasks/${task._id}`}
                         className="flex-1"
                       >
-                        <h4 className="text-base font-semibold text-gray-800 hover:text-blue-600 transition-colors break-words">
+                        <h4 className="text-base font-semibold text-foreground hover:text-accent transition-colors break-words">
                           {task.title}
                         </h4>
                       </Link>
@@ -341,14 +341,14 @@ export default function FollowUps() {
                     )}
 
                     {task.recurringTaskId && (
-                      <p className="text-xs text-purple-600 font-medium flex items-center gap-1 mb-2">
-                        <span className="bg-purple-100 px-2 py-1 rounded text-xs">🔁 Recurring</span>
+                      <p className="text-xs text-accent font-medium flex items-center gap-1 mb-2">
+                        <span className="bg-muted px-2 py-1 rounded text-xs">🔁 Recurring</span>
                       </p>
                     )}
 
                     <div className="space-y-1">
                       <p className="text-xs text-gray-600 flex items-center gap-1">
-                        <FaCalendarAlt className="text-blue-400" />
+                        <FaCalendarAlt className="text-muted-foreground" />
                         <span>Due: {format(new Date(task.dueDate), 'MMM dd, yyyy')}</span>
                       </p>
 
@@ -360,9 +360,9 @@ export default function FollowUps() {
                       </p>
 
                       <p className="text-xs text-gray-600 flex items-center gap-1 min-w-0">
-                        <FaUserCircle className="text-indigo-400 flex-shrink-0" />
+                        <FaUserCircle className="text-muted-foreground flex-shrink-0" />
                         <span>Assigned to:</span>
-                        <span className="font-medium text-blue-700 break-all">
+                        <span className="font-medium text-accent break-all">
                           {task.assignedTo?.displayName || task.assignedTo?.email || task.assignedTo}
                         </span>
                       </p>
@@ -371,7 +371,7 @@ export default function FollowUps() {
                     <div className="mt-3 flex gap-2 justify-end">
                       <Link
                         to={`/tasks/${task._id}`}
-                        className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
+                        className="flex items-center justify-center bg-primary hover:bg-zinc-800 text-primary-foreground px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
                       >
                         <FaEye className="sm:mr-1" /> <span className="hidden sm:inline">View Details</span>
                       </Link>

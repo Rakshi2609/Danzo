@@ -39,11 +39,11 @@ export default function AdminPanel() {
       case 'Admin':
         return 'bg-red-100 text-red-800';
       case 'Manager':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-muted text-foreground';
       case 'Member':
         return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-foreground';
     }
   };
 
@@ -55,7 +55,7 @@ export default function AdminPanel() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <FaCrown className="text-yellow-500 text-3xl" />
-        <h2 className="text-3xl font-bold text-gray-800">Admin Panel</h2>
+        <h2 className="text-3xl font-bold text-foreground">Admin Panel</h2>
       </div>
 
       <p className="text-gray-600">Manage user roles and permissions</p>
@@ -94,7 +94,7 @@ export default function AdminPanel() {
                         className="h-10 w-10 rounded-full mr-3"
                       />
                     )}
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-foreground">
                       {user.displayName}
                     </div>
                   </div>
@@ -111,7 +111,7 @@ export default function AdminPanel() {
                   <select
                     value={user.role}
                     onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
                   >
                     <option value="Member">Member</option>
                     <option value="Manager">Manager</option>
@@ -134,20 +134,20 @@ export default function AdminPanel() {
       </div>
 
       {/* Role Descriptions */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div className="bg-muted/50 border border-border rounded-lg p-6">
         <h3 className="font-semibold text-lg mb-3">Role Permissions</h3>
         <div className="space-y-2 text-sm">
           <div>
             <span className="font-medium text-red-700">Admin:</span>
-            <span className="text-gray-700"> Full access. Can manage user roles and permissions.</span>
+            <span className="text-muted-foreground"> Full access. Can manage user roles and permissions.</span>
           </div>
           <div>
-            <span className="font-medium text-blue-700">Manager:</span>
-            <span className="text-gray-700"> Can create and manage tasks for team members.</span>
+            <span className="font-medium text-accent">Manager:</span>
+            <span className="text-muted-foreground"> Can create and manage tasks for team members.</span>
           </div>
           <div>
             <span className="font-medium text-green-700">Member:</span>
-            <span className="text-gray-700"> Can create tasks, update own task status, and add comments.</span>
+            <span className="text-muted-foreground"> Can create tasks, update own task status, and add comments.</span>
           </div>
         </div>
       </div>

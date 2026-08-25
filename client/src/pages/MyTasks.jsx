@@ -271,41 +271,41 @@ export default function MyTasks() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center">
-                    <FaSpinner className="animate-spin text-6xl text-blue-600 mx-auto mb-4" />
-                    <p className="text-xl font-semibold text-gray-700">Loading your tasks...</p>
+                    <FaSpinner className="animate-spin text-5xl text-accent mx-auto mb-4" />
+                    <p className="text-xl font-semibold text-muted-foreground">Loading your tasks...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-3 lg:p-4">
+        <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
             <motion.div
-                className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-3xl shadow-2xl border border-blue-200 relative overflow-hidden"
+                className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-indigo-100/50 opacity-60 rounded-3xl pointer-events-none"></div>
+                <div className="absolute inset-0 "></div>
 
                 <motion.div className="flex items-center justify-center gap-3 mb-6" variants={itemVariants}>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900 drop-shadow-md flex items-center gap-2">
-                        <FaTasks className="text-blue-600 text-2xl sm:text-3xl" /> Tasks
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-foreground drop-shadow-md flex items-center gap-2">
+                        <FaTasks className="text-accent text-xl sm:text-2xl" /> Tasks
                     </h2>
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors duration-200"
+                        className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200"
                         title="Toggle Filters"
                     >
-                        <FaFilter className="text-blue-600 text-lg" />
+                        <FaFilter className="text-accent text-lg" />
                     </button>
                 </motion.div>
 
                 {showFilters && (
                 <motion.div
-                    className="bg-blue-50 p-3 rounded-xl shadow-md border border-blue-100 mb-4 space-y-3 relative z-10"
+                    className="bg-white p-3 rounded-xl shadow-xs border border-border mb-4 space-y-3 relative z-10"
                     variants={itemVariants}
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -314,11 +314,11 @@ export default function MyTasks() {
                 >
                     {/* Sort Section */}
                     <div className="flex items-center gap-2 w-full">
-                        <FaSort className="text-lg sm:text-xl text-blue-600 flex-shrink-0" />
+                        <FaSort className="text-lg sm:text-xl text-accent flex-shrink-0" />
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="flex-1 border border-blue-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white hover:border-blue-400 transition-all duration-200"
+                            className="flex-1 flex-1 border border-border rounded-lg px-2 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white hover:border-zinc-300 transition-colors"
                         >
                             <option value="none">Sort: Default</option>
                             <option value="dueDate">Due Date</option>
@@ -332,13 +332,13 @@ export default function MyTasks() {
 
                     {/* Date Filter Section */}
                     <div className="flex items-center gap-2 w-full">
-                        <FaCalendarAlt className="text-lg sm:text-xl text-blue-600 flex-shrink-0" />
+                        <FaCalendarAlt className="text-lg sm:text-xl text-accent flex-shrink-0" />
                         <div className="flex-1 flex items-center gap-2">
                             <DatePicker
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                                 placeholderText="Filter by Due Date"
-                                className="flex-1 border border-blue-300 px-2 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white hover:border-blue-400 transition-all duration-200"
+                                className="flex-1 border border-border px-2 py-2 text-xs sm:text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white hover:border-zinc-300 transition-colors"
                                 wrapperClassName="flex-1"
                             />
                             {selectedDate && (
@@ -358,7 +358,7 @@ export default function MyTasks() {
                     <div className="w-full">
                         <motion.button
                             onClick={() => setShowCompleted((v) => !v)}
-                            className="w-full inline-flex items-center justify-center gap-2 bg-white border border-blue-300 text-blue-700 px-3 py-2 rounded-lg shadow-sm hover:bg-blue-50 transition-all duration-200 text-xs sm:text-sm font-medium"
+                            className="w-full inline-flex items-center justify-center gap-2 bg-white border border-border text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors text-xs sm:text-sm font-medium"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             title={showCompleted ? "Show Pending Tasks" : "Show Completed Tasks"}
@@ -378,7 +378,7 @@ export default function MyTasks() {
                     <>
                         {!showCompleted ? (
                             <>
-                                <motion.h3 className="text-xl font-bold mt-4 mb-3 text-blue-800">
+                                <motion.h3 className="text-base font-semibold mt-4 mb-3 text-foreground">
                                     Pending Tasks
                                 </motion.h3>
 
@@ -401,15 +401,15 @@ export default function MyTasks() {
                                                 whileHover="hover"
                                             >
                                                 <div>
-                                                    <h4 className="text-base font-semibold text-gray-800 break-words">{task.title}</h4>
+                                                    <h4 className="text-base font-semibold text-foreground break-words">{task.title}</h4>
                                                     <p className="text-sm font-medium text-gray-600 break-words">{task.description}</p>
                                                     {task.recurringTaskId && (
-                                                        <p className="text-xs text-purple-600 font-medium flex items-center gap-1 mt-1">
-                                                            <span className="bg-purple-100 px-2 py-1 rounded text-xs">🔁 Recurring</span>
+                                                        <p className="text-xs text-accent font-medium flex items-center gap-1 mt-1">
+                                                            <span className="bg-muted px-2 py-1 rounded text-xs">🔁 Recurring</span>
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-gray-600 flex items-center gap-1 mt-1">
-                                                        <FaCalendarAlt className="text-blue-400" /> Due: {new Date(task.dueDate).toLocaleDateString()}
+                                                        <FaCalendarAlt className="text-muted-foreground" /> Due: {new Date(task.dueDate).toLocaleDateString()}
                                                     </p>
                                                     <p className="text-xs text-gray-600">
                                                         <span className={`font-bold ${task.priority === 'High' ? 'text-red-500' : task.priority === 'Medium' ? 'text-yellow-600' : 'text-green-600'}`}>
@@ -418,9 +418,9 @@ export default function MyTasks() {
                                                     </p>
                                                     {task.createdBy && (
                                                         <p className="text-xs text-gray-600 flex items-center gap-1 min-w-0">
-                                                            <FaUserCircle className="text-indigo-400 flex-shrink-0" />
+                                                            <FaUserCircle className="text-muted-foreground flex-shrink-0" />
                                                             <span>From:</span>
-                                                            <span className="font-medium text-blue-700 break-all">
+                                                            <span className="font-medium text-foreground break-all">
                                                                 {task.createdBy.displayName || task.createdBy.email || task.createdBy}
                                                             </span>
                                                         </p>
@@ -428,7 +428,7 @@ export default function MyTasks() {
                                                     <div className="mt-3 flex flex-row gap-2 justify-end">
                                                         <Link
                                                             to={`/tasks/${task._id}`}
-                                                            className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
+                                                            className="flex items-center justify-center bg-primary hover:bg-zinc-800 text-primary-foreground px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
                                                             title="View Details"
                                                         >
                                                             <FaEye className="sm:mr-1" /> <span className="hidden sm:inline">View Details</span>
@@ -467,7 +467,7 @@ export default function MyTasks() {
                             </>
                         ) : (
                             <>
-                                <motion.h3 className="text-xl font-bold mt-4 mb-3 text-blue-800">
+                                <motion.h3 className="text-base font-semibold mt-4 mb-3 text-foreground">
                                     Completed Tasks
                                 </motion.h3>
 
@@ -490,10 +490,10 @@ export default function MyTasks() {
                                                 whileHover={{ scale: 1.01 }}
                                             >
                                                 <div>
-                                                    <h4 className="text-base line-through font-medium text-gray-700 break-words">{task.title}</h4>
+                                                    <h4 className="text-base line-through font-medium text-muted-foreground break-words">{task.title}</h4>
                                                     {task.recurringTaskId && (
-                                                        <p className="text-xs text-purple-600 font-medium flex items-center gap-1 mt-1">
-                                                            <span className="bg-purple-100 px-2 py-1 rounded text-xs">🔁 Recurring</span>
+                                                        <p className="text-xs text-accent font-medium flex items-center gap-1 mt-1">
+                                                            <span className="bg-muted px-2 py-1 rounded text-xs">🔁 Recurring</span>
                                                         </p>
                                                     )}
                                                     {task.completedAt && (
@@ -504,17 +504,17 @@ export default function MyTasks() {
                                                     {(task.actualStartTime || task.actualEndTime) && (
                                                         <div className="mt-1 space-y-1">
                                                             {task.actualStartTime && (
-                                                                <div className="inline-flex items-center gap-1 bg-gradient-to-r from-blue-100 to-cyan-100 px-2 py-1 rounded-full border border-blue-300 shadow-sm">
-                                                                    <FaClock className="text-blue-700 text-xs" />
-                                                                    <span className="text-xs font-semibold text-blue-900">
+                                                                <div className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full border border-border">
+                                                                    <FaClock className="text-muted-foreground text-xs" />
+                                                                    <span className="text-xs font-medium text-foreground">
                                                                         Started: {new Date(task.actualStartTime).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
                                                                     </span>
                                                                 </div>
                                                             )}
                                                             {task.actualEndTime && (
-                                                                <div className="inline-flex items-center gap-1 bg-gradient-to-r from-purple-100 to-pink-100 px-2 py-1 rounded-full border border-purple-300 shadow-sm ml-2">
-                                                                    <FaClock className="text-purple-700 text-xs" />
-                                                                    <span className="text-xs font-semibold text-purple-900">
+                                                                <div className="inline-flex items-center gap-1 bg-gradient-to-r bg-muted px-2 py-1 rounded-full border border-border ml-2">
+                                                                    <FaClock className="text-muted-foreground text-xs" />
+                                                                    <span className="text-xs font-medium text-foreground">
                                                                         Finished: {new Date(task.actualEndTime).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
                                                                     </span>
                                                                 </div>
@@ -522,11 +522,11 @@ export default function MyTasks() {
                                                         </div>
                                                     )}
                                                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                                                        <FaCalendarAlt className="text-blue-400" /> Due: {new Date(task.dueDate).toLocaleDateString()}
+                                                        <FaCalendarAlt className="text-muted-foreground" /> Due: {new Date(task.dueDate).toLocaleDateString()}
                                                     </p>
                                                     {task.createdBy && (
                                                         <p className="text-xs text-gray-500 flex items-center gap-1 min-w-0">
-                                                            <FaUserCircle className="text-indigo-300 flex-shrink-0" />
+                                                            <FaUserCircle className="text-muted-foreground/70 flex-shrink-0" />
                                                             <span>From:</span>
                                                             <span className="font-light break-all">
                                                                 {task.createdBy.displayName || task.createdBy.email || task.createdBy}
@@ -536,7 +536,7 @@ export default function MyTasks() {
                                                     <div className="mt-3 flex justify-end">
                                                         <Link
                                                             to={`/tasks/${task._id}`}
-                                                            className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
+                                                            className="flex items-center justify-center bg-primary hover:bg-zinc-800 text-primary-foreground px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
                                                             title="View Details"
                                                         >
                                                             <FaEye className="sm:mr-1" /> <span className="hidden sm:inline">View Details</span>
@@ -566,41 +566,41 @@ export default function MyTasks() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                        className="bg-white rounded-xl shadow-xs max-w-md w-full p-6"
                     >
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">Track Your Time</h3>
+                        <h3 className="text-2xl font-bold text-foreground mb-4">Track Your Time</h3>
                         <p className="text-gray-600 mb-4">
                             Record what time you started and finished this task today.
                         </p>
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-                            <p className="text-sm text-blue-800 flex items-center gap-2">
-                                <FaCalendarAlt className="text-blue-600" />
+                        <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6">
+                            <p className="text-sm text-foreground flex items-center gap-2">
+                                <FaCalendarAlt className="text-accent" />
                                 <span className="font-semibold">Date: {new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
                             </p>
                         </div>
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-muted-foreground mb-2">
                                     Start Time (Optional)
                                 </label>
                                 <input
                                     type="time"
                                     value={timeData.startTime}
                                     onChange={(e) => setTimeData({ ...timeData, startTime: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
                                 />
                             </div>
                             
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-muted-foreground mb-2">
                                     End Time (Optional)
                                 </label>
                                 <input
                                     type="time"
                                     value={timeData.endTime}
                                     onChange={(e) => setTimeData({ ...timeData, endTime: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
                                     If you don't provide an end time, it will be set to now.
@@ -611,13 +611,13 @@ export default function MyTasks() {
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={handleTimeModalCancel}
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-muted-foreground hover:bg-gray-50 font-medium transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleTimeModalSubmit}
-                                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+                                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-zinc-800 font-medium transition-colors"
                             >
                                 Complete Task
                             </button>

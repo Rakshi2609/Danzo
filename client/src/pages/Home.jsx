@@ -56,7 +56,7 @@ export default function Home() {
       {/* Top Navbar */}
       <nav className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-zinc-700 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
             D
           </div>
           <span className="font-bold text-xl tracking-tight">Danzo</span>
@@ -79,7 +79,7 @@ export default function Home() {
           </button>
           <button 
             onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-            className="px-5 py-2 rounded-full bg-indigo-600/10 border border-indigo-500/30 hover:bg-indigo-600/20 text-indigo-300 text-sm font-semibold transition-all hover:border-indigo-400/50"
+            className="px-5 py-2 rounded-full bg-indigo-600/10 border border-indigo-500/30 hover:bg-zinc-800/20 text-indigo-300 text-sm font-semibold transition-all hover:border-indigo-400/50"
           >
             {currentUser ? 'Go to Dashboard' : 'Start free trial'}
           </button>
@@ -133,7 +133,7 @@ export default function Home() {
             className="w-full max-w-5xl relative mt-4 md:mt-10"
           >
             {/* Fake App Mockup Window */}
-            <div className="rounded-xl md:rounded-2xl border border-white/10 bg-black/40 backdrop-blur-2xl shadow-2xl overflow-hidden relative z-10 mx-2 md:mx-0">
+            <div className="rounded-xl md:rounded-2xl border border-white/10 bg-black/40 backdrop-blur-2xl shadow-xs overflow-hidden relative z-10 mx-2 md:mx-0">
               
               {/* Mockup Header */}
               <div className="h-10 md:h-12 border-b border-white/5 flex items-center px-3 md:px-4 bg-white/5">

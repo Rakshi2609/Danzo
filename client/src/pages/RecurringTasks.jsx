@@ -39,10 +39,10 @@ export default function RecurringTasks() {
 
   const getFrequencyColor = (frequency) => {
     switch (frequency) {
-      case 'Daily': return 'bg-blue-100 text-blue-800';
-      case 'Weekly': return 'bg-purple-100 text-purple-800';
+      case 'Daily': return 'bg-muted text-foreground';
+      case 'Weekly': return 'bg-muted text-foreground';
       case 'Monthly': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-foreground';
     }
   };
 
@@ -90,28 +90,28 @@ export default function RecurringTasks() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <FaSpinner className="animate-spin text-6xl text-blue-600 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-gray-700">Loading recurring reminders...</p>
+          <FaSpinner className="animate-spin text-6xl text-accent mx-auto mb-4" />
+          <p className="text-xl font-semibold text-muted-foreground">Loading recurring reminders...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-3 lg:p-4">
+    <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
       <motion.div
-        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-3xl shadow-2xl border border-blue-200 relative overflow-hidden"
+        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-indigo-100/50 opacity-60 rounded-3xl pointer-events-none"></div>
+        <div className="absolute inset-0 "></div>
 
         <motion.div className="flex items-center justify-between mb-6" variants={itemVariants}>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 drop-shadow-md flex items-center gap-2">
-            <FaSync className="text-blue-600 text-2xl sm:text-3xl" /> Recurring Reminders
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground drop-shadow-md flex items-center gap-2">
+            <FaSync className="text-accent text-2xl sm:text-3xl" /> Recurring Reminders
           </h2>
           <motion.button
             onClick={handleTriggerNow}
@@ -125,10 +125,10 @@ export default function RecurringTasks() {
         </motion.div>
 
         <motion.div 
-          className="bg-blue-50 p-3 sm:p-4 rounded-xl shadow-md border border-blue-100 mb-6 relative z-10"
+          className="bg-muted/50 p-3 sm:p-4 rounded-xl shadow-md border border-border mb-6 relative z-10"
           variants={itemVariants}
         >
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-foreground">
             <strong>About Recurring Reminders:</strong> These reminders automatically create tasks daily at 9 PM. Click "Generate Now" to manually create tasks. You have <strong>{tasks.length}</strong> recurring {tasks.length === 1 ? 'reminder' : 'reminders'}.
           </p>
         </motion.div>
@@ -139,7 +139,7 @@ export default function RecurringTasks() {
             variants={itemVariants}
           >
             <FaSync className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Recurring Reminders Yet</h3>
+            <h3 className="text-xl font-semibold text-foreground mb-2">No Recurring Reminders Yet</h3>
             <p className="text-gray-600">Create your first recurring reminder to automate task generation</p>
           </motion.div>
         ) : (
@@ -147,7 +147,7 @@ export default function RecurringTasks() {
             {tasks.map((task, index) => (
               <motion.li
                 key={task._id || index}
-                className="bg-white border-l-4 border-blue-500 p-4 rounded-lg shadow-md relative z-10"
+                className="bg-white border-l-4 border-accent p-4 rounded-lg border-y-0 border-r-0 border-border bg-white relative z-10"
                 variants={taskCardVariants}
                 initial="hidden"
                 animate="visible"
@@ -155,7 +155,7 @@ export default function RecurringTasks() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <h4 className="text-base font-semibold text-gray-800 break-words">{task.title}</h4>
+                    <h4 className="text-base font-semibold text-foreground break-words">{task.title}</h4>
                     <span className={`text-xs px-2 py-1 rounded font-medium ${getFrequencyColor(task.frequency)}`}>
                       {task.frequency}
                     </span>
@@ -175,13 +175,13 @@ export default function RecurringTasks() {
                   
                   <div className="space-y-1">
                     <p className="text-xs text-gray-600 flex items-center gap-1">
-                      <FaUserCircle className="text-indigo-400" />
+                      <FaUserCircle className="text-muted-foreground" />
                       <span>Assigned to:</span>
-                      <span className="font-medium text-blue-700">{task.assignedTo?.displayName || task.assignedTo?.email}</span>
+                      <span className="font-medium text-accent">{task.assignedTo?.displayName || task.assignedTo?.email}</span>
                     </p>
                     
                     <p className="text-xs text-gray-600 flex items-center gap-1 flex-wrap">
-                      <FaCalendarAlt className="text-blue-400" />
+                      <FaCalendarAlt className="text-muted-foreground" />
                       <span><strong>From:</strong> {format(new Date(task.startDate), 'MMM dd, yyyy')}</span>
                       <span className="mx-1">•</span>
                       <span><strong>To:</strong> {task.endDate ? format(new Date(task.endDate), 'MMM dd, yyyy') : 'No end date'}</span>

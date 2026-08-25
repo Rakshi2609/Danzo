@@ -37,10 +37,21 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
   };
 
   return (
-    <div className="p-3 sm:p-4 bg-green-50 rounded-lg shadow-md border border-green-200 relative z-10">
-      <h3 className="text-sm sm:text-base font-bold mb-2 text-green-800 flex items-center gap-2">
-        <FaWhatsapp className="text-green-600" /> WhatsApp Reminders
-      </h3>
+    <div className="relative z-10 p-4 sm:p-5 bg-white rounded-xl border border-border shadow-xs">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-50 text-emerald-600">
+          <FaWhatsapp className="text-sm" />
+        </span>
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Notifications
+          </p>
+          <h3 className="text-sm sm:text-[15px] font-semibold leading-tight text-foreground">
+            WhatsApp Reminders
+          </h3>
+        </div>
+      </div>
+
       {editing ? (
         <div className="flex flex-col sm:flex-row gap-2">
           <input
@@ -48,31 +59,34 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="918660677696"
-            className="flex-1 px-3 py-2 rounded-lg border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+            className="flex-1 h-9 px-3 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-zinc-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={saving}
           />
           <button
             onClick={save}
             disabled={saving}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-zinc-800 active:bg-zinc-950 disabled:pointer-events-none disabled:opacity-50"
           >
-            <FaCheck /> {saving ? "Saving..." : "Save"}
+            <FaCheck className="text-xs" /> {saving ? "Saving..." : "Save"}
           </button>
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <p className="text-sm text-gray-700">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-sm text-muted-foreground">
             {phone ? (
-              <>Get daily task digests on <span className="font-bold">+{phone}</span></>
+              <>
+                Daily task digests delivered to{" "}
+                <span className="font-semibold text-foreground tabular-nums">+{phone}</span>
+              </>
             ) : (
               "No WhatsApp number set — add one to get morning & evening task summaries."
             )}
           </p>
           <button
             onClick={() => { setEditing(true); }}
-            className="px-3 py-1.5 bg-white border border-green-300 text-green-700 rounded-lg text-xs font-bold hover:bg-green-100 flex items-center gap-1"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-white px-3 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-zinc-50 active:bg-zinc-100"
           >
-            <FaPencilAlt /> {phone ? "Change" : "Add Number"}
+            <FaPencilAlt className="text-[10px]" /> {phone ? "Change" : "Add Number"}
           </button>
         </div>
       )}
