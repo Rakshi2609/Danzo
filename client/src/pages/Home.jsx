@@ -1,499 +1,590 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  FiCheckSquare,
-  FiRefreshCw,
-  FiUsers,
-  FiPieChart,
-  FiSmartphone,
-  FiShield,
-  FiArrowRight,
-  FiArrowUpRight
-} from 'react-icons/fi';
-import { FaWhatsapp, FaCheck } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { 
+  CheckSquare, 
+  RefreshCw, 
+  Users, 
+  PieChart, 
+  ShieldCheck, 
+  Menu, 
+  X,
+  ArrowRight,
+  Zap,
+  Layers,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  SlidersHorizontal,
+  ChevronRight,
+  Sun,
+  Moon,
+  Laptop,
+  Terminal,
+  ArrowUpRight
+} from 'lucide-react';
 import InstallPWA from '../components/InstallPWA';
 import { useAuth } from '../contexts/AuthContext';
+import KineticGrid from '@/components/ui/kinetic-grid';
+import { TerminalSimulator } from '@/components/remocn/terminal-simulator';
 
-/* ---------- shared reveal wrapper ---------- */
-function Reveal({ children, delay = 0, className = '' }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+const features = [
+  {
+    icon: <CheckSquare className="w-5 h-5 text-black dark:text-white" />,
+    title: "Task Orchestration",
+    description: "Structure, prioritize, and track team tasks with sub-task milestones and smart deadlines."
+  },
+  {
+    icon: <RefreshCw className="w-5 h-5 text-black dark:text-white" />,
+    title: "Automated Recurring Schedules",
+    description: "Eliminate manual overhead by configuring tasks that automatically reset daily, weekly, or monthly."
+  },
+  {
+    icon: <Users className="w-5 h-5 text-black dark:text-white" />,
+    title: "Accountability Follow-ups",
+    description: "Keep visibility across team deliverables with designated ownership and automated reminders."
+  },
+  {
+    icon: <PieChart className="w-5 h-5 text-black dark:text-white" />,
+    title: "Executive Analytics",
+    description: "Gain actionable clarity over throughput, resolution speed, and team workload distribution."
+  },
+  {
+    icon: <Laptop className="w-5 h-5 text-black dark:text-white" />,
+    title: "Instant PWA & Offline Support",
+    description: "Install directly onto macOS, Windows, iOS, or Android with rapid offline caching."
+  },
+  {
+    icon: <ShieldCheck className="w-5 h-5 text-black dark:text-white" />,
+    title: "Role-Based Access & Security",
+    description: "Granular administrative permissions backed by Firebase Admin authentication and MongoDB."
+  }
+];
 
-/* ---------- border-beam card (Magic UI style) ---------- */
-function BeamCard({ children, className = '' }) {
-  return (
-    <div className={`group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0D0D13]/80 ${className}`}>
-      {/* animated border glow */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <motion.div
-          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
-      </div>
-      {children}
-    </div>
-  );
-}
-
-/* ---------- WhatsApp chat mock ---------- */
-function ChatMock() {
-  const msgs = [
-    { dir: 'in', title: 'Danzo · 9:00 AM', body: '☀️ Morning plan — 4 tasks today. First up: Review mockups at 10 AM.', delay: 0.2 },
-    { dir: 'out', title: 'You', body: 'Got it 👍', delay: 0.7 },
-    { dir: 'in', title: 'Danzo · 6:00 PM', body: '🌙 EOD summary: 3 done, 1 pending. Great pace today! 🎉', delay: 1.2 }
-  ];
-  return (
-    <div className="flex flex-col gap-2.5 p-5 h-full justify-center">
-      {msgs.map((m, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 12, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: m.delay, duration: 0.45 }}
-          className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-snug ${
-            m.dir === 'in'
-              ? 'self-start rounded-tl-sm bg-[#1B2B23] border border-emerald-500/15 text-zinc-200'
-              : 'self-end rounded-tr-sm bg-indigo-600/90 text-white'
-          }`}
-        >
-          <div className={`text-[10px] font-medium mb-1 ${m.dir === 'in' ? 'text-emerald-400' : 'text-indigo-200'}`}>
-            {m.title}
-          </div>
-          {m.body}
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-/* ---------- app window mockup ---------- */
-function AppMock() {
-  return (
-    <div className="rounded-xl border border-white/10 bg-black/60 overflow-hidden shadow-2xl">
-      <div className="h-9 border-b border-white/5 flex items-center px-4 bg-white/[0.03] gap-2">
-        <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-        <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-        <div className="mx-auto text-[10px] text-zinc-500 border border-white/5 bg-black/40 rounded px-6 py-0.5">
-          denzo.onrender.com
-        </div>
-        <div className="w-10" />
-      </div>
-      <div className="flex h-[260px] md:h-[300px]">
-        <div className="hidden md:flex w-48 border-r border-white/5 p-3 flex-col gap-1">
-          {[
-            { icon: <FiPieChart className="w-3.5 h-3.5 text-indigo-400" />, label: 'Dashboard', active: true },
-            { icon: <FiCheckSquare className="w-3.5 h-3.5" />, label: 'My Tasks' },
-            { icon: <FiRefreshCw className="w-3.5 h-3.5" />, label: 'Recurring' },
-            { icon: <FiUsers className="w-3.5 h-3.5" />, label: 'Follow-ups' }
-          ].map((it) => (
-            <div key={it.label} className={`px-3 py-2 rounded-lg text-xs flex items-center gap-2.5 ${it.active ? 'bg-white/[0.06] text-white' : 'text-zinc-500'}`}>
-              {it.icon}{it.label}
-            </div>
-          ))}
-          <div className="mt-auto rounded-lg bg-white/[0.03] border border-white/5 p-3">
-            <div className="text-[9px] uppercase tracking-wider text-zinc-500 mb-1.5">Today</div>
-            <div className="flex items-center gap-2">
-              <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0">
-                <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
-                <motion.circle
-                  cx="18" cy="18" r="15" fill="none" stroke="rgb(129 140 248)" strokeWidth="4" strokeLinecap="round"
-                  strokeDasharray="94.2"
-                  initial={{ strokeDashoffset: 94.2 }}
-                  whileInView={{ strokeDashoffset: 94.2 * 0.22 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.4, ease: 'easeOut' }}
-                />
-              </svg>
-              <div>
-                <div className="text-sm font-semibold text-white">78%</div>
-                <div className="text-[9px] text-emerald-400">on track</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 p-4 md:p-5 text-left">
-          <div className="text-[11px] text-indigo-400 font-medium mb-0.5">Today's Focus</div>
-          <div className="text-base md:text-lg font-semibold mb-3 md:mb-4">Complete Project Danzo</div>
-          <div className="space-y-2.5 max-w-sm">
-            {[
-              { done: true, text: 'Review final mockups and update homepage styling' },
-              { done: false, text: 'Integrate the PWA download button into navigation' },
-              { done: false, text: 'Ship evening digest to WhatsApp at 6 PM' }
-            ].map((t, i) => (
-              <motion.div
-                key={i}
-                className="flex items-center gap-2.5"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + i * 0.15 }}
-              >
-                <span className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center ${t.done ? 'bg-indigo-500 border border-indigo-400' : 'border border-zinc-600'}`}>
-                  {t.done && <FaCheck className="w-2 h-2 text-white" />}
-                </span>
-                <span className={`text-[11px] md:text-xs ${t.done ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>{t.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Count Up ---------- */
-function CountUp({ to, suffix = '' }) {
-  const [val, setVal] = useState(0);
-  const ref = useRef(null);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      obs.disconnect();
-      const t0 = performance.now();
-      const tick = (t) => {
-        const p = Math.min((t - t0) / 1300, 1);
-        setVal(Math.round(to * (1 - Math.pow(1 - p, 3))));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: 0.5 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [to]);
-  return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
-}
-
-const stats = [
-  { value: 2, suffix: '/day', label: 'WhatsApp digests' },
-  { value: 100, suffix: '%', label: 'Deadline visibility' },
-  { value: 30, suffix: 's', label: 'To log a task' }
+const mockTasks = [
+  {
+    id: 1,
+    title: "Finalize Design Token Architecture & Kinetic Grid System",
+    tag: "Design System",
+    priority: "High",
+    due: "Today, 5:00 PM",
+    assignee: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80",
+    assigneeName: "Elena R.",
+    completed: false
+  },
+  {
+    id: 2,
+    title: "Deploy Firebase Admin Auth & Agenda Cron Scheduler",
+    tag: "Backend",
+    priority: "Urgent",
+    due: "Tomorrow",
+    assignee: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80",
+    assigneeName: "David K.",
+    completed: true
+  },
+  {
+    id: 3,
+    title: "Weekly Sprint Retrospective & Recurring Sync Setup",
+    tag: "Product Ops",
+    priority: "Routine",
+    due: "Friday",
+    assignee: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80",
+    assigneeName: "Sarah M.",
+    completed: false
+  }
 ];
 
 export default function Home() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const heroRef = useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
 
-  // parallax fade on scroll for the mockup
-  const { scrollY } = useScroll();
-  const mockY = useTransform(scrollY, [0, 500], [0, 60]);
-  const mockScale = useTransform(scrollY, [0, 500], [1, 0.96]);
+  React.useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
-  // subtle hero tilt
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rx = useSpring(my, { stiffness: 100, damping: 20 });
-  const ry = useSpring(mx, { stiffness: 100, damping: 20 });
+  const themeMode = isDarkMode ? "dark" : "light";
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] text-white font-sans overflow-x-hidden antialiased selection:bg-indigo-500/30">
-      {/* ================= NAV ================= */}
-      <nav className="fixed top-4 left-0 right-0 z-50 px-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between rounded-2xl border border-white/[0.07] bg-[#0A0A0F]/80 backdrop-blur-xl pl-4 pr-2 py-2 shadow-lg shadow-black/40">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-xs text-white">
-              D
-            </div>
-            <span className="font-semibold text-sm tracking-tight">Danzo</span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-6 text-[13px] font-medium text-zinc-400">
-            <a href="#product" className="hover:text-white transition-colors">Product</a>
-            <a href="#digests" className="hover:text-white transition-colors">WhatsApp</a>
-            <a href="#stats" className="hover:text-white transition-colors">Numbers</a>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/login')}
-              className="hidden sm:inline-block text-[13px] font-medium text-zinc-300 hover:text-white px-3 py-2 transition-colors"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-              className="group inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-white text-black text-[13px] font-semibold hover:bg-zinc-200 transition-colors"
-            >
-              {currentUser ? 'Dashboard' : 'Get started'}
-              <FiArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* ================= HERO ================= */}
-      <header
-        ref={heroRef}
-        onMouseMove={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          mx.set(((e.clientX - r.left) / r.width - 0.5) * 6);
-          my.set(-((e.clientY - r.top) / r.height - 0.5) * 4);
-        }}
-        className="relative pt-40 md:pt-48 pb-10 px-4 flex flex-col items-center text-center"
+    <div className={isDarkMode ? "dark" : ""}>
+      <KineticGrid 
+        globalColor={themeMode}
+        className={`min-h-screen font-sans overflow-x-hidden transition-colors duration-300 ${
+          isDarkMode ? "bg-black text-white" : "bg-white text-black"
+        }`}
       >
-        {/* background: single clean radial + grid */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-indigo-600/[0.13] blur-[140px] rounded-full" />
-          <div
-            className="absolute inset-0 opacity-[0.12]"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)',
-              backgroundSize: '64px 64px',
-              maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%)'
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-3xl">
-          <motion.a
-            href="#digests"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.08] transition-colors"
-          >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            </span>
-            WhatsApp digests are live
-            <FiArrowUpRight className="w-3 h-3 text-zinc-500" />
-          </motion.a>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[42px] leading-[1.05] md:text-7xl font-semibold tracking-[-0.03em] mb-5"
-          >
-            Tasks that come to you,
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-              not the other way
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-base md:text-lg text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed"
-          >
-            Danzo plans your morning, tracks your follow-ups, and texts you a
-            wrap-up every evening — so nothing slips.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <button
-              onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-              className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-colors"
-            >
-              Start for free
-              <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
-            <a
-              href="#product"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl border border-white/10 bg-white/[0.03] text-sm font-medium text-zinc-200 hover:bg-white/[0.07] transition-colors"
-            >
-              See how it works
-            </a>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-4 text-xs text-zinc-600"
-          >
-            Free forever for personal use · No credit card
-          </motion.p>
-        </div>
-
-        {/* hero mockup with parallax + tilt */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{ y: mockY, scale: mockScale, perspective: 1200 }}
-          className="relative z-10 w-full max-w-3xl mt-14"
-        >
-          <motion.div style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}>
-            <AppMock />
-          </motion.div>
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[70%] h-16 bg-indigo-600/25 blur-[60px] pointer-events-none" />
-        </motion.div>
-      </header>
-
-      {/* ================= BENTO GRID ================= */}
-      <section id="product" className="px-4 pt-24 pb-8 relative z-10">
-        <div className="max-w-5xl mx-auto">
-          <Reveal className="text-center mb-12">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-indigo-400 mb-3">Product</p>
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
-              One workspace, zero chaos
-            </h2>
-            <p className="text-zinc-400 max-w-lg mx-auto text-sm md:text-base">
-              Everything Danzo does, in one glance.
-            </p>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(0,auto)]">
-            {/* WhatsApp digests — large cell */}
-            <Reveal className="md:col-span-2 md:row-span-2" delay={0}>
-              <BeamCard className="h-full" id="digests">
-                <div className="grid md:grid-cols-2 h-full">
-                  <div className="p-7 flex flex-col justify-center">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
-                      <FaWhatsapp className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Digests on WhatsApp</h3>
-                    <p className="text-sm text-zinc-400 leading-relaxed mb-4">
-                      A friendly morning plan and an end-of-day wrap-up, delivered
-                      automatically. Reply-friendly, no app needed.
-                    </p>
-                    <div className="flex gap-2 text-[11px]">
-                      <span className="rounded-full bg-white/[0.05] border border-white/10 px-2.5 py-1 text-zinc-400">9:00 AM plan</span>
-                      <span className="rounded-full bg-white/[0.05] border border-white/10 px-2.5 py-1 text-zinc-400">6:00 PM recap</span>
-                    </div>
-                  </div>
-                  <div className="border-t md:border-t-0 md:border-l border-white/[0.06] bg-black/30">
-                    <ChatMock />
-                  </div>
-                </div>
-              </BeamCard>
-            </Reveal>
-
-            {/* Stats cell */}
-            <Reveal delay={0.1}>
-              <BeamCard className="h-full">
-                <div id="stats" className="p-6 flex flex-col justify-between h-full">
-                  <FiPieChart className="w-5 h-5 text-indigo-400 mb-3" />
-                  <div>
-                    <div className="text-3xl font-semibold tracking-tight">
-                      <CountUp to={100} suffix="%" />
-                    </div>
-                    <div className="text-xs text-zinc-500 mt-1">deadline visibility across your whole team</div>
-                  </div>
-                </div>
-              </BeamCard>
-            </Reveal>
-
-            {/* Recurring cell */}
-            <Reveal delay={0.15}>
-              <BeamCard className="h-full">
-                <div className="p-6 flex flex-col justify-between h-full">
-                  <FiRefreshCw className="w-5 h-5 text-violet-400 mb-3" />
-                  <div>
-                    <div className="text-lg font-semibold mb-1">Set once, repeats forever</div>
-                    <div className="text-xs text-zinc-500">Daily, weekly or monthly tasks run themselves.</div>
-                  </div>
-                </div>
-              </BeamCard>
-            </Reveal>
-
-            {/* Follow-ups cell */}
-            <Reveal delay={0.1}>
-              <BeamCard className="h-full">
-                <div className="p-6 flex flex-col justify-between h-full">
-                  <FiUsers className="w-5 h-5 text-pink-400 mb-3" />
-                  <div>
-                    <div className="text-lg font-semibold mb-1">Follow-ups that nudge</div>
-                    <div className="text-xs text-zinc-500">Gently reminds teammates before things go stale.</div>
-                  </div>
-                </div>
-              </BeamCard>
-            </Reveal>
-
-            {/* PWA cell */}
-            <Reveal delay={0.15}>
-              <BeamCard className="h-full">
-                <div className="p-6 flex flex-col justify-between h-full">
-                  <FiSmartphone className="w-5 h-5 text-sky-400 mb-3" />
-                  <div>
-                    <div className="text-lg font-semibold mb-1">Installable app</div>
-                    <div className="text-xs text-zinc-500 mb-3">Native-like feel, straight from the browser.</div>
-                    <div className="scale-95 origin-left text-left"><InstallPWA /></div>
-                  </div>
-                </div>
-              </BeamCard>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= STATS BAND ================= */}
-      <section className="px-4 py-16 relative z-10">
-        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-4">
-          {stats.map((s, i) => (
-            <Reveal key={i} delay={i * 0.08}>
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] py-7 text-center">
-                <div className="text-2xl md:text-3xl font-semibold bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">
-                  <CountUp to={s.value} suffix={s.suffix} />
-                </div>
-                <div className="mt-1.5 text-[10px] md:text-xs uppercase tracking-widest text-zinc-600">{s.label}</div>
+        {/* Navigation Header */}
+        <header className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors ${
+          isDarkMode 
+            ? "bg-black/90 border-neutral-800" 
+            : "bg-white/90 border-neutral-200"
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            {/* Brand Logo */}
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <div className="w-8 h-8 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-sm tracking-tighter">
+                DANZO
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+              <span className="font-bold text-lg tracking-tight text-black dark:text-white">
+                Danzo
+              </span>
+            </div>
 
-      {/* ================= CTA ================= */}
-      <section className="px-4 pb-24 relative z-10">
-        <Reveal>
-          <div className="relative max-w-3xl mx-auto overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0D0D14] px-6 py-16 md:py-20 text-center">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent" />
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-[180px] bg-indigo-500/15 blur-[90px] pointer-events-none" />
-            <div className="relative z-10">
-              <FiShield className="w-6 h-6 text-indigo-400 mx-auto mb-4" />
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
-                Your evening recap, tomorrow.
-              </h2>
-              <p className="text-zinc-400 text-sm md:text-base max-w-md mx-auto mb-8">
-                Create an account, add your number, and Danzo handles the remembering.
-              </p>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+              <a href="#features" className="hover:text-black dark:hover:text-white transition-colors">Features</a>
+              <a href="#workspace" className="hover:text-black dark:hover:text-white transition-colors">Workspace</a>
+              <a href="#architecture" className="hover:text-black dark:hover:text-white transition-colors">Architecture</a>
+            </nav>
+
+            {/* Actions & Theme Switcher */}
+            <div className="hidden md:flex items-center gap-3">
               <button
-                onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-                className="group inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-colors"
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-lg border text-sm font-medium transition-all cursor-pointer ${
+                  isDarkMode
+                    ? "border-neutral-800 bg-neutral-900 text-neutral-100 hover:bg-neutral-800"
+                    : "border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+                }`}
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
-                Get started free
-                <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+
+              <InstallPWA />
+
+              <button 
+                onClick={() => navigate('/login')} 
+                className="text-sm font-semibold px-4 py-2 text-neutral-900 dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Sign in
+              </button>
+
+              <button 
+                onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 shadow-sm transition-all cursor-pointer"
+              >
+                <span>{currentUser ? 'Dashboard' : 'Get Started'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Mobile Menu & Theme Switcher */}
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-lg border ${
+                  isDarkMode
+                    ? "border-neutral-800 bg-neutral-900 text-neutral-100"
+                    : "border-neutral-300 bg-neutral-100 text-neutral-900"
+                }`}
+              >
+                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+              <button 
+                className={`p-2 rounded-lg ${isDarkMode ? "text-neutral-200" : "text-neutral-900"}`}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
-        </Reveal>
-      </section>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="border-t border-white/5 py-8 px-4 relative z-10">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-[9px] text-white">D</div>
-            <span>&copy; {new Date().getFullYear()} Danzo Workspace</span>
+          {/* Mobile Menu Dropdown */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className={`border-b px-6 py-5 flex flex-col gap-4 md:hidden ${
+                  isDarkMode ? "bg-black border-neutral-800" : "bg-white border-neutral-200"
+                }`}
+              >
+                <div className="flex flex-col gap-3 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                  <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="py-1">Features</a>
+                  <a href="#workspace" onClick={() => setIsMobileMenuOpen(false)} className="py-1">Workspace</a>
+                  <a href="#architecture" onClick={() => setIsMobileMenuOpen(false)} className="py-1">Architecture</a>
+                </div>
+                <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex flex-col gap-2.5">
+                  <InstallPWA />
+                  <button 
+                    onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} 
+                    className="w-full py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
+                  >
+                    Sign in
+                  </button>
+                  <button 
+                    onClick={() => { setIsMobileMenuOpen(false); navigate(currentUser ? '/dashboard' : '/login'); }}
+                    className="w-full py-2.5 rounded-lg bg-black text-white dark:bg-white dark:text-black text-sm font-semibold"
+                  >
+                    {currentUser ? 'Dashboard' : 'Get Started'}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </header>
+
+        {/* Hero Section */}
+        <section className="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center">
+          {/* Minimalist Monochrome Pill Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border mb-8 ${
+              isDarkMode 
+                ? "bg-neutral-900 border-neutral-800 text-neutral-200" 
+                : "bg-neutral-100 border-neutral-300 text-neutral-900 shadow-sm"
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-black dark:bg-white animate-pulse"></span>
+            <span>Danzo Workspace 2.0</span>
+            <span className="text-neutral-400 dark:text-neutral-600">/</span>
+            <span className="font-bold">Kinetic Grid System</span>
+          </motion.div>
+
+          {/* Headline - Sharp High-Contrast Black & White */}
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white max-w-4xl leading-[1.08]"
+          >
+            The focused workspace for high-velocity teams
+          </motion.h1>
+
+          {/* Subtitle - Crisp and highly readable */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-6 text-lg sm:text-xl text-neutral-800 dark:text-neutral-300 max-w-2xl font-medium leading-relaxed"
+          >
+            Orchestrate daily deliverables, automate recurring routines, and track follow-ups with instant clarity and responsive canvas physics.
+          </motion.p>
+
+          {/* Primary Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-9 flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto"
+          >
+            <button
+              onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-lg bg-black text-white dark:bg-white dark:text-black font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Start for free</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <a
+              href="#workspace"
+              className={`w-full sm:w-auto px-7 py-3.5 rounded-lg border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                isDarkMode 
+                  ? "bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800" 
+                  : "bg-white border-neutral-300 text-neutral-950 hover:bg-neutral-50 shadow-sm"
+              }`}
+            >
+              <span>Explore workspace</span>
+            </a>
+          </motion.div>
+
+          {/* Monochrome Trust Proof */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs font-semibold text-neutral-700 dark:text-neutral-400"
+          >
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-black dark:text-white" />
+              <span>Full Offline PWA</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-black dark:text-white" />
+              <span>Real-time Sync</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-black dark:text-white" />
+              <span>Enterprise RBAC</span>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Minimalist Black & White Workspace Preview */}
+        <section id="workspace" className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-24">
+          <div className={`rounded-2xl border shadow-2xl overflow-hidden transition-all ${
+            isDarkMode 
+              ? "bg-neutral-950 border-neutral-800 shadow-black" 
+              : "bg-white border-neutral-300 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)]"
+          }`}>
+            
+            {/* Card Window Bar */}
+            <div className={`px-5 py-4 border-b flex flex-wrap items-center justify-between gap-4 ${
+              isDarkMode ? "border-neutral-800 bg-neutral-900/80" : "border-neutral-200 bg-neutral-50"
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
+                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
+                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
+                </div>
+                <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800 mx-1"></div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200">
+                  Sprint Execution Matrix
+                </div>
+              </div>
+
+              {/* Minimalist Tabs */}
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-neutral-200/70 dark:bg-neutral-900 text-xs font-semibold">
+                {['all', 'active', 'recurring'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1.5 rounded-md capitalize transition-all cursor-pointer ${
+                      activeTab === tab 
+                        ? (isDarkMode ? "bg-white text-black font-bold" : "bg-black text-white font-bold shadow-sm") 
+                        : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Matrix Body */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-neutral-200 dark:divide-neutral-800">
+              
+              {/* Task Items List */}
+              <div className="lg:col-span-8 p-5 sm:p-6 space-y-3.5">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-xs font-bold tracking-wider uppercase text-neutral-600 dark:text-neutral-400">
+                    Active Deliverables ({mockTasks.length})
+                  </span>
+                  <span className="text-xs font-bold text-black dark:text-white flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Live Cloud Sync
+                  </span>
+                </div>
+
+                {mockTasks.map((task) => (
+                  <div 
+                    key={task.id}
+                    className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
+                      isDarkMode 
+                        ? "bg-neutral-900/60 border-neutral-800 hover:border-neutral-600" 
+                        : "bg-white border-neutral-300 hover:border-black hover:shadow-md"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 cursor-pointer ${
+                        task.completed 
+                          ? "bg-black text-white dark:bg-white dark:text-black border-transparent" 
+                          : "border-neutral-400 dark:border-neutral-600 bg-neutral-100 dark:bg-neutral-800"
+                      }`}>
+                        {task.completed && <CheckCircle2 className="w-3.5 h-3.5 fill-current" />}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className={`text-sm font-semibold truncate ${
+                          task.completed 
+                            ? "line-through text-neutral-400 dark:text-neutral-500" 
+                            : "text-neutral-950 dark:text-white"
+                        }`}>
+                          {task.title}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[11px] font-bold text-neutral-600 dark:text-neutral-400">
+                            {task.tag}
+                          </span>
+                          <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                          <span className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {task.due}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200">
+                        {task.priority}
+                      </span>
+                      <img 
+                        src={task.assignee} 
+                        alt={task.assigneeName}
+                        title={task.assigneeName} 
+                        className="w-7 h-7 rounded-full object-cover border border-neutral-300 dark:border-neutral-700" 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Metrics & Velocity Column */}
+              <div className={`lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between ${
+                isDarkMode ? "bg-neutral-900/30" : "bg-neutral-50"
+              }`}>
+                <div className="space-y-4">
+                  <div className="text-xs font-bold tracking-wider uppercase text-neutral-600 dark:text-neutral-400">
+                    Workspace Statistics
+                  </div>
+
+                  <div className={`p-4 rounded-xl border ${
+                    isDarkMode ? "bg-neutral-900 border-neutral-800" : "bg-white border-neutral-300 shadow-sm"
+                  }`}>
+                    <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">
+                      94.2%
+                    </div>
+                    <div className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mt-0.5">
+                      On-time milestone delivery
+                    </div>
+                    <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2 rounded-full mt-3 overflow-hidden">
+                      <div className="bg-black dark:bg-white h-full rounded-full w-[94.2%]"></div>
+                    </div>
+                  </div>
+
+                  <div className={`p-4 rounded-xl border ${
+                    isDarkMode ? "bg-neutral-900 border-neutral-800" : "bg-white border-neutral-300 shadow-sm"
+                  }`}>
+                    <div className="flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
+                      <span>Pending Follow-ups</span>
+                      <span className="font-extrabold text-black dark:text-white text-sm">3</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                      <span>Automated Cron Jobs</span>
+                      <span className="font-extrabold text-black dark:text-white text-sm">8</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                  <button 
+                    onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+                    className="w-full py-3 rounded-lg bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <span>Launch Workspace</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
-          <span>Built by Rakshith</span>
-        </div>
-      </footer>
+        </section>
+
+        {/* Feature Grid Section */}
+        <section id="features" className={`py-20 px-4 sm:px-6 lg:px-8 border-t transition-colors ${
+          isDarkMode ? "bg-black border-neutral-800" : "bg-neutral-50/80 border-neutral-200"
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                Everything required to scale productivity
+              </h2>
+              <p className="mt-3 text-neutral-700 dark:text-neutral-300 text-sm sm:text-base font-medium">
+                Engineered with high contrast and zero fluff to keep individual contributors and leadership aligned.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((item, idx) => (
+                <div 
+                  key={idx}
+                  className={`p-6 rounded-xl border transition-all ${
+                    isDarkMode 
+                      ? "bg-neutral-950 border-neutral-800 hover:border-neutral-500" 
+                      : "bg-white border-neutral-300 hover:border-black hover:shadow-md"
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 border ${
+                    isDarkMode 
+                      ? "bg-neutral-900 border-neutral-800 text-white" 
+                      : "bg-neutral-100 border-neutral-300 text-black shadow-sm"
+                  }`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="text-base font-bold text-neutral-950 dark:text-white mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm font-medium leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Terminal Simulator & Architecture Section */}
+        <section id="architecture" className={`py-20 px-4 sm:px-6 lg:px-8 border-t transition-colors ${
+          isDarkMode ? "bg-neutral-950 border-neutral-800" : "bg-neutral-50/90 border-neutral-200"
+        }`}>
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-6 space-y-4 text-left">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white">
+                <Terminal className="w-4 h-4" /> Production Terminal
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                Built for rapid builds and seamless execution
+              </h2>
+              <p className="text-sm sm:text-base font-medium text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                Zero friction local development and automated CI/CD compiling. The terminal simulator scene validates builds and runtime tasks in real-time.
+              </p>
+
+              <div className="flex flex-wrap gap-2 pt-2">
+                <span className="px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-black dark:text-white shadow-sm">
+                  React 19
+                </span>
+                <span className="px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-black dark:text-white shadow-sm">
+                  Tailwind CSS v4
+                </span>
+                <span className="px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-black dark:text-white shadow-sm">
+                  Express.js MongoDB
+                </span>
+                <span className="px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-black dark:text-white shadow-sm">
+                  Remotion Scene
+                </span>
+              </div>
+            </div>
+
+            {/* Terminal Simulator Container */}
+            <div className="lg:col-span-6 w-full">
+              <TerminalSimulator
+                lines={[
+                  { text: "npm run build", type: "command" },
+                  { text: "Compiled successfully", type: "success", delay: 14 },
+                ]}
+                title="danzo-workspace ~/build"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className={`py-8 border-t text-center text-xs font-semibold transition-colors ${
+          isDarkMode ? "border-neutral-800 bg-black text-neutral-400" : "border-neutral-200 bg-neutral-100 text-neutral-700"
+        }`}>
+          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-[9px]">
+                D
+              </div>
+              <span className="font-bold text-black dark:text-white">Danzo</span>
+              <span>— Task & Workflow Management</span>
+            </div>
+            <p>&copy; {new Date().getFullYear()} Danzo Workspace. All rights reserved.</p>
+          </div>
+        </footer>
+      </KineticGrid>
     </div>
   );
 }
