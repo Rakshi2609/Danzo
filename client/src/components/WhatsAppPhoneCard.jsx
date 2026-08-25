@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userService } from "../services/taskService";
 import toast from "react-hot-toast";
 import { FaWhatsapp, FaCheck, FaPencilAlt } from "react-icons/fa";
@@ -6,8 +6,15 @@ import { FaWhatsapp, FaCheck, FaPencilAlt } from "react-icons/fa";
 // Card that lets a user set/update their WhatsApp number (digits only, with country code).
 const WhatsAppPhoneCard = ({ user, onUpdated }) => {
   const [editing, setEditing] = useState(false);
-  const [phone, setPhone] = useState(user?.phone || "");
+  const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Always fetch fresh profile — AuthContext user may be stale (saved before phone was set)
+  useEffect(() => {
+    userService.getCurrentUser()
+      .then((res) => setPhone(res.data?.phone || ""))
+      .catch(() => setPhone(user?.phone || ""));
+  }, []);
 
   const save = async () => {
     const digits = phone.replace(/\D/g, "");
@@ -55,8 +62,8 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
       ) : (
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <p className="text-sm text-gray-700">
-            {user?.phone ? (
-              <>Get daily task digests on <span className="font-bold">+{user.phone}</span></>
+            {phone ? (
+              <>Get daily task digests on <span className="font-bold">+{phone}</span></>
             ) : (
               "No WhatsApp number set — add one to get morning & evening task summaries."
             )}
@@ -65,7 +72,7 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
             onClick={() => { setEditing(true); }}
             className="px-3 py-1.5 bg-white border border-green-300 text-green-700 rounded-lg text-xs font-bold hover:bg-green-100 flex items-center gap-1"
           >
-            <FaPencilAlt /> {user?.phone ? "Change" : "Add Number"}
+            <FaPencilAlt /> {phone ? "Change" : "Add Number"}
           </button>
         </div>
       )}
