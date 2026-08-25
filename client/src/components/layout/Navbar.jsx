@@ -7,10 +7,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import { FaTasks, FaUserCircle, FaSignOutAlt, FaHome } from "react-icons/fa";
 import { HiOutlineMenu } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
+import { Sun, Moon } from "lucide-react";
 import InstallPWA from "../InstallPWA";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -73,6 +76,14 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
 
                 <InstallPWA />
 
+                <button
+                  onClick={toggleTheme}
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                >
+                  {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-700" />}
+                </button>
+
                 <motion.button
                   onClick={handleLogout}
                   className="inline-flex items-center gap-2 h-9 px-3.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
@@ -92,6 +103,14 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                   </motion.button>
                 </Link>
 
+                <button
+                  onClick={toggleTheme}
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                >
+                  {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-700" />}
+                </button>
+
                 <Link to="/login">
                   <motion.button
                     className="inline-flex items-center h-9 px-4 rounded-lg text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
@@ -104,15 +123,23 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <IoClose className="text-xl" /> : <HiOutlineMenu className="text-xl" />}
-          </button>
+          {/* Mobile menu button & Theme toggle */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-700" />}
+            </button>
+            <button
+              className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <IoClose className="text-xl" /> : <HiOutlineMenu className="text-xl" />}
+            </button>
+          </div>
         </div>
       </div>
 

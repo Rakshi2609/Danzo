@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import InstallPWA from '../components/InstallPWA';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import KineticGrid from '@/components/ui/kinetic-grid';
 import { TerminalSimulator } from '@/components/remocn/terminal-simulator';
 import { CheckList } from '@/components/remocn/check-list';
@@ -97,32 +98,24 @@ const mockTasks = [
 
 export default function Home() {
   const { user } = useAuth();
+  const { isDark, toggleTheme, theme } = useTheme();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
-  React.useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const themeMode = isDarkMode ? "dark" : "light";
+  const themeMode = isDark ? "dark" : "light";
 
   return (
-    <div className={isDarkMode ? "dark" : ""}>
+    <div className={isDark ? "dark" : ""}>
       <KineticGrid 
         globalColor={themeMode}
         className={`min-h-screen font-sans overflow-x-hidden transition-colors duration-300 ${
-          isDarkMode ? "bg-black text-white" : "bg-white text-black"
+          isDark ? "bg-black text-white" : "bg-white text-black"
         }`}
       >
         {/* Navigation Header */}
         <header className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors ${
-          isDarkMode 
+          isDark 
             ? "bg-black/90 border-neutral-800" 
             : "bg-white/90 border-neutral-200"
         }`}>
@@ -147,15 +140,15 @@ export default function Home() {
             {/* Actions & Theme Switcher */}
             <div className="hidden md:flex items-center gap-3">
               <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
+                onClick={toggleTheme}
                 className={`p-2 rounded-lg border text-sm font-medium transition-all cursor-pointer ${
-                  isDarkMode
+                  isDark
                     ? "border-neutral-800 bg-neutral-900 text-neutral-100 hover:bg-neutral-800"
                     : "border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
                 }`}
-                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
-                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
               <InstallPWA />
@@ -179,17 +172,17 @@ export default function Home() {
             {/* Mobile Menu & Theme Switcher */}
             <div className="flex items-center gap-2 md:hidden">
               <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
+                onClick={toggleTheme}
                 className={`p-2 rounded-lg border ${
-                  isDarkMode
+                  isDark
                     ? "border-neutral-800 bg-neutral-900 text-neutral-100"
                     : "border-neutral-300 bg-neutral-100 text-neutral-900"
                 }`}
               >
-                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
               <button 
-                className={`p-2 rounded-lg ${isDarkMode ? "text-neutral-200" : "text-neutral-900"}`}
+                className={`p-2 rounded-lg ${isDark ? "text-neutral-200" : "text-neutral-900"}`}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -205,7 +198,7 @@ export default function Home() {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className={`border-b px-6 py-5 flex flex-col gap-4 md:hidden ${
-                  isDarkMode ? "bg-black border-neutral-800" : "bg-white border-neutral-200"
+                  isDark ? "bg-black border-neutral-800" : "bg-white border-neutral-200"
                 }`}
               >
                 <div className="flex flex-col gap-3 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
@@ -241,7 +234,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border mb-8 ${
-              isDarkMode 
+              isDark 
                 ? "bg-neutral-900 border-neutral-800 text-neutral-200" 
                 : "bg-neutral-100 border-neutral-300 text-neutral-900 shadow-sm"
             }`}
@@ -280,7 +273,7 @@ export default function Home() {
             className="mt-9 flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto"
           >
             <button
-              onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+              onClick={() => navigate(user ? '/dashboard' : '/login')}
               className="w-full sm:w-auto px-7 py-3.5 rounded-lg bg-black text-white dark:bg-white dark:text-black font-semibold text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Start for free</span>
@@ -289,7 +282,7 @@ export default function Home() {
             <a
               href="#workspace"
               className={`w-full sm:w-auto px-7 py-3.5 rounded-lg border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-                isDarkMode 
+                isDark 
                   ? "bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800" 
                   : "bg-white border-neutral-300 text-neutral-950 hover:bg-neutral-50 shadow-sm"
               }`}
@@ -321,22 +314,22 @@ export default function Home() {
         </section>
 
         {/* Animated CheckList Showcase Section */}
-        <section id="workspace" className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
-          <div className={`p-6 sm:p-12 rounded-3xl border shadow-2xl transition-all ${
-            isDarkMode 
+        <section id="workspace" className="px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto pb-24">
+          <div className={`p-6 sm:p-8 rounded-2xl border shadow-xl transition-all ${
+            isDark 
               ? "bg-neutral-950/90 border-neutral-800 shadow-black" 
-              : "bg-white/95 border-neutral-300 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.12)]"
+              : "bg-white/95 border-neutral-300 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.08)]"
           }`}>
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center justify-between mb-6 pb-3 border-b border-neutral-200 dark:border-neutral-800">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
                 <span className="ml-2 text-xs font-mono font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
                   check-list.scene
                 </span>
               </div>
-              <span className="text-xs font-mono font-bold text-neutral-500">
+              <span className="text-xs font-mono font-medium text-neutral-500">
                 Interactive CheckList
               </span>
             </div>
@@ -348,14 +341,15 @@ export default function Home() {
                 "Every component MIT",
                 { text: "Ships as source", checked: false },
               ]}
-              width={820}
-              fontSize={36}
-              itemGap={18}
-              closeGap={9}
-              perStep={1.6}
-              strokeWidth={3}
-              color={isDarkMode ? "#ffffff" : "#0a0a0a"}
-              boxColor={isDarkMode ? "#ffffff" : "#0a0a0a"}
+              width={720}
+              fontSize={20}
+              itemGap={12}
+              closeGap={6}
+              rowGap={10}
+              perStep={1.4}
+              strokeWidth={2.5}
+              color={isDark ? "#ffffff" : "#0a0a0a"}
+              boxColor={isDark ? "#ffffff" : "#0a0a0a"}
               tickColor="#6f7f35"
               step={3}
             />
@@ -364,7 +358,7 @@ export default function Home() {
 
         {/* Feature Grid Section */}
         <section id="features" className={`py-20 px-4 sm:px-6 lg:px-8 border-t transition-colors ${
-          isDarkMode ? "bg-black border-neutral-800" : "bg-neutral-50/80 border-neutral-200"
+          isDark ? "bg-black border-neutral-800" : "bg-neutral-50/80 border-neutral-200"
         }`}>
           <div className="max-w-6xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -381,13 +375,13 @@ export default function Home() {
                 <div 
                   key={idx}
                   className={`p-6 rounded-xl border transition-all ${
-                    isDarkMode 
+                    isDark 
                       ? "bg-neutral-950 border-neutral-800 hover:border-neutral-500" 
                       : "bg-white border-neutral-300 hover:border-black hover:shadow-md"
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 border ${
-                    isDarkMode 
+                    isDark 
                       ? "bg-neutral-900 border-neutral-800 text-white" 
                       : "bg-neutral-100 border-neutral-300 text-black shadow-sm"
                   }`}>
@@ -407,7 +401,7 @@ export default function Home() {
 
         {/* Terminal Simulator & Architecture Section */}
         <section id="architecture" className={`py-20 px-4 sm:px-6 lg:px-8 border-t transition-colors ${
-          isDarkMode ? "bg-neutral-950 border-neutral-800" : "bg-neutral-50/90 border-neutral-200"
+          isDark ? "bg-neutral-950 border-neutral-800" : "bg-neutral-50/90 border-neutral-200"
         }`}>
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-6 space-y-4 text-left">
@@ -452,7 +446,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className={`py-8 border-t text-center text-xs font-semibold transition-colors ${
-          isDarkMode ? "border-neutral-800 bg-black text-neutral-400" : "border-neutral-200 bg-neutral-100 text-neutral-700"
+          isDark ? "border-neutral-800 bg-black text-neutral-400" : "border-neutral-200 bg-neutral-100 text-neutral-700"
         }`}>
           <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">

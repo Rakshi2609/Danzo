@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Layout from './components/layout/Layout';
@@ -17,9 +18,10 @@ import Home from './pages/Home';
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <Toaster position="top-right" />
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -44,10 +46,10 @@ function App() {
             }
           />
         </Routes>
-      </AuthProvider>
-    </Router>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 
 export default App;
-
