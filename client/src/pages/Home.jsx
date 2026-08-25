@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   FiCheckSquare,
@@ -9,245 +9,226 @@ import {
   FiSmartphone,
   FiShield,
   FiArrowRight,
-  FiZap
+  FiArrowUpRight
 } from 'react-icons/fi';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaCheck } from 'react-icons/fa';
 import InstallPWA from '../components/InstallPWA';
 import { useAuth } from '../contexts/AuthContext';
 
-/* ---------------- ReactBits-style: Split Text (per-char reveal) ---------------- */
-function SplitText({ text, className = '', delay = 0 }) {
+/* ---------- shared reveal wrapper ---------- */
+function Reveal({ children, delay = 0, className = '' }) {
   return (
-    <span className={className} aria-label={text}>
-      {text.split('').map((ch, i) => (
-        <motion.span
-          key={i}
-          aria-hidden
-          className="inline-block"
-          initial={{ opacity: 0, y: '0.4em', rotateX: -40 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.5, delay: delay + i * 0.025, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {ch === ' ' ? '\u00A0' : ch}
-        </motion.span>
-      ))}
-    </span>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 }
 
-/* ---------------- ReactBits-style: Spotlight Card (mouse-follow glow) ---------------- */
-function SpotlightCard({ children, className = '' }) {
-  const ref = useRef(null);
-  const [pos, setPos] = useState({ x: -999, y: -999 });
-  const onMove = (e) => {
-    const r = ref.current.getBoundingClientRect();
-    setPos({ x: e.clientX - r.left, y: e.clientY - r.top });
-  };
+/* ---------- border-beam card (Magic UI style) ---------- */
+function BeamCard({ children, className = '' }) {
   return (
-    <div
-      ref={ref}
-      onMouseMove={onMove}
-      onMouseLeave={() => setPos({ x: -999, y: -999 })}
-      className={`relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-colors hover:border-white/[0.12] ${className}`}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(400px circle at ${pos.x}px ${pos.y}px, rgba(99,102,241,0.12), transparent 60%)`
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(220px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.05), transparent 70%)`
-        }}
-      />
-      <div className="relative z-10 h-full">{children}</div>
+    <div className={`group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0D0D13]/80 ${className}`}>
+      {/* animated border glow */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <motion.div
+          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400 to-transparent"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+        />
+      </div>
+      {children}
     </div>
   );
 }
 
-/* ---------------- ReactBits-style: Infinite Marquee ---------------- */
-function Marquee({ items, reverse = false }) {
-  const row = [...items, ...items];
+/* ---------- WhatsApp chat mock ---------- */
+function ChatMock() {
+  const msgs = [
+    { dir: 'in', title: 'Danzo · 9:00 AM', body: '☀️ Morning plan — 4 tasks today. First up: Review mockups at 10 AM.', delay: 0.2 },
+    { dir: 'out', title: 'You', body: 'Got it 👍', delay: 0.7 },
+    { dir: 'in', title: 'Danzo · 6:00 PM', body: '🌙 EOD summary: 3 done, 1 pending. Great pace today! 🎉', delay: 1.2 }
+  ];
   return (
-    <div className="relative overflow-hidden py-3 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-      <div
-        className="flex w-max gap-3 animate-marquee"
-        style={reverse ? { animationDirection: 'reverse' } : undefined}
-      >
-        {row.map((item, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-5 py-2 text-sm text-zinc-300"
-          >
-            {item.icon}
-            {item.label}
+    <div className="flex flex-col gap-2.5 p-5 h-full justify-center">
+      {msgs.map((m, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 12, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: m.delay, duration: 0.45 }}
+          className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-snug ${
+            m.dir === 'in'
+              ? 'self-start rounded-tl-sm bg-[#1B2B23] border border-emerald-500/15 text-zinc-200'
+              : 'self-end rounded-tr-sm bg-indigo-600/90 text-white'
+          }`}
+        >
+          <div className={`text-[10px] font-medium mb-1 ${m.dir === 'in' ? 'text-emerald-400' : 'text-indigo-200'}`}>
+            {m.title}
           </div>
-        ))}
+          {m.body}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- app window mockup ---------- */
+function AppMock() {
+  return (
+    <div className="rounded-xl border border-white/10 bg-black/60 overflow-hidden shadow-2xl">
+      <div className="h-9 border-b border-white/5 flex items-center px-4 bg-white/[0.03] gap-2">
+        <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+        <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+        <div className="mx-auto text-[10px] text-zinc-500 border border-white/5 bg-black/40 rounded px-6 py-0.5">
+          denzo.onrender.com
+        </div>
+        <div className="w-10" />
+      </div>
+      <div className="flex h-[260px] md:h-[300px]">
+        <div className="hidden md:flex w-48 border-r border-white/5 p-3 flex-col gap-1">
+          {[
+            { icon: <FiPieChart className="w-3.5 h-3.5 text-indigo-400" />, label: 'Dashboard', active: true },
+            { icon: <FiCheckSquare className="w-3.5 h-3.5" />, label: 'My Tasks' },
+            { icon: <FiRefreshCw className="w-3.5 h-3.5" />, label: 'Recurring' },
+            { icon: <FiUsers className="w-3.5 h-3.5" />, label: 'Follow-ups' }
+          ].map((it) => (
+            <div key={it.label} className={`px-3 py-2 rounded-lg text-xs flex items-center gap-2.5 ${it.active ? 'bg-white/[0.06] text-white' : 'text-zinc-500'}`}>
+              {it.icon}{it.label}
+            </div>
+          ))}
+          <div className="mt-auto rounded-lg bg-white/[0.03] border border-white/5 p-3">
+            <div className="text-[9px] uppercase tracking-wider text-zinc-500 mb-1.5">Today</div>
+            <div className="flex items-center gap-2">
+              <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
+                <motion.circle
+                  cx="18" cy="18" r="15" fill="none" stroke="rgb(129 140 248)" strokeWidth="4" strokeLinecap="round"
+                  strokeDasharray="94.2"
+                  initial={{ strokeDashoffset: 94.2 }}
+                  whileInView={{ strokeDashoffset: 94.2 * 0.22 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.4, ease: 'easeOut' }}
+                />
+              </svg>
+              <div>
+                <div className="text-sm font-semibold text-white">78%</div>
+                <div className="text-[9px] text-emerald-400">on track</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 p-4 md:p-5 text-left">
+          <div className="text-[11px] text-indigo-400 font-medium mb-0.5">Today's Focus</div>
+          <div className="text-base md:text-lg font-semibold mb-3 md:mb-4">Complete Project Danzo</div>
+          <div className="space-y-2.5 max-w-sm">
+            {[
+              { done: true, text: 'Review final mockups and update homepage styling' },
+              { done: false, text: 'Integrate the PWA download button into navigation' },
+              { done: false, text: 'Ship evening digest to WhatsApp at 6 PM' }
+            ].map((t, i) => (
+              <motion.div
+                key={i}
+                className="flex items-center gap-2.5"
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.15 }}
+              >
+                <span className={`w-4 h-4 rounded flex-shrink-0 flex items-center justify-center ${t.done ? 'bg-indigo-500 border border-indigo-400' : 'border border-zinc-600'}`}>
+                  {t.done && <FaCheck className="w-2 h-2 text-white" />}
+                </span>
+                <span className={`text-[11px] md:text-xs ${t.done ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>{t.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ---------------- ReactBits-style: Count Up statistic ---------------- */
+/* ---------- Count Up ---------- */
 function CountUp({ to, suffix = '' }) {
   const [val, setVal] = useState(0);
   const ref = useRef(null);
   useEffect(() => {
-    let started = false;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting && !started) {
-          started = true;
-          const t0 = performance.now();
-          const tick = (t) => {
-            const p = Math.min((t - t0) / 1400, 1);
-            setVal(Math.round(to * (1 - Math.pow(1 - p, 3))));
-            if (p < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0.5 }
-    );
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      const t0 = performance.now();
+      const tick = (t) => {
+        const p = Math.min((t - t0) / 1300, 1);
+        setVal(Math.round(to * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.5 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [to]);
-  return (
-    <span ref={ref}>
-      {val.toLocaleString()}
-      {suffix}
-    </span>
-  );
+  return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
 }
-
-/* ---------------- Aurora / beams backdrop ---------------- */
-function Aurora() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <motion.div
-        className="absolute -top-[20%] left-[15%] w-[700px] h-[420px] rounded-full bg-indigo-600/25 blur-[130px]"
-        animate={{ x: [0, 80, -30, 0], y: [0, 30, 60, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute top-[30%] right-[5%] w-[500px] h-[380px] rounded-full bg-violet-600/20 blur-[120px]"
-        animate={{ x: [0, -60, 20, 0], y: [0, 40, -20, 0] }}
-        transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      {/* grid */}
-      <div
-        className="absolute inset-0 opacity-[0.14]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)',
-          backgroundSize: '56px 56px',
-          maskImage: 'radial-gradient(ellipse 90% 55% at 50% 0%, black 30%, transparent 75%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 90% 55% at 50% 0%, black 30%, transparent 75%)'
-        }}
-      />
-    </div>
-  );
-}
-
-const features = [
-  {
-    icon: <FiCheckSquare className="w-6 h-6 text-indigo-400" />,
-    title: 'Task Management',
-    description: 'Create, assign, and track tasks with ease. Stay on top of your daily responsibilities.'
-  },
-  {
-    icon: <FiRefreshCw className="w-6 h-6 text-violet-400" />,
-    title: 'Recurring Tasks',
-    description: 'Automate your workflow with tasks that repeat daily, weekly, or monthly.'
-  },
-  {
-    icon: <FaWhatsapp className="w-6 h-6 text-emerald-400" />,
-    title: 'WhatsApp Digests',
-    description: 'Morning briefings and end-of-day summaries delivered straight to your WhatsApp.'
-  },
-  {
-    icon: <FiUsers className="w-6 h-6 text-pink-400" />,
-    title: 'Team Follow-ups',
-    description: 'Keep track of pending follow-ups and ensure seamless team collaboration.'
-  },
-  {
-    icon: <FiPieChart className="w-6 h-6 text-sky-400" />,
-    title: 'Smart Dashboard',
-    description: "A bird's-eye view of your productivity with an intuitive analytics dashboard."
-  },
-  {
-    icon: <FiSmartphone className="w-6 h-6 text-indigo-400" />,
-    title: 'Installable App',
-    description: 'Install Danzo directly to your device for a fast, native-like experience.'
-  }
-];
-
-const marqueeA = [
-  { icon: <FiZap className="text-indigo-400" />, label: 'Smart reminders' },
-  { icon: <FaWhatsapp className="text-emerald-400" />, label: 'WhatsApp digests' },
-  { icon: <FiRefreshCw className="text-violet-400" />, label: 'Recurring workflows' },
-  { icon: <FiShield className="text-pink-400" />, label: 'Role-based access' }
-];
-const marqueeB = [
-  { icon: <FiPieChart className="text-sky-400" />, label: 'Completion analytics' },
-  { icon: <FiCheckSquare className="text-indigo-400" />, label: 'Deadline tracking' },
-  { icon: <FiUsers className="text-pink-400" />, label: 'Team follow-ups' },
-  { icon: <FiSmartphone className="text-emerald-400" />, label: 'PWA installable' }
-];
 
 const stats = [
-  { value: 100, suffix: '%', label: 'On-time visibility' },
   { value: 2, suffix: '/day', label: 'WhatsApp digests' },
-  { value: 0, suffix: ' missed', label: 'Deadlines' }
+  { value: 100, suffix: '%', label: 'Deadline visibility' },
+  { value: 30, suffix: 's', label: 'To log a task' }
 ];
 
 export default function Home() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const heroRef = useRef(null);
 
-  // subtle parallax tilt for hero mockup
+  // parallax fade on scroll for the mockup
+  const { scrollY } = useScroll();
+  const mockY = useTransform(scrollY, [0, 500], [0, 60]);
+  const mockScale = useTransform(scrollY, [0, 500], [1, 0.96]);
+
+  // subtle hero tilt
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(my, { stiffness: 120, damping: 18 });
-  const ry = useSpring(mx, { stiffness: 120, damping: 18 });
-  const onTilt = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set(((e.clientX - r.left) / r.width - 0.5) * 8);
-    my.set(-((e.clientY - r.top) / r.height - 0.5) * 6);
-  };
+  const rx = useSpring(my, { stiffness: 100, damping: 20 });
+  const ry = useSpring(mx, { stiffness: 100, damping: 20 });
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] text-white font-sans overflow-x-hidden selection:bg-indigo-500/30">
-      {/* ================= NAVBAR ================= */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.04] bg-[#0A0A0F]/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+    <div className="min-h-screen bg-[#0A0A0F] text-white font-sans overflow-x-hidden antialiased selection:bg-indigo-500/30">
+      {/* ================= NAV ================= */}
+      <nav className="fixed top-4 left-0 right-0 z-50 px-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between rounded-2xl border border-white/[0.07] bg-[#0A0A0F]/80 backdrop-blur-xl pl-4 pr-2 py-2 shadow-lg shadow-black/40">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-xs text-white">
               D
             </div>
-            <span className="font-bold text-lg tracking-tight">Danzo</span>
+            <span className="font-semibold text-sm tracking-tight">Danzo</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#stats" className="hover:text-white transition-colors">Why Danzo</a>
+          <div className="hidden md:flex items-center gap-6 text-[13px] font-medium text-zinc-400">
+            <a href="#product" className="hover:text-white transition-colors">Product</a>
+            <a href="#digests" className="hover:text-white transition-colors">WhatsApp</a>
+            <a href="#stats" className="hover:text-white transition-colors">Numbers</a>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block"><InstallPWA /></div>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => navigate('/login')}
-              className="hidden sm:inline-block text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+              className="hidden sm:inline-block text-[13px] font-medium text-zinc-300 hover:text-white px-3 py-2 transition-colors"
             >
               Login
             </button>
             <button
               onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-              className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black text-sm font-semibold transition-transform hover:scale-[1.03] active:scale-95"
+              className="group inline-flex items-center gap-1.5 h-9 px-4 rounded-xl bg-white text-black text-[13px] font-semibold hover:bg-zinc-200 transition-colors"
             >
-              {currentUser ? 'Dashboard' : 'Get Started'}
+              {currentUser ? 'Dashboard' : 'Get started'}
               <FiArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
@@ -255,293 +236,263 @@ export default function Home() {
       </nav>
 
       {/* ================= HERO ================= */}
-      <header className="relative pt-36 md:pt-44 pb-16 px-4 md:px-6 flex flex-col items-center min-h-[92vh]" onMouseMove={onTilt}>
-        <Aurora />
+      <header
+        ref={heroRef}
+        onMouseMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          mx.set(((e.clientX - r.left) / r.width - 0.5) * 6);
+          my.set(-((e.clientY - r.top) / r.height - 0.5) * 4);
+        }}
+        className="relative pt-40 md:pt-48 pb-10 px-4 flex flex-col items-center text-center"
+      >
+        {/* background: single clean radial + grid */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-indigo-600/[0.13] blur-[140px] rounded-full" />
+          <div
+            className="absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)',
+              backgroundSize: '64px 64px',
+              maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, black 20%, transparent 70%)'
+            }}
+          />
+        </div>
 
-        <div className="relative z-10 flex flex-col items-center text-center max-w-4xl w-full">
+        <div className="relative z-10 max-w-3xl">
           <motion.a
-            href="#features"
-            initial={{ opacity: 0, y: -16 }}
+            href="#digests"
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-4 py-1.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.08] hover:border-white/20 transition-colors cursor-pointer"
+            transition={{ duration: 0.5 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.08] transition-colors"
           >
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-indigo-400" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
             </span>
-            New: Daily WhatsApp digests just landed
-            <FiArrowRight className="w-3 h-3" />
+            WhatsApp digests are live
+            <FiArrowUpRight className="w-3 h-3 text-zinc-500" />
           </motion.a>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-[1.05]">
-            <SplitText text="Work better" className="text-white" delay={0.1} />
-            <br />
-            <SplitText
-              text="with Danzo"
-              delay={0.35}
-              className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent"
-            />
-          </h1>
-
-          <motion.p
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl font-light px-4"
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[42px] leading-[1.05] md:text-7xl font-semibold tracking-[-0.03em] mb-5"
           >
-            Never miss a task, follow-up or recurring event.
-            Morning plans and evening summaries — right in your WhatsApp.
+            Tasks that come to you,
+            <br />
+            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              not the other way
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="text-base md:text-lg text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed"
+          >
+            Danzo plans your morning, tracks your follow-ups, and texts you a
+            wrap-up every evening — so nothing slips.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.85 }}
-            className="flex flex-col sm:flex-row items-center gap-3 mb-6"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
             <button
               onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-              className="group inline-flex items-center gap-2 h-11 px-6 rounded-full bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-500/30 hover:bg-indigo-400 transition-colors active:scale-95"
+              className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-colors"
             >
-              Start organizing free
+              Start for free
               <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
-            <div className="scale-110 origin-center">
-              <InstallPWA />
-            </div>
+            <a
+              href="#product"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl border border-white/10 bg-white/[0.03] text-sm font-medium text-zinc-200 hover:bg-white/[0.07] transition-colors"
+            >
+              See how it works
+            </a>
           </motion.div>
 
-          {/* ===== Tilted app mockup ===== */}
-          <motion.div
-            initial={{ opacity: 0, y: 60, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-5xl relative mt-8 md:mt-14"
-            style={{ perspective: 1200 }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="mt-4 text-xs text-zinc-600"
           >
-            <motion.div style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}>
-              <div className="rounded-2xl border border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_20px_80px_-20px_rgba(99,102,241,0.35)] overflow-hidden relative z-10 mx-2 md:mx-0">
-                {/* window chrome */}
-                <div className="h-11 border-b border-white/5 flex items-center px-4 bg-white/[0.04] gap-3">
-                  <div className="flex gap-2">
-                    <span className="w-3 h-3 rounded-full bg-red-500/70" />
-                    <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
-                    <span className="w-3 h-3 rounded-full bg-green-500/70" />
-                  </div>
-                  <div className="mx-auto bg-black/50 rounded-md px-10 md:px-32 py-1 text-[10px] md:text-xs text-zinc-500 border border-white/5 flex items-center gap-2">
-                    <FiCheckSquare className="w-3 h-3" /> <span className="hidden sm:inline">Search anything…</span><span className="sm:hidden">Search</span>
-                  </div>
-                  <div className="w-14 hidden md:block" />
-                </div>
-
-                <div className="flex flex-col md:flex-row h-[320px] md:h-[420px]">
-                  {/* sidebar */}
-                  <div className="hidden md:flex w-60 border-r border-white/5 p-4 flex-col gap-1.5">
-                    <div className="text-zinc-500 text-xs font-semibold mb-2 px-2 uppercase tracking-wider">Workspace</div>
-                    {[
-                      { icon: <FiPieChart className="w-4 h-4 text-indigo-400" />, label: 'Dashboard', active: true },
-                      { icon: <FiCheckSquare className="w-4 h-4" />, label: 'My Tasks' },
-                      { icon: <FiRefreshCw className="w-4 h-4" />, label: 'Recurring' },
-                      { icon: <FiUsers className="w-4 h-4" />, label: 'Follow-ups' }
-                    ].map((it) => (
-                      <div
-                        key={it.label}
-                        className={`px-3 py-2 rounded-lg text-sm flex items-center gap-3 ${it.active ? 'bg-white/[0.07] text-white border border-white/[0.06]' : 'text-zinc-400 hover:bg-white/[0.03]'}`}
-                      >
-                        {it.icon} {it.label}
-                        {it.active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />}
-                      </div>
-                    ))}
-                    {/* mini progress ring */}
-                    <div className="mt-auto px-3 py-3 rounded-xl bg-white/[0.03] border border-white/5">
-                      <div className="text-[10px] uppercase tracking-wide text-zinc-500 mb-2">Today</div>
-                      <div className="flex items-end justify-between">
-                        <div>
-                          <div className="text-xl font-semibold text-white">78%</div>
-                          <div className="text-[10px] text-emerald-400">on track</div>
-                        </div>
-                        <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
-                          <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" />
-                          <motion.circle
-                            cx="26" cy="26" r="22" fill="none" stroke="rgb(129 140 248)" strokeWidth="5"
-                            strokeLinecap="round" strokeDasharray="138.2"
-                            initial={{ strokeDashoffset: 138.2 }}
-                            animate={{ strokeDashoffset: 138.2 * 0.22 }}
-                            transition={{ duration: 1.6, delay: 1.6, ease: 'easeOut' }}
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* main panel */}
-                  <div className="flex-1 p-5 md:p-8 relative text-left">
-                    <div className="text-xs md:text-sm text-indigo-400 font-medium mb-1">Today's Focus</div>
-                    <div className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Complete Project Danzo</div>
-                    <div className="space-y-3 md:space-y-4 max-w-md">
-                      {[
-                        { done: true, text: 'Review final mockups and update styling for the new homepage.' },
-                        { done: false, text: 'Integrate the new PWA download button into navigation.' },
-                        { done: false, text: 'Ship evening digest to WhatsApp at 6:00 PM.' }
-                      ].map((t, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex items-start gap-3"
-                          initial={{ opacity: 0, x: -12 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 1.5 + i * 0.25 }}
-                        >
-                          <div
-                            className={`w-4 md:w-5 h-4 md:h-5 rounded flex-shrink-0 mt-0.5 md:mt-1 flex items-center justify-center ${
-                              t.done ? 'border border-indigo-400 bg-indigo-500/20' : 'border border-zinc-600'
-                            }`}
-                          >
-                            {t.done && (
-                              <svg width="10" height="10" viewBox="0 0 10 10" className="fill-none stroke-indigo-300" strokeWidth="2" strokeLinecap="round">
-                                <path d="M1.5 5.5l2.5 2.5 4.5-5" />
-                              </svg>
-                            )}
-                          </div>
-                          <div className={`text-xs md:text-sm leading-relaxed ${t.done ? 'text-zinc-500 line-through decoration-zinc-600' : 'text-zinc-300'}`}>
-                            {t.text}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    {/* whatsapp toast mock */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 2.4, duration: 0.6 }}
-                      className="absolute bottom-4 md:bottom-6 right-4 md:right-6 max-w-[240px] rounded-xl rounded-br-sm bg-emerald-950/80 border border-emerald-500/20 backdrop-blur-md px-4 py-3 shadow-xl"
-                    >
-                      <div className="flex items-center gap-2 text-[10px] text-emerald-400 font-medium mb-1">
-                        <FaWhatsapp /> Danzo · 6:00 PM
-                      </div>
-                      <p className="text-xs text-zinc-200 leading-relaxed">
-                        🌙 EOD summary: <b>3 done</b>, 1 pending. Great pace today! 🎉
-                      </p>
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-[85%] h-[90px] bg-indigo-600/30 blur-[60px] pointer-events-none" />
-          </motion.div>
+            Free forever for personal use · No credit card
+          </motion.p>
         </div>
+
+        {/* hero mockup with parallax + tilt */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{ y: mockY, scale: mockScale, perspective: 1200 }}
+          className="relative z-10 w-full max-w-3xl mt-14"
+        >
+          <motion.div style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}>
+            <AppMock />
+          </motion.div>
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[70%] h-16 bg-indigo-600/25 blur-[60px] pointer-events-none" />
+        </motion.div>
       </header>
 
-      {/* ================= MARQUEES ================= */}
-      <section className="relative z-10 space-y-1 pb-4">
-        <Marquee items={marqueeA} />
-        <Marquee items={marqueeB} reverse />
-      </section>
+      {/* ================= BENTO GRID ================= */}
+      <section id="product" className="px-4 pt-24 pb-8 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          <Reveal className="text-center mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-indigo-400 mb-3">Product</p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
+              One workspace, zero chaos
+            </h2>
+            <p className="text-zinc-400 max-w-lg mx-auto text-sm md:text-base">
+              Everything Danzo does, in one glance.
+            </p>
+          </Reveal>
 
-      {/* ================= FEATURES ================= */}
-      <section id="features" className="py-24 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-3xl md:text-5xl font-bold mb-4 tracking-tight"
-            >
-              Everything you need,{' '}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-                built right in
-              </span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-zinc-400 max-w-2xl mx-auto"
-            >
-              A carefully crafted set of features designed to make your daily workflow feel like magic.
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-              >
-                <SpotlightCard className="h-full">
-                  <div className="p-6 group cursor-default h-full">
-                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 border border-white/5 group-hover:scale-110 group-hover:border-indigo-500/30 transition-all duration-300">
-                      {feature.icon}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(0,auto)]">
+            {/* WhatsApp digests — large cell */}
+            <Reveal className="md:col-span-2 md:row-span-2" delay={0}>
+              <BeamCard className="h-full" id="digests">
+                <div className="grid md:grid-cols-2 h-full">
+                  <div className="p-7 flex flex-col justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                      <FaWhatsapp className="w-5 h-5 text-emerald-400" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-zinc-100">{feature.title}</h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed">{feature.description}</p>
+                    <h3 className="text-xl font-semibold mb-2">Digests on WhatsApp</h3>
+                    <p className="text-sm text-zinc-400 leading-relaxed mb-4">
+                      A friendly morning plan and an end-of-day wrap-up, delivered
+                      automatically. Reply-friendly, no app needed.
+                    </p>
+                    <div className="flex gap-2 text-[11px]">
+                      <span className="rounded-full bg-white/[0.05] border border-white/10 px-2.5 py-1 text-zinc-400">9:00 AM plan</span>
+                      <span className="rounded-full bg-white/[0.05] border border-white/10 px-2.5 py-1 text-zinc-400">6:00 PM recap</span>
+                    </div>
                   </div>
-                </SpotlightCard>
-              </motion.div>
-            ))}
+                  <div className="border-t md:border-t-0 md:border-l border-white/[0.06] bg-black/30">
+                    <ChatMock />
+                  </div>
+                </div>
+              </BeamCard>
+            </Reveal>
+
+            {/* Stats cell */}
+            <Reveal delay={0.1}>
+              <BeamCard className="h-full">
+                <div id="stats" className="p-6 flex flex-col justify-between h-full">
+                  <FiPieChart className="w-5 h-5 text-indigo-400 mb-3" />
+                  <div>
+                    <div className="text-3xl font-semibold tracking-tight">
+                      <CountUp to={100} suffix="%" />
+                    </div>
+                    <div className="text-xs text-zinc-500 mt-1">deadline visibility across your whole team</div>
+                  </div>
+                </div>
+              </BeamCard>
+            </Reveal>
+
+            {/* Recurring cell */}
+            <Reveal delay={0.15}>
+              <BeamCard className="h-full">
+                <div className="p-6 flex flex-col justify-between h-full">
+                  <FiRefreshCw className="w-5 h-5 text-violet-400 mb-3" />
+                  <div>
+                    <div className="text-lg font-semibold mb-1">Set once, repeats forever</div>
+                    <div className="text-xs text-zinc-500">Daily, weekly or monthly tasks run themselves.</div>
+                  </div>
+                </div>
+              </BeamCard>
+            </Reveal>
+
+            {/* Follow-ups cell */}
+            <Reveal delay={0.1}>
+              <BeamCard className="h-full">
+                <div className="p-6 flex flex-col justify-between h-full">
+                  <FiUsers className="w-5 h-5 text-pink-400 mb-3" />
+                  <div>
+                    <div className="text-lg font-semibold mb-1">Follow-ups that nudge</div>
+                    <div className="text-xs text-zinc-500">Gently reminds teammates before things go stale.</div>
+                  </div>
+                </div>
+              </BeamCard>
+            </Reveal>
+
+            {/* PWA cell */}
+            <Reveal delay={0.15}>
+              <BeamCard className="h-full">
+                <div className="p-6 flex flex-col justify-between h-full">
+                  <FiSmartphone className="w-5 h-5 text-sky-400 mb-3" />
+                  <div>
+                    <div className="text-lg font-semibold mb-1">Installable app</div>
+                    <div className="text-xs text-zinc-500 mb-3">Native-like feel, straight from the browser.</div>
+                    <div className="scale-95 origin-left text-left"><InstallPWA /></div>
+                  </div>
+                </div>
+              </BeamCard>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ================= STATS ================= */}
-      <section id="stats" className="pb-24 px-6 relative z-10">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* ================= STATS BAND ================= */}
+      <section className="px-4 py-16 relative z-10">
+        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-4">
           {stats.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] py-8 text-center"
-            >
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
-                <CountUp to={s.value} suffix={s.suffix} />
+            <Reveal key={i} delay={i * 0.08}>
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] py-7 text-center">
+                <div className="text-2xl md:text-3xl font-semibold bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">
+                  <CountUp to={s.value} suffix={s.suffix} />
+                </div>
+                <div className="mt-1.5 text-[10px] md:text-xs uppercase tracking-widest text-zinc-600">{s.label}</div>
               </div>
-              <div className="mt-2 text-xs uppercase tracking-widest text-zinc-500">{s.label}</div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="px-6 pb-28 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="relative max-w-4xl mx-auto overflow-hidden rounded-3xl border border-indigo-500/20 bg-gradient-to-b from-indigo-950/40 via-[#0D0D14] to-[#0A0A0F] px-6 py-16 md:py-20 text-center"
-        >
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[240px] bg-indigo-500/25 blur-[100px] pointer-events-none" />
-          <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-              Ready to stop dropping tasks?
-            </h2>
-            <p className="text-zinc-400 max-w-xl mx-auto mb-8">
-              Set up Danzo in under a minute and get your first WhatsApp briefing tomorrow morning.
-            </p>
-            <button
-              onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
-              className="group inline-flex items-center gap-2 h-12 px-8 rounded-full bg-white text-black text-sm font-semibold hover:scale-[1.03] active:scale-95 transition-transform"
-            >
-              Get started now
-              <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
+      <section className="px-4 pb-24 relative z-10">
+        <Reveal>
+          <div className="relative max-w-3xl mx-auto overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0D0D14] px-6 py-16 md:py-20 text-center">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent" />
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-[180px] bg-indigo-500/15 blur-[90px] pointer-events-none" />
+            <div className="relative z-10">
+              <FiShield className="w-6 h-6 text-indigo-400 mx-auto mb-4" />
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
+                Your evening recap, tomorrow.
+              </h2>
+              <p className="text-zinc-400 text-sm md:text-base max-w-md mx-auto mb-8">
+                Create an account, add your number, and Danzo handles the remembering.
+              </p>
+              <button
+                onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+                className="group inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-colors"
+              >
+                Get started free
+                <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
           </div>
-        </motion.div>
+        </Reveal>
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="py-8 border-t border-white/5 text-center text-zinc-600 text-sm relative z-10 bg-[#0A0A0F]">
-        <p>&copy; {new Date().getFullYear()} Danzo Workspace · Built by Rakshith</p>
+      <footer className="border-t border-white/5 py-8 px-4 relative z-10">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-[9px] text-white">D</div>
+            <span>&copy; {new Date().getFullYear()} Danzo Workspace</span>
+          </div>
+          <span>Built by Rakshith</span>
+        </div>
       </footer>
     </div>
   );
