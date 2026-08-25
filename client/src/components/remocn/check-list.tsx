@@ -1,199 +1,187 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export type CheckListItem =
-  | string
-  | {
-      text: string;
-      checked?: boolean;
-      tag?: string;
-      priority?: string;
-      due?: string;
-      assignee?: string;
-      assigneeName?: string;
-    };
+export type CheckListItem = {
+  text: string;
+  checked?: boolean;
+};
 
 export interface CheckListProps {
-  items: CheckListItem[];
+  items: (string | CheckListItem)[];
   width?: number | string;
-  fontSize?: number | string;
+  fontSize?: number;
+  color?: string;
+  boxColor?: string;
+  tickColor?: string;
+  delay?: number;
   itemGap?: number;
   closeGap?: number;
-  perStep?: number;
+  rowGap?: number;
   strokeWidth?: number;
-  color?: string;
-  tickColor?: string;
+  perStep?: number;
+  weight?: number;
+  seed?: string;
   step?: number;
   className?: string;
   interactive?: boolean;
-  onItemToggle?: (index: number, checked: boolean) => void;
 }
 
 export function CheckList({
   items,
-  width = "100%",
-  fontSize,
-  itemGap = 16,
-  closeGap = 8,
-  perStep = 1.6,
-  strokeWidth = 2.5,
+  width = 820,
+  fontSize = 32,
   color,
-  tickColor = "#10b981",
-  step = 3,
+  boxColor,
+  tickColor = "#6f7f35",
+  delay = 0,
+  itemGap = 18,
+  closeGap = 9,
+  rowGap = 16,
+  strokeWidth = 3,
+  perStep = 1.6,
   className,
   interactive = true,
-  onItemToggle,
 }: CheckListProps) {
-  // Normalize items to structured objects
-  const [internalItems, setInternalItems] = useState(() =>
-    items.map((item, idx) => {
-      if (typeof item === "string") {
-        return { text: item, checked: idx < step };
-      }
-      return {
-        ...item,
-        checked: item.checked !== undefined ? item.checked : idx < step,
-      };
-    })
+  const normalized = items.map((item) =>
+    typeof item === "string"
+      ? { text: item, checked: true }
+      : { text: item.text, checked: item.checked ?? true }
   );
 
-  useEffect(() => {
-    setInternalItems(
-      items.map((item, idx) => {
-        if (typeof item === "string") {
-          return { text: item, checked: idx < step };
-        }
-        return {
-          ...item,
-          checked: item.checked !== undefined ? item.checked : idx < step,
-        };
-      })
-    );
-  }, [items, step]);
+  const [taskList, setTaskList] = useState(normalized);
 
-  const handleToggle = (index: number) => {
+  useEffect(() => {
+    setTaskList(
+      items.map((item) =>
+        typeof item === "string"
+          ? { text: item, checked: true }
+          : { text: item.text, checked: item.checked ?? true }
+      )
+    );
+  }, [items]);
+
+  const toggleItem = (idx: number) => {
     if (!interactive) return;
-    setInternalItems((prev) => {
+    setTaskList((prev) => {
       const next = [...prev];
-      const newChecked = !next[index].checked;
-      next[index] = { ...next[index], checked: newChecked };
-      if (onItemToggle) {
-        onItemToggle(index, newChecked);
-      }
+      next[idx] = { ...next[idx], checked: !next[idx].checked };
       return next;
     });
   };
+
+  const boxSize = Math.round(fontSize * 0.9);
 
   return (
     <div
       style={{
         maxWidth: typeof width === "number" ? `${width}px` : width,
-        gap: `${itemGap}px`,
+        gap: `${rowGap}px`,
       }}
-      className={cn("flex flex-col w-full text-left font-sans", className)}
+      className={cn(
+        "flex flex-col w-full mx-auto font-sans transition-colors duration-300",
+        className
+      )}
     >
-      {internalItems.map((item, index) => {
+      {taskList.map((item, index) => {
         const isChecked = item.checked;
 
         return (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: index * 0.08 * (perStep || 1) }}
-            onClick={() => handleToggle(index)}
-            style={{
-              fontSize: typeof fontSize === "number" ? `${fontSize}px` : fontSize,
-              marginBottom: `${closeGap}px`,
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: (delay + index * itemGap) * 0.04 * (perStep || 1),
+              ease: [0.16, 1, 0.3, 1],
             }}
+            onClick={() => toggleItem(index)}
             className={cn(
-              "group relative flex items-start gap-4 p-4 rounded-xl border transition-all select-none",
+              "group flex items-center gap-4 sm:gap-6 p-3.5 sm:p-5 rounded-2xl border transition-all duration-200 select-none",
               interactive ? "cursor-pointer" : "cursor-default",
-              "border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900/90 hover:border-black dark:hover:border-neutral-600 shadow-sm"
+              "border-neutral-200 dark:border-neutral-800/80 bg-neutral-50/60 dark:bg-neutral-900/40 hover:bg-neutral-100/80 dark:hover:bg-neutral-900/80 hover:border-neutral-400 dark:hover:border-neutral-600"
             )}
           >
-            {/* Animated SVG Checkbox Box */}
-            <div className="relative flex-shrink-0 mt-0.5">
-              <div
-                className={cn(
-                  "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-300",
-                  isChecked
-                    ? "bg-black dark:bg-white border-black dark:border-white"
-                    : "border-neutral-400 dark:border-neutral-600 bg-neutral-100 dark:bg-neutral-800 group-hover:border-black dark:group-hover:border-white"
-                )}
+            {/* Hand-drawn style SVG Checkbox */}
+            <div
+              style={{ width: boxSize, height: boxSize }}
+              className="relative flex-shrink-0 flex items-center justify-center"
+            >
+              <svg
+                width={boxSize}
+                height={boxSize}
+                viewBox="0 0 36 36"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="overflow-visible"
               >
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <motion.path
-                    d="M4 12.5L9.5 18L20 6"
-                    stroke={isChecked ? (tickColor === "#10b981" || !tickColor ? (item.checked ? "#ffffff" : "currentColor") : tickColor) : "transparent"}
-                    strokeWidth={strokeWidth}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: isChecked ? 1 : 0 }}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                  />
-                </svg>
-              </div>
+                {/* Outer Box */}
+                <path
+                  d="M 4 4 L 32 4 L 32 32 L 4 32 Z"
+                  stroke={boxColor || (isChecked ? "currentColor" : "#888888")}
+                  strokeWidth={strokeWidth}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={cn(
+                    "transition-colors duration-300",
+                    !boxColor && "text-neutral-900 dark:text-neutral-100"
+                  )}
+                />
+
+                {/* Animated Tick */}
+                <motion.path
+                  d="M 7 18 L 15 27 L 31 7"
+                  stroke={tickColor}
+                  strokeWidth={strokeWidth + 1}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={false}
+                  animate={{
+                    pathLength: isChecked ? 1 : 0,
+                    opacity: isChecked ? 1 : 0,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                  }}
+                />
+              </svg>
             </div>
 
-            {/* Text & Metadata */}
-            <div className="flex-1 min-w-0">
-              <div
-                style={{ color: color }}
+            {/* Label with Strike-through animation */}
+            <div className="relative flex-1 min-w-0">
+              <span
+                style={{
+                  fontSize: `clamp(18px, 2.5vw, ${fontSize}px)`,
+                  color: color,
+                }}
                 className={cn(
-                  "font-semibold leading-snug transition-all duration-300",
-                  isChecked
-                    ? "text-neutral-500 dark:text-neutral-400 line-through"
-                    : "text-neutral-950 dark:text-white"
+                  "font-bold tracking-tight block leading-tight transition-all duration-300 font-sans",
+                  !color &&
+                    (isChecked
+                      ? "text-neutral-500 dark:text-neutral-400"
+                      : "text-neutral-950 dark:text-white")
                 )}
               >
                 {item.text}
-              </div>
+              </span>
 
-              {/* Optional sub-tags if present */}
-              {(item.tag || item.due || item.priority) && (
-                <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
-                  {item.tag && (
-                    <span className="font-bold text-neutral-600 dark:text-neutral-400">
-                      {item.tag}
-                    </span>
-                  )}
-                  {item.due && (
-                    <>
-                      <span className="text-neutral-300 dark:text-neutral-700">•</span>
-                      <span className="font-medium text-neutral-500 dark:text-neutral-400">
-                        {item.due}
-                      </span>
-                    </>
-                  )}
-                  {item.priority && (
-                    <span className="ml-auto font-bold px-2 py-0.5 rounded text-[10px] border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200">
-                      {item.priority}
-                    </span>
-                  )}
-                </div>
+              {/* Hand-drawn style strike line */}
+              {isChecked && (
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  style={{
+                    backgroundColor: tickColor,
+                    height: `${Math.max(2, strokeWidth - 1)}px`,
+                    transformOrigin: "left center",
+                  }}
+                  className="absolute top-1/2 left-0 right-4 -translate-y-1/2 opacity-75 rounded-full pointer-events-none"
+                />
               )}
             </div>
-
-            {/* Assignee Avatar if provided */}
-            {item.assignee && (
-              <img
-                src={item.assignee}
-                alt={item.assigneeName || "Assignee"}
-                title={item.assigneeName}
-                className="w-7 h-7 rounded-full object-cover border border-neutral-300 dark:border-neutral-700 flex-shrink-0"
-              />
-            )}
           </motion.div>
         );
       })}

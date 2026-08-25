@@ -320,130 +320,45 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Minimalist Black & White Workspace Preview */}
-        <section id="workspace" className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-24">
-          <div className={`rounded-2xl border shadow-2xl overflow-hidden transition-all ${
+        {/* Animated CheckList Showcase Section */}
+        <section id="workspace" className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
+          <div className={`p-6 sm:p-12 rounded-3xl border shadow-2xl transition-all ${
             isDarkMode 
-              ? "bg-neutral-950 border-neutral-800 shadow-black" 
-              : "bg-white border-neutral-300 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)]"
+              ? "bg-neutral-950/90 border-neutral-800 shadow-black" 
+              : "bg-white/95 border-neutral-300 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.12)]"
           }`}>
-            
-            {/* Card Window Bar */}
-            <div className={`px-5 py-4 border-b flex flex-wrap items-center justify-between gap-4 ${
-              isDarkMode ? "border-neutral-800 bg-neutral-900/80" : "border-neutral-200 bg-neutral-50"
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
-                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
-                  <div className="w-3 h-3 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
-                </div>
-                <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800 mx-1"></div>
-                <div className="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200">
-                  Sprint Execution Matrix
-                </div>
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                <span className="ml-2 text-xs font-mono font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                  check-list.scene
+                </span>
               </div>
-
-              {/* Minimalist Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-neutral-200/70 dark:bg-neutral-900 text-xs font-semibold">
-                {['all', 'active', 'recurring'].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1.5 rounded-md capitalize transition-all cursor-pointer ${
-                      activeTab === tab 
-                        ? (isDarkMode ? "bg-white text-black font-bold" : "bg-black text-white font-bold shadow-sm") 
-                        : "text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+              <span className="text-xs font-mono font-bold text-neutral-500">
+                Interactive CheckList
+              </span>
             </div>
 
-            {/* Matrix Body */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-neutral-200 dark:divide-neutral-800">
-              
-              {/* Task Items Animated CheckList */}
-              <div className="lg:col-span-8 p-5 sm:p-6 space-y-4">
-                <div className="flex items-center justify-between pb-1">
-                  <span className="text-xs font-bold tracking-wider uppercase text-neutral-600 dark:text-neutral-400">
-                    Active Deliverables ({mockTasks.length})
-                  </span>
-                  <span className="text-xs font-bold text-black dark:text-white flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Live Cloud Sync
-                  </span>
-                </div>
-
-                <CheckList
-                  items={mockTasks.map((t) => ({
-                    text: t.title,
-                    checked: t.completed,
-                    tag: t.tag,
-                    priority: t.priority,
-                    due: t.due,
-                    assignee: t.assignee,
-                    assigneeName: t.assigneeName,
-                  }))}
-                  itemGap={12}
-                  closeGap={8}
-                  perStep={1.2}
-                  strokeWidth={2.5}
-                  tickColor={isDarkMode ? "#ffffff" : "#000000"}
-                  interactive={true}
-                />
-              </div>
-
-              {/* Metrics & Velocity Column */}
-              <div className={`lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between ${
-                isDarkMode ? "bg-neutral-900/30" : "bg-neutral-50"
-              }`}>
-                <div className="space-y-4">
-                  <div className="text-xs font-bold tracking-wider uppercase text-neutral-600 dark:text-neutral-400">
-                    Workspace Statistics
-                  </div>
-
-                  <div className={`p-4 rounded-xl border ${
-                    isDarkMode ? "bg-neutral-900 border-neutral-800" : "bg-white border-neutral-300 shadow-sm"
-                  }`}>
-                    <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">
-                      94.2%
-                    </div>
-                    <div className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mt-0.5">
-                      On-time milestone delivery
-                    </div>
-                    <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2 rounded-full mt-3 overflow-hidden">
-                      <div className="bg-black dark:bg-white h-full rounded-full w-[94.2%]"></div>
-                    </div>
-                  </div>
-
-                  <div className={`p-4 rounded-xl border ${
-                    isDarkMode ? "bg-neutral-900 border-neutral-800" : "bg-white border-neutral-300 shadow-sm"
-                  }`}>
-                    <div className="flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
-                      <span>Pending Follow-ups</span>
-                      <span className="font-extrabold text-black dark:text-white text-sm">3</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                      <span>Automated Cron Jobs</span>
-                      <span className="font-extrabold text-black dark:text-white text-sm">8</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                  <button 
-                    onClick={() => navigate(user ? '/dashboard' : '/login')}
-                    className="w-full py-3 rounded-lg bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <span>Launch Workspace</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-            </div>
+            <CheckList
+              items={[
+                "Render on your own machine",
+                "No watermark, ever",
+                "Every component MIT",
+                { text: "Ships as source", checked: false },
+              ]}
+              width={820}
+              fontSize={36}
+              itemGap={18}
+              closeGap={9}
+              perStep={1.6}
+              strokeWidth={3}
+              color={isDarkMode ? "#ffffff" : "#0a0a0a"}
+              boxColor={isDarkMode ? "#ffffff" : "#0a0a0a"}
+              tickColor="#6f7f35"
+              step={3}
+            />
           </div>
         </section>
 
