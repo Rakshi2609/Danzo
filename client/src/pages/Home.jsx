@@ -96,7 +96,7 @@ const mockTasks = [
 ];
 
 export default function Home() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -168,10 +168,10 @@ export default function Home() {
               </button>
 
               <button 
-                onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+                onClick={() => navigate(user ? '/dashboard' : '/login')}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-black text-white dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 shadow-sm transition-all cursor-pointer"
               >
-                <span>{currentUser ? 'Dashboard' : 'Get Started'}</span>
+                <span>{user ? 'Dashboard' : 'Get Started'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -222,10 +222,10 @@ export default function Home() {
                     Sign in
                   </button>
                   <button 
-                    onClick={() => { setIsMobileMenuOpen(false); navigate(currentUser ? '/dashboard' : '/login'); }}
+                    onClick={() => { setIsMobileMenuOpen(false); navigate(user ? '/dashboard' : '/login'); }}
                     className="w-full py-2.5 rounded-lg bg-black text-white dark:bg-white dark:text-black text-sm font-semibold"
                   >
-                    {currentUser ? 'Dashboard' : 'Get Started'}
+                    {user ? 'Dashboard' : 'Get Started'}
                   </button>
                 </div>
               </motion.div>
@@ -434,7 +434,7 @@ export default function Home() {
 
                 <div className="mt-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                   <button 
-                    onClick={() => navigate(currentUser ? '/dashboard' : '/login')}
+                    onClick={() => navigate(user ? '/dashboard' : '/login')}
                     className="w-full py-3 rounded-lg bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <span>Launch Workspace</span>
