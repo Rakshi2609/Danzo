@@ -458,7 +458,7 @@ export default function FollowUps() {
                         to={`/tasks/${task._id}`}
                         className="flex-1"
                       >
-                        <h4 className="text-base font-semibold text-foreground hover:text-accent transition-colors break-words">
+                        <h4 className="text-base font-semibold text-foreground hover:text-primary transition-colors break-words">
                           {task.title}
                         </h4>
                       </Link>
@@ -472,7 +472,7 @@ export default function FollowUps() {
                     )}
 
                     {task.recurringTaskId && (
-                      <p className="text-xs text-accent font-medium flex items-center gap-1 mb-2">
+                      <p className="text-xs text-foreground font-medium flex items-center gap-1 mb-2">
                         <span className="bg-muted px-2 py-1 rounded text-xs">🔁 Recurring</span>
                       </p>
                     )}
@@ -493,7 +493,7 @@ export default function FollowUps() {
                       <p className="text-xs text-muted-foreground flex items-center gap-1 min-w-0">
                         <FaUserCircle className="text-muted-foreground flex-shrink-0" />
                         <span>Assigned to:</span>
-                        <span className="font-medium text-accent break-all">
+                        <span className="font-semibold text-foreground break-all">
                           {task.assignedTo?.displayName || task.assignedTo?.email || task.assignedTo}
                         </span>
                       </p>

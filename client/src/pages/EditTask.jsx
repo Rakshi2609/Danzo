@@ -149,17 +149,17 @@ export default function EditTask() {
 
   if (loadingTask || loadingUsers) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-accent mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading task details...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground font-medium">Loading task details...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -169,7 +169,7 @@ export default function EditTask() {
         {/* Back Button */}
         <button
           onClick={() => navigate(`/tasks/${id}`)}
-          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-accent transition-colors font-medium group"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium group cursor-pointer"
         >
           <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
           Back to Task Details

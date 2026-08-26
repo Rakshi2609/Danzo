@@ -132,7 +132,7 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="md:hidden border-t border-border bg-white"
+            className="md:hidden border-t border-border bg-white dark:bg-neutral-900"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -146,7 +146,7 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                     <div className="flex flex-col min-w-0">
                       <span className="text-sm font-medium text-foreground truncate">{user.displayName || 'User'}</span>
                       <span className="text-xs text-muted-foreground truncate">{user.email}</span>
-                      <span className="text-[10px] font-medium uppercase tracking-wide bg-accent/10 text-accent px-1.5 py-0.5 rounded-full mt-1 inline-block w-fit">
+                      <span className="text-[10px] font-semibold uppercase tracking-wide bg-primary text-primary-foreground px-2 py-0.5 rounded-full mt-1 inline-block w-fit">
                         {user.role || 'Member'}
                       </span>
                     </div>
