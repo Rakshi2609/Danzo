@@ -12,6 +12,7 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import toast from 'react-hot-toast';
+import WhatsAppPhoneCard from "../components/WhatsAppPhoneCard";
 import LoadingScreen from "../components/common/LoadingScreen";
 
 const Dashboard = () => {
