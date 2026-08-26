@@ -19,14 +19,37 @@ import {
   MessageSquare,
   Sparkles,
   Info,
-  Clock
+  Clock,
+  Shuffle
 } from 'lucide-react';
+
+const PROFILE_BACKGROUNDS = [
+  '/profile/_s30qa.gif',
+  '/profile/gif2.gif',
+  '/profile/gif3.jpg',
+  '/profile/gif4.jpg',
+  '/profile/hdsjakd.webp',
+  '/profile/images.jpeg',
+];
 
 export default function Profile() {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Randomize background on every visit / refresh
+  const [bgImage, setBgImage] = useState(() => {
+    const randomIndex = Math.floor(Math.random() * PROFILE_BACKGROUNDS.length);
+    return PROFILE_BACKGROUNDS[randomIndex];
+  });
+
+  const handleShuffleBackground = () => {
+    const remaining = PROFILE_BACKGROUNDS.filter(img => img !== bgImage);
+    const nextBg = remaining[Math.floor(Math.random() * remaining.length)];
+    setBgImage(nextBg);
+    toast.success('Wallpaper updated!', { duration: 1500 });
+  };
 
   // Editable form fields
   const [displayName, setDisplayName] = useState('');
@@ -133,12 +156,13 @@ export default function Profile() {
 
   return (
     <div className="relative min-h-[calc(100vh-5rem)] rounded-2xl overflow-hidden p-3 sm:p-5 lg:p-6 mb-8">
-      {/* Dynamic Animated GIF Page Background */}
+      {/* Dynamic Animated GIF / Image Page Background */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <img
-          src="/profile/_s30qa.gif"
+          key={`bg-${bgImage}`}
+          src={bgImage}
           alt="Profile Background"
-          className="w-full h-full object-cover object-center filter brightness-[0.45] dark:brightness-[0.25] saturate-125 transform scale-105"
+          className="w-full h-full object-cover object-center filter brightness-[0.45] dark:brightness-[0.25] saturate-125 transform scale-105 transition-all duration-700"
         />
         <div className="absolute inset-0 bg-neutral-950/40 dark:bg-neutral-950/70 backdrop-blur-md"></div>
       </div>
@@ -146,14 +170,25 @@ export default function Profile() {
       <div className="max-w-5xl mx-auto space-y-6 relative z-10">
         {/* Profile Banner Card */}
         <div className="relative rounded-2xl border border-white/20 dark:border-white/10 bg-white/85 dark:bg-neutral-900/85 backdrop-blur-xl shadow-xl overflow-hidden">
-          {/* Cover with user's GIF background */}
-          <div className="h-36 sm:h-48 relative overflow-hidden">
+          {/* Cover with user's GIF / image background */}
+          <div className="h-36 sm:h-48 relative overflow-hidden group">
             <img
-              src="/profile/_s30qa.gif"
+              key={`cover-${bgImage}`}
+              src={bgImage}
               alt="Profile Cover Banner"
-              className="w-full h-full object-cover object-center transform scale-105 filter brightness-90 dark:brightness-80"
+              className="w-full h-full object-cover object-center transform scale-105 filter brightness-90 dark:brightness-80 transition-all duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+
+            {/* Quick Shuffle Wallpaper button */}
+            <button
+              onClick={handleShuffleBackground}
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white border border-white/20 text-xs font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer hover:scale-105"
+              title="Shuffle to another picture/GIF"
+            >
+              <Shuffle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Shuffle Wallpaper</span>
+            </button>
           </div>
 
           {/* Profile Info Header */}
