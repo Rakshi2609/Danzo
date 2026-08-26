@@ -1,6 +1,7 @@
 import Task from '../models/Task.js';
 import TaskUpdate from '../models/TaskUpdate.js';
 import User from '../models/User.js';
+import RecurringTask from '../models/RecurringTask.js';
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -13,6 +14,7 @@ export const getAllTasks = async (req, res) => {
     })
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email')
+      .populate('recurringTaskId', 'title frequency isActive')
       .sort({ dueDate: 1 });
     res.json(tasks);
   } catch (error) {
@@ -26,6 +28,7 @@ export const getMyTasks = async (req, res) => {
     const tasks = await Task.find({ assignedTo: req.user._id })
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email')
+      .populate('recurringTaskId', 'title frequency isActive')
       .sort({ dueDate: 1 });
     
     const recurringCount = tasks.filter(t => t.recurringTaskId).length;
@@ -43,6 +46,7 @@ export const getFollowUps = async (req, res) => {
     const tasks = await Task.find({ createdBy: req.user._id })
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email')
+      .populate('recurringTaskId', 'title frequency isActive')
       .sort({ dueDate: 1 });
     res.json(tasks);
   } catch (error) {
@@ -54,7 +58,8 @@ export const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
       .populate('assignedTo', 'displayName email')
-      .populate('createdBy', 'displayName email');
+      .populate('createdBy', 'displayName email')
+      .populate('recurringTaskId', 'title frequency isActive');
     
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });

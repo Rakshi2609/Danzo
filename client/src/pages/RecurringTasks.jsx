@@ -26,12 +26,15 @@ export default function RecurringTasks() {
   };
 
   const handleTriggerNow = async () => {
+    const loadingToast = toast.loading('Generating tasks from recurring reminders...');
     try {
-      const loadingToast = toast.loading('Generating tasks from recurring reminders...');
       const response = await recurringTaskService.triggerNow();
       toast.dismiss(loadingToast);
-      toast.success(response.data.message || 'Tasks generated successfully!');
+      const { generated = 0, skipped = 0 } = response.data || {};
+      toast.success(`Generated ${generated} new task(s) (${skipped} already up-to-date)!`);
+      loadData();
     } catch (error) {
+      toast.dismiss(loadingToast);
       console.error('Failed to trigger tasks:', error);
       toast.error(error.response?.data?.error || 'Failed to generate tasks');
     }

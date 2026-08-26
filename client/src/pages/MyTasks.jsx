@@ -203,20 +203,26 @@ export default function MyTasks() {
         if (sortBy === "dueDate") {
             filteredAndSortedTasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
         } else if (sortBy === "priority") {
-            const priorityOrder = { High: 1, Medium: 2, Low: 3 };
-            filteredAndSortedTasks.sort((a, b) => (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4));
+            const priorityOrder = { Urgent: 0, High: 1, Medium: 2, Low: 3 };
+            filteredAndSortedTasks.sort((a, b) => (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4));
         } else if (sortBy === "daily") {
-            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => task.taskFrequency === "Daily");
+            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => 
+                task.taskFrequency === "Daily" || task.recurringTaskId?.frequency === "Daily"
+            );
         } else if (sortBy === "weekly") {
-            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => task.taskFrequency === "Weekly");
+            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => 
+                task.taskFrequency === "Weekly" || task.recurringTaskId?.frequency === "Weekly"
+            );
         } else if (sortBy === "monthly") {
-            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => task.taskFrequency === "Monthly");
+            filteredAndSortedTasks = filteredAndSortedTasks.filter(task => 
+                task.taskFrequency === "Monthly" || task.recurringTaskId?.frequency === "Monthly"
+            );
         } else if (sortBy === "all") {
-            const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+            const priorityOrder = { Urgent: 0, High: 1, Medium: 2, Low: 3 };
             filteredAndSortedTasks.sort((a, b) => {
                 const dateDiff = new Date(a.dueDate) - new Date(b.dueDate);
                 if (dateDiff !== 0) return dateDiff;
-                return (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4);
+                return (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
             });
         }
 

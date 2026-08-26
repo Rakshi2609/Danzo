@@ -1,5 +1,6 @@
 import RecurringTask from '../models/RecurringTask.js';
 import Task from '../models/Task.js';
+import User from '../models/User.js';
 
 /**
  * Core recurring-task generator
@@ -15,6 +16,10 @@ export const generateRecurringTasksCore = async (now = new Date()) => {
 
   for (const recurringTask of recurringTasks) {
     if (!recurringTask.startDate) continue;
+
+    const assignedToId = recurringTask.assignedTo?._id || recurringTask.assignedTo;
+    const createdById = recurringTask.createdBy?._id || recurringTask.createdBy;
+    if (!assignedToId || !createdById) continue;
 
     // Start generating from startDate
     let currentDate = new Date(recurringTask.startDate);
@@ -49,17 +54,22 @@ export const generateRecurringTasksCore = async (now = new Date()) => {
       });
 
       if (!existingTask) {
+        const subtasks = (recurringTask.taskTemplate?.subtasks || []).map(st => ({
+          title: st.title,
+          isCompleted: false
+        }));
+
         await Task.create({
           title: recurringTask.title,
           description: recurringTask.description,
-          assignedTo: recurringTask.assignedTo._id || recurringTask.assignedTo,
-          createdBy: recurringTask.createdBy._id || recurringTask.createdBy,
+          assignedTo: assignedToId,
+          createdBy: createdById,
           recurringTaskId: recurringTask._id,
-          priority: recurringTask.taskTemplate.priority,
-          startTime: recurringTask.taskTemplate.startTime || null,
-          endTime: recurringTask.taskTemplate.endTime || null,
-          tags: recurringTask.taskTemplate.tags || [],
-          subtasks: recurringTask.taskTemplate.subtasks || [],
+          priority: recurringTask.taskTemplate?.priority || 'Medium',
+          startTime: recurringTask.taskTemplate?.startTime || null,
+          endTime: recurringTask.taskTemplate?.endTime || null,
+          tags: recurringTask.taskTemplate?.tags || [],
+          subtasks,
           dueDate: new Date(currentDate),
           status: 'Pending',
         });
@@ -94,9 +104,16 @@ export const generateRecurringTasksCore = async (now = new Date()) => {
 
 export const getAllRecurringTasks = async (req, res) => {
   try {
-    const tasks = await RecurringTask.find({
-      assignedTo: req.user._id
-    })
+    const query = (req.user.role === 'Admin' || req.user.role === 'Manager')
+      ? {}
+      : {
+          $or: [
+            { assignedTo: req.user._id },
+            { createdBy: req.user._id }
+          ]
+        };
+
+    const tasks = await RecurringTask.find(query)
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email')
       .sort({ createdAt: -1 });
