@@ -5,8 +5,9 @@ import { generateRecurringTasksCore } from "../controllers/recurringTask.control
 const router = express.Router();
 
 router.post("/run", async (req, res) => {
-  if (req.headers["x-cron-secret"] !== process.env.CRON_SECRET) {
-    return res.status(401).json({ error: "Unauthorized" });
+  const secret = process.env.CRON_SECRET;
+  if (!secret || req.headers["x-cron-secret"] !== secret) {
+    return res.status(401).json({ error: "Unauthorized cron execution" });
   }
 
   try {

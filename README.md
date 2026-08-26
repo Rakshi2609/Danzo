@@ -1,339 +1,189 @@
-# Task Manager - MERN Stack with Firebase Authentication
+# ⚡ Danzo - Modern Full-Stack Task & Workflow Intelligence Platform
 
-A full-stack task management application built with MongoDB, Express, React, and Node.js (MERN), featuring Firebase Google Authentication and automated recurring tasks.
+**Danzo** is a production-grade, full-stack task and workflow management ecosystem built with the MERN stack (MongoDB, Express.js, React 19, Node.js), featuring Firebase Google Authentication, automated recurring schedule engines, daily streak tracking, WhatsApp bot dispatching, and enterprise-grade security hardening.
 
-## Features
+---
 
-- 🔐 **Google Authentication** via Firebase
-- ✅ **Task Management** (Create, Assign, Update, Delete)
-- 📊 **Dashboard** with Calendar View & Statistics
-- 🔄 **Recurring Tasks** with automated generation (skips Sundays)
-- 📝 **Task Comments** (Creator + Assigned User only)
-- 👥 **Role-Based Access Control** (Admin, Manager, Member)
-- 📅 **Follow Ups** - Track tasks you assigned to others
-- 🎯 **My Tasks** - View tasks assigned to you
+## 🚀 Key Features
 
-## Tech Stack
+### 🔐 1. Authentication & Security Hardening
+- **Firebase OAuth + 7-Day JWT**: Seamless Google Sign-In with cryptographically verified ID tokens and fast 7-day signed JWT sessions.
+- **DDoS & Brute-Force Rate Limiting**: Tiered rate limiters (`express-rate-limit`) protecting authentication (`/api/auth/login`), batch task mutations, cron endpoints, and global API traffic.
+- **Strict Role-Based Access Control (RBAC)**: `Admin`, `Manager`, and `Member` permission layers.
+- **IDOR & Data Isolation**: Comprehensive middleware verifying task ownership before edits, deletions, or status transitions.
+- **Security Headers & Payload Limits**: Hardened HTTP headers via `helmet`, CORS policy isolation, and 1MB request payload guardrails.
 
-### Frontend
-- React 19 with Vite
-- Tailwind CSS
-- Firebase Client SDK
-- React Router DOM
-- React Big Calendar
-- Axios
-- React Hook Form + Yup
-- React Hot Toast
+### 🔁 2. Smart Recurring Task Automation
+- **Multi-Frequency Scheduling**: Define recurring blueprints (*Daily, Weekly, Monthly*) with custom start dates, end dates, subtasks, priorities, and time slots.
+- **Automated Sunday-Exclusion Engine**: Automatically skips Sundays and distributes instances forward seamlessly.
+- **Template-Linked Tasks**: All generated tasks remain linked to their parent template (`recurringTaskId`) with interactive filter toggles and one-click manual generator triggers.
 
-### Backend
-- Node.js + Express
-- MongoDB with Mongoose
-- Firebase Admin SDK
-- Agenda.js (Task Scheduler)
-- JWT Authentication
+### 🎯 3. Task Management & Reassignment Audit Trail
+- **My Tasks vs. Follow-Ups**: Dedicated workspaces for tasks assigned to you versus tasks you assigned to team members.
+- **Smart Reassignment**: Reassign open tasks to any team member with an automated audit log entry appended in the task history.
+- **Follow-up Subtasks & Checklists**: Interactive subtask progress tracker; prevents task completion until all required subtasks are checked.
+- **Time Tracking**: Log actual start times and finish times for precise execution metrics.
 
-## Project Structure
+### 👤 4. Profile Hub, Login Streaks & Dynamic Wallpapers
+- **Daily Login Streak Counter**: Gamified attendance tracker calculating consecutive logins and all-time record streaks with interactive monthly calendar heatmaps.
+- **WhatsApp Integration**: Save user contact numbers in standard E.164 format for WhatsApp bot task dispatching.
+- **Dynamic Background Randomizer & Shuffle**: Randomizes aesthetic GIF/visual themes on every refresh or visit, with an instant 🎲 **Shuffle Wallpaper** button.
+
+### 🔍 5. Real-Time Filtering & Search
+- **Instant Keyword Search**: Live filtering across task titles, descriptions, assignees, creators, and tags.
+- **Multi-Dimensional Filters**: Filter by Status, Priority (*Urgent, High, Medium, Low*), Type (*Regular vs. Recurring*), and Date range.
+- **Timezone-Safe Moment Date Picker**: High z-index portal dropdowns ensuring zero clipping or overlay issues across all viewports.
+- **Quick Pills**: One-click toggles for "Today" and "⚠️ Overdue" tasks.
+
+### 🤖 6. Bot & External Automation API
+- Secure `/api/bot` endpoints protected by `x-bot-key` for WhatsApp bot / AI assistant integrations (e.g. daily briefings, due reminders, user lookups).
+- Protected `/cron/run` endpoint secured by `x-cron-secret` for serverless cron workflows.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Lucide Icons, React DatePicker, React Hot Toast, Canvas Confetti |
+| **Backend** | Node.js, Express.js, MongoDB (Mongoose), Firebase Admin SDK, JSON Web Token (JWT) |
+| **Security** | Express Rate Limit, Helmet, CORS, Token Signature Verification, RBAC |
+| **PWA** | Vite PWA Plugin, Service Worker offline readiness |
+
+---
+
+## 📁 Project Structure
 
 ```
-denzo/
-├── client/                 # React Frontend
+Danzo/
+├── client/                     # React Frontend (Vite)
+│   ├── public/
+│   │   ├── profile/            # Animated GIF & Wallpaper collection
+│   │   └── manifest.webmanifest# Progressive Web App configuration
 │   ├── src/
-│   │   ├── components/    # Reusable components
-│   │   ├── contexts/      # Auth context
-│   │   ├── pages/         # Page components
-│   │   ├── services/      # API services
-│   │   └── App.jsx
+│   │   ├── components/         # Modals, Navigation, ThemeToggle, Pagination
+│   │   ├── contexts/           # AuthContext & ThemeContext
+│   │   ├── pages/              # Dashboard, MyTasks, FollowUps, Profile, AdminPanel, EditTask
+│   │   ├── services/           # Axios API services & Firebase Client SDK
+│   │   └── index.css           # Design tokens, Dark Mode, DatePicker styles
 │   └── package.json
 │
-└── server/                # Express Backend
+└── server/                     # Express Backend API
     ├── src/
-    │   ├── config/        # DB, Firebase, Agenda config
-    │   ├── controllers/   # Request handlers
-    │   ├── middleware/    # Auth & validation
-    │   ├── models/        # Mongoose schemas
-    │   ├── routes/        # API routes
-    │   └── services/      # Business logic
-    └── server.js
+    │   ├── config/             # MongoDB, Firebase Admin, Agenda
+    │   ├── controllers/        # Auth, Tasks, RecurringTasks, Users, Dashboard
+    │   ├── middleware/         # Auth, TaskPermissions, RateLimiter, ErrorHandler
+    │   ├── models/             # User, Task, RecurringTask, TaskUpdate
+    │   ├── routes/             # REST API routes & Webhooks
+    │   └── utils/              # Cron summaries & seeders
+    ├── server.js               # Application Entrypoint & Middleware Pipeline
+    └── package.json
 ```
 
-## Getting Started
+---
 
-### Prerequisites
+## 🛡️ API & Security Matrix
 
-- Node.js (v18 or higher)
-- MongoDB (local or Atlas)
-- Firebase Account
+### Rate Limiting Rules
+- **Global API (`/api/*`)**: Max `300` requests / 15 minutes per IP.
+- **Auth Endpoint (`/api/auth/login`)**: Max `30` authentication requests / 15 minutes per IP.
+- **Mutations & Creations (`POST/PUT/DELETE`)**: Max `100` mutation requests / 15 minutes per IP.
+- **Batch Triggers & Cron (`/cron/run`, `/api/recurring-tasks/trigger-now`)**: Max `15` requests / 15 minutes.
 
-### 1. Firebase Setup
+### Endpoints Overview
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Enable **Google Authentication**:
-   - Go to Authentication → Sign-in method
-   - Enable Google provider
-4. Get Web credentials:
-   - Project Settings → General → Your apps
-   - Copy Firebase config values
-5. Get Service Account:
-   - Project Settings → Service Accounts
-   - Generate new private key (downloads JSON)
-   - Use values in server `.env`
+#### 🔐 Authentication & Users
+- `POST /api/auth/login` - Authenticate via Firebase ID token, calculate streak, return 7-day JWT. *(Rate Limited)*
+- `GET /api/auth/me` - Fetch authenticated user session.
+- `GET /api/users` - List all active workspace members.
+- `PATCH /api/users/profile` - Update display name and WhatsApp phone number.
+- `PATCH /api/users/:id/role` - Update user permission role (*Admin only*).
 
-### 2. Backend Setup
+#### 📋 Tasks
+- `GET /api/tasks` - List tasks created by or assigned to current user.
+- `GET /api/tasks/my-tasks` - Get tasks assigned to current user.
+- `GET /api/tasks/follow-ups` - Get tasks created by current user for team members.
+- `GET /api/tasks/:id` - Fetch single task details with creator/assignee privacy check.
+- `POST /api/tasks` - Create new task. *(Rate Limited)*
+- `PUT /api/tasks/:id` - Update task details (*Creator or Admin/Manager only*).
+- `PATCH /api/tasks/:id/reassign` - Reassign task and append audit note.
+- `PATCH /api/tasks/:id/status` - Update progress status (*Assignee only*).
+- `PATCH /api/tasks/complete` - Mark complete with actual execution timestamps.
+- `DELETE /api/tasks/:id` - Remove task (*Creator or Admin/Manager only*).
+- `GET /api/tasks/:taskId/updates` - Fetch discussion comments and audit timeline.
+- `POST /api/tasks/:taskId/updates` - Add comment (*Creator or Assignee only*).
+- `POST /api/tasks/:taskId/subtasks` - Add checklist subtask.
+- `PATCH /api/tasks/:taskId/subtasks/:subtaskId` - Toggle subtask completion status.
+- `DELETE /api/tasks/:taskId/subtasks/:subtaskId` - Delete subtask.
 
-```bash
-cd server
+#### 🔁 Recurring Tasks
+- `GET /api/recurring-tasks` - List recurring templates.
+- `POST /api/recurring-tasks` - Create recurring template and trigger instance generation.
+- `POST /api/recurring-tasks/trigger-now` - Manually trigger batch task generation. *(Rate Limited)*
+- `PUT /api/recurring-tasks/:id` - Update recurring template (*Creator or Admin only*).
+- `PATCH /api/recurring-tasks/:id/toggle` - Toggle active/paused state.
+- `DELETE /api/recurring-tasks/:id` - Delete recurring template.
 
-# Install dependencies (already done)
-# npm install
+#### 🤖 Bot & Automated Cron
+- `POST /cron/run` - Trigger batch recurring tasks and daily summary digests *(Requires `x-cron-secret`)*.
+- `GET /api/bot/tasks/due` - Fetch upcoming tasks within N hours *(Requires `x-bot-key`)*.
+- `GET /api/bot/tasks/today` - Fetch tasks scheduled for today *(Requires `x-bot-key`)*.
+- `GET /api/bot/tasks/for?phone=...` - Fetch open tasks for a user by phone *(Requires `x-bot-key`)*.
 
-# Create .env file
-# Update the following in server/.env:
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/task-manager
-CORS_ORIGIN=http://localhost:5173
+---
 
-# Firebase Admin SDK (from downloaded JSON)
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_Private_Key_Here\n-----END PRIVATE KEY-----"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
+## ⚡ Setup & Installation
 
-# Start MongoDB (if local)
-# mongod
+### 1. Prerequisites
+- Node.js (v18+)
+- MongoDB instance (Local or MongoDB Atlas)
+- Firebase Project with Google Authentication enabled
 
-# Run server
-npm run dev
-```
+### 2. Environment Configuration
 
-Server will run on `http://localhost:5000`
-
-### 3. Frontend Setup
-
-```bash
-cd client
-
-# Install dependencies (already done)
-# npm install
-
-# .env is already configured with your Firebase credentials
-
-# Run client
-npm run dev
-```
-
-Client will run on `http://localhost:5173`
-
-### 4. Access the Application
-
-1. Open browser: `http://localhost:5173`
-2. Click "Sign in with Google"
-3. First user becomes a Member (default role)
-4. To make yourself Admin:
-   ```bash
-   # Connect to MongoDB
-   mongosh
-   use task-manager
-   db.users.updateOne({email: "your@email.com"}, {$set: {role: "Admin"}})
-   ```
-
-## Usage
-
-### Task Management
-
-**Follow Ups Page:**
-- Create new tasks and assign to others
-- Edit/delete tasks you created
-- Track status of tasks you assigned
-
-**My Tasks Page:**
-- View tasks assigned to you
-- Update task status
-- Filter by status (All, Pending, In Progress, Completed)
-
-**Recurring Tasks:**
-- Create tasks that auto-generate on schedule
-- Frequencies: Daily, Weekly, Monthly
-- Automatically skips Sundays
-- Only creator can edit/delete recurring tasks
-
-### Permissions
-
-- **Task Creation**: Anyone can create and assign tasks
-- **Task Editing**: Only task creator can edit/delete
-- **Status Updates**: Only assigned user can update status
-- **Comments**: Only creator and assigned user can comment
-- **Recurring Tasks**: Only creator can edit/delete
-- **Role Management**: Only Admin can change user roles
-
-### Dashboard
-
-- View statistics (Total, Completed, Due Today, Overdue)
-- Calendar view with all tasks
-- Overdue tasks alerts
-- Color-coded task status
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/login` - Firebase login/sync user
-- `GET /api/auth/me` - Get current user
-
-### Tasks
-- `GET /api/tasks` - Get all tasks
-- `GET /api/tasks/my-tasks` - Get tasks assigned to me
-- `GET /api/tasks/follow-ups` - Get tasks I created
-- `POST /api/tasks` - Create task
-- `PUT /api/tasks/:id` - Update task (creator only)
-- `PATCH /api/tasks/:id/status` - Update status (assigned user)
-- `DELETE /api/tasks/:id` - Delete task (creator only)
-
-### Recurring Tasks
-- `GET /api/recurring-tasks` - Get all recurring tasks
-- `POST /api/recurring-tasks` - Create recurring task
-- `PUT /api/recurring-tasks/:id` - Update (creator only)
-- `DELETE /api/recurring-tasks/:id` - Delete (creator only)
-- `PATCH /api/recurring-tasks/:id/toggle` - Activate/deactivate
-
-### Dashboard
-- `GET /api/dashboard/stats` - Get statistics
-- `GET /api/dashboard/calendar` - Get tasks for date range
-- `GET /api/dashboard/overdue` - Get overdue tasks
-
-### Users
-- `GET /api/users` - Get all users
-- `PATCH /api/users/:id/role` - Update user role (Admin only)
-
-## Recurring Task Logic
-
-Recurring tasks automatically generate new task instances based on frequency:
-
-- **Daily**: Creates task every day (skips Sundays)
-- **Weekly**: Creates task every week
-- **Monthly**: Creates task every month
-
-**Sunday Skip Logic:**
-- Recurring tasks never generate on Sundays
-- If due date falls on Sunday, moves to Monday
-
-**Job Scheduler:**
-- Runs daily at 1:00 AM
-- Uses Agenda.js with MongoDB storage
-- Survives server restarts
-
-## Environment Variables
-
-### Client (.env)
-```
+#### Client (`client/.env`)
+```env
 VITE_API_URL=http://localhost:5000/api
-VITE_FIREBASE_API_KEY=your-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
+VITE_FIREBASE_API_KEY=your-firebase-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 VITE_FIREBASE_APP_ID=your-app-id
-VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
 ```
 
-### Server (.env)
-```
+#### Server (`server/.env` or root `.env`)
+```env
 NODE_ENV=development
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/task-manager
-CORS_ORIGIN=http://localhost:5173
+JWT_SECRET=your_super_secret_jwt_key
+CRON_SECRET=your_secure_cron_secret
+BOT_API_KEY=your_hermes_or_whatsapp_bot_key
+
+# Firebase Admin Credentials
 FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY="your-private-key"
-FIREBASE_CLIENT_EMAIL=your-client-email
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
 ```
 
-## Scripts
+### 3. Run Locally
 
-### Client
 ```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run preview  # Preview production build
+# Backend
+cd server
+npm install
+npm run dev
+
+# Frontend (in a separate terminal)
+cd client
+npm install
+npm run dev
 ```
 
-### Server
-```bash
-npm run dev      # Start with nodemon
-npm start        # Start production server
-```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## Database Schema
+---
 
-### Users
-- firebaseUid (unique)
-- email
-- displayName
-- photoURL
-- role (Admin/Manager/Member)
-- isActive
-
-### Tasks
-- title
-- description
-- status (Pending/In Progress/Completed/Cancelled)
-- priority (Low/Medium/High/Urgent)
-- dueDate
-- assignedTo (ref: User)
-- createdBy (ref: User)
-- recurringTaskId (ref: RecurringTask)
-
-### Recurring Tasks
-- title
-- description
-- frequency (Daily/Weekly/Monthly)
-- startDate
-- endDate
-- assignedTo (ref: User)
-- createdBy (ref: User)
-- taskTemplate (priority, tags)
-- isActive
-- lastGeneratedAt
-- nextRunAt
-
-### Task Updates
-- taskId (ref: Task)
-- userId (ref: User)
-- type (Comment/StatusChange/Assignment/Update)
-- content
-- oldValue
-- newValue
-
-## Troubleshooting
-
-### Firebase Authentication Issues
-- Verify Firebase config in client `.env`
-- Check Firebase Console → Authentication is enabled
-- Ensure Google provider is activated
-
-### Server Won't Start
-- Check MongoDB is running
-- Verify `.env` file exists and has correct values
-- Check Firebase Admin SDK credentials
-
-### Recurring Tasks Not Generating
-- Check Agenda.js logs in server console
-- Verify MongoDB connection
-- Check recurring task `isActive` status
-
-## Future Enhancements
-
-- [ ] Email notifications for task assignments
-- [ ] File attachments
-- [ ] Task priority levels
-- [ ] Team/Department organization
-- [ ] Mobile app
-- [ ] Advanced analytics
-
-## License
-
-MIT
-
-## Support
-
-For issues or questions, please open an issue on GitHub.
-#   D e n z o  
- 
+## 📄 License
+Licensed under the [MIT License](LICENSE). Built with ❤️ by [Rakshith Ganjimut](https://github.com/Rakshi2609).

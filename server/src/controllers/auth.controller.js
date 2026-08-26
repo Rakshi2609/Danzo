@@ -8,19 +8,28 @@ export const login = async (req, res) => {
   try {
     console.log('🟣 Backend Auth: Login request received');
     const { token, email, displayName, photoURL } = req.body;
-    let firebaseUid = req.user?.firebaseUid || req.body.firebaseUid;
+    let firebaseUid = null;
 
-    // If Firebase ID token is sent, verify and extract UID if not already available
-    if (token && !firebaseUid) {
+    // Verify Firebase ID Token
+    if (token) {
       try {
         const decoded = await admin.auth().verifyIdToken(token);
         firebaseUid = decoded.uid;
       } catch (err) {
-        console.warn('Firebase ID token verification in login route:', err.message);
+        console.error('❌ Firebase ID token verification failed:', err.message);
+        return res.status(401).json({ error: 'Invalid or expired authentication credentials' });
       }
+    } else if (req.body.firebaseUid && process.env.NODE_ENV === 'development') {
+      firebaseUid = req.body.firebaseUid;
+    } else {
+      return res.status(400).json({ error: 'Authentication token is required' });
     }
 
-    console.log('🟣 Backend Auth: Email:', email, 'UID:', firebaseUid);
+    if (!email) {
+      return res.status(400).json({ error: 'Email address is required' });
+    }
+
+    console.log('🟣 Backend Auth: Verified Email:', email, 'UID:', firebaseUid);
 
     let user = null;
     if (firebaseUid) {

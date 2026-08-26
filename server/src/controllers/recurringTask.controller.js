@@ -175,8 +175,10 @@ export const updateRecurringTask = async (req, res) => {
       return res.status(404).json({ error: 'Recurring task not found' });
     }
 
-    if (recurringTask.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Only creator can edit' });
+    const isCreator = recurringTask.createdBy.toString() === req.user._id.toString();
+    const isPrivileged = req.user.role === 'Admin' || req.user.role === 'Manager';
+    if (!isCreator && !isPrivileged) {
+      return res.status(403).json({ error: 'Only creator or Admin/Manager can edit this recurring task' });
     }
 
     const {
@@ -227,8 +229,10 @@ export const deleteRecurringTask = async (req, res) => {
       return res.status(404).json({ error: 'Recurring task not found' });
     }
 
-    if (recurringTask.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Only creator can delete' });
+    const isCreator = recurringTask.createdBy.toString() === req.user._id.toString();
+    const isPrivileged = req.user.role === 'Admin' || req.user.role === 'Manager';
+    if (!isCreator && !isPrivileged) {
+      return res.status(403).json({ error: 'Only creator or Admin/Manager can delete this recurring task' });
     }
 
     await RecurringTask.findByIdAndDelete(req.params.id);
@@ -245,6 +249,12 @@ export const toggleRecurringTask = async (req, res) => {
 
     if (!recurringTask) {
       return res.status(404).json({ error: 'Recurring task not found' });
+    }
+
+    const isCreator = recurringTask.createdBy.toString() === req.user._id.toString();
+    const isPrivileged = req.user.role === 'Admin' || req.user.role === 'Manager';
+    if (!isCreator && !isPrivileged) {
+      return res.status(403).json({ error: 'Only creator or Admin/Manager can toggle this recurring task' });
     }
 
     recurringTask.isActive = !recurringTask.isActive;

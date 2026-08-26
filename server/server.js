@@ -10,6 +10,7 @@ import connectDB from './src/config/database.js';
 import routes from './src/routes/index.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
 import cornRoutes from './src/routes/corn.route.js';
+import { globalLimiter, triggerLimiter } from './src/middleware/rateLimiter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,9 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Trust proxy for rate limiters behind reverse proxies (e.g. Render / Cloudflare / Nginx)
+app.set('trust proxy', 1);
 
 // --- UPDATED MIDDLEWARE SECTION ---
 
@@ -39,8 +43,8 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // --- ROUTES & STATIC FILES ---
 
@@ -48,8 +52,9 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-app.use('/api', routes);
-app.use('/cron', cornRoutes);
+// Protected API routes with rate limiting
+app.use('/api', globalLimiter, routes);
+app.use('/cron', triggerLimiter, cornRoutes);
 
 // Serve static files from the client build folder
 // Note: Adjusted path assuming your folder structure is /server/app.js and /client/dist
