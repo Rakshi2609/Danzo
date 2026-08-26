@@ -130,22 +130,29 @@ export default function UserStreakPopover() {
             transition={{ duration: 0.2 }}
             className="absolute right-0 mt-2 w-80 sm:w-88 z-50 rounded-2xl border border-border bg-white dark:bg-neutral-900 shadow-2xl shadow-black/20 p-4 text-foreground backdrop-blur-xl"
           >
-            {/* Header: User Profile Info */}
-            <div className="flex items-center gap-3 pb-3.5 border-b border-border">
+            {/* Header: User Profile Info (Clickable to /profile) */}
+            <div
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/profile');
+              }}
+              className="flex items-center gap-3 pb-3.5 border-b border-border cursor-pointer hover:bg-muted/30 p-1.5 -mx-1.5 rounded-xl transition-all group"
+              title="Click to view full Profile"
+            >
               {user.photoURL ? (
                 <img
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-border shadow-xs"
+                  className="w-11 h-11 rounded-full object-cover border-2 border-border shadow-xs group-hover:ring-2 group-hover:ring-primary/30 transition-all"
                 />
               ) : (
-                <div className="w-11 h-11 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center border border-border">
+                <div className="w-11 h-11 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center border border-border group-hover:ring-2 group-hover:ring-primary/30 transition-all">
                   <UserIcon className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-sm font-bold truncate text-foreground">
+                  <h4 className="text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">
                     {user.displayName || 'User'}
                   </h4>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-border">
@@ -153,6 +160,11 @@ export default function UserStreakPopover() {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                {user.phone && (
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium truncate">
+                    +{user.phone}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -283,15 +295,16 @@ export default function UserStreakPopover() {
             </div>
 
             {/* Quick Actions Footer */}
-            <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between">
+            <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between gap-2">
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  navigate('/dashboard');
+                  navigate('/profile');
                 }}
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline transition-all cursor-pointer"
               >
-                Dashboard
+                <UserIcon className="w-3.5 h-3.5" />
+                <span>My Profile</span>
               </button>
 
               <button

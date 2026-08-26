@@ -10,6 +10,7 @@ import {
   FaChevronDown,
   FaChevronRight,
   FaPlus,
+  FaUserCircle,
 } from "react-icons/fa";
 
 // Contract:
@@ -40,6 +41,7 @@ const SideNavbar = ({ isOpen, onClose }) => {
           title: "Overview",
           links: [
             { to: "/dashboard", label: "Dashboard", icon: <FaHome /> },
+            { to: "/profile", label: "My Profile", icon: <FaUserCircle /> },
           ]
         },
         {

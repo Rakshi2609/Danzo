@@ -14,6 +14,7 @@ import TaskDetail from './pages/TaskDetail';
 import CreateTask from './pages/CreateTask';
 import EditTask from './pages/EditTask';
 import CreateRecurringTask from './pages/CreateRecurringTask';
+import Profile from './pages/Profile';
 import Home from './pages/Home';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/edit-task/:id" element={<EditTask />} />
                     <Route path="/recurring-tasks" element={<RecurringTasks />} />
                     <Route path="/create-recurring-task" element={<CreateRecurringTask />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="/tasks/:id" element={<TaskDetail />} />
                     <Route path="/admin" element={<AdminPanel />} />
                   </Routes>

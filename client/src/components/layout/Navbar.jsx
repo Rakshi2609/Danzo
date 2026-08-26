@@ -152,7 +152,15 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                     </div>
                   </div>
 
-                  <div className="px-1 py-1">
+                  <div className="px-1 py-1 flex flex-col gap-2">
+                    <Link
+                      to="/profile"
+                      onClick={closeMobileMenu}
+                      className={`${mobileNavLinkClasses} border border-border rounded-lg`}
+                    >
+                      <FaUserCircle className="text-base" />
+                      <span>My Profile & Settings</span>
+                    </Link>
                     <InstallPWA />
                   </div>
 
