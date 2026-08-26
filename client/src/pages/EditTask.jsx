@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { FaSave, FaTimes, FaCalendar, FaUser, FaFlag, FaEdit, FaArrowLeft } from 'react-icons/fa';
 import moment from 'moment';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function EditTask() {
   const navigate = useNavigate();
@@ -148,14 +149,7 @@ export default function EditTask() {
   };
 
   if (loadingTask || loadingUsers) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground font-medium">Loading task details...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading task editor..." submessage="Fetching task history, subtasks, and collaborators" />;
   }
 
   return (

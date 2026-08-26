@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { recurringTaskService, userService } from '../services/taskService';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { FaSync, FaSpinner, FaCalendarAlt, FaUserCircle, FaFlag, FaClock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function RecurringTasks() {
   const [tasks, setTasks] = useState([]);
@@ -92,14 +92,7 @@ export default function RecurringTasks() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <FaSpinner className="animate-spin text-6xl text-accent mx-auto mb-4" />
-          <p className="text-xl font-semibold text-muted-foreground">Loading recurring reminders...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading recurring blueprints..." submessage="Preparing recurring schedules & automations" />;
   }
 
   return (

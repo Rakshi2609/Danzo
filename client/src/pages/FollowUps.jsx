@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Pagination from '../components/Pagination';
 import moment from 'moment';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function FollowUps() {
   const [tasks, setTasks] = useState([]);
@@ -215,14 +216,7 @@ export default function FollowUps() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <FaSpinner className="animate-spin text-6xl text-accent mx-auto mb-4" />
-          <p className="text-xl font-semibold text-muted-foreground">Loading follow ups...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading delegated tasks..." submessage="Fetching follow-ups and assignee status updates" />;
   }
 
   return (

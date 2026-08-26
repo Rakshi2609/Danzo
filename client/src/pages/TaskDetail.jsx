@@ -7,6 +7,7 @@ import { FiArrowLeft, FiCalendar, FiUser, FiClock, FiMessageSquare, FiEdit, FiTr
 import { motion, AnimatePresence } from 'framer-motion';
 import moment from 'moment';
 import confetti from 'canvas-confetti';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function TaskDetail() {
   const { id } = useParams();
@@ -307,11 +308,7 @@ export default function TaskDetail() {
   const canReassign = isCreatedByMe || user?.role === 'Admin' || user?.role === 'Manager';
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <LoadingScreen message="Loading task details..." submessage="Fetching history, comments, and subtasks" />;
   }
 
   if (!task) {

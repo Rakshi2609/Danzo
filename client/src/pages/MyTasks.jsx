@@ -23,6 +23,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import LoadingScreen from "../components/common/LoadingScreen";
 import { Link, useSearchParams } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import moment from "moment";
@@ -291,14 +292,7 @@ export default function MyTasks() {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-center">
-                    <FaSpinner className="animate-spin text-6xl text-accent mx-auto mb-4" />
-                    <p className="text-xl font-semibold text-muted-foreground">Loading tasks...</p>
-                </div>
-            </div>
-        );
+        return <LoadingScreen message="Loading your tasks..." submessage="Fetching deliverables and priority lists" />;
     }
 
     return (

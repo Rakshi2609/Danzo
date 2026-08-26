@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { FaSave, FaTimes, FaCalendar, FaUser, FaFlag, FaSync } from 'react-icons/fa';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function CreateRecurringTask() {
   const navigate = useNavigate();
@@ -123,11 +124,7 @@ export default function CreateRecurringTask() {
   };
 
   if (loadingUsers) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <LoadingScreen message="Loading automation settings..." submessage="Preparing recurring frequency & schedule options" />;
   }
 
   return (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { userService } from '../services/taskService';
 import toast from 'react-hot-toast';
 import { FaCrown, FaUserShield, FaUserTie, FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -48,11 +49,7 @@ export default function AdminPanel() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-3 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <LoadingScreen message="Loading administration console..." submessage="Fetching user directory & role policies" />;
   }
 
   return (

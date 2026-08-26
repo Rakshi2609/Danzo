@@ -22,6 +22,7 @@ import {
   Clock,
   Shuffle
 } from 'lucide-react';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 const PROFILE_BACKGROUNDS = [
   '/profile/_s30qa.gif',
@@ -147,11 +148,7 @@ export default function Profile() {
   const role = profileData?.role || user?.role || 'Member';
 
   if (loading && !profileData) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-3 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <LoadingScreen message="Loading user profile..." submessage="Fetching attendance records & activity history" />;
   }
 
   return (
