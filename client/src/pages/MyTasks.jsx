@@ -281,9 +281,9 @@ export default function MyTasks() {
     }
 
     return (
-        <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
+        <div className="min-h-screen bg-transparent p-2 sm:p-3 lg:p-4">
             <motion.div
-                className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative"
+                className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -296,7 +296,7 @@ export default function MyTasks() {
                     </h2>
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200"
+                        className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200 cursor-pointer"
                         title="Toggle Filters"
                     >
                         <FaFilter className="text-accent text-lg" />
@@ -305,7 +305,7 @@ export default function MyTasks() {
 
                 {showFilters && (
                 <motion.div
-                    className="bg-white p-3 rounded-xl shadow-xs border border-border mb-4 space-y-3 relative z-10"
+                    className="bg-neutral-50 dark:bg-neutral-950 p-3 rounded-xl shadow-xs border border-border mb-4 space-y-3 relative z-10"
                     variants={itemVariants}
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -318,7 +318,7 @@ export default function MyTasks() {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="flex-1 flex-1 border border-border rounded-lg px-2 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white hover:border-zinc-300 transition-colors"
+                            className="flex-1 border border-border rounded-lg px-2 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
                         >
                             <option value="none">Sort: Default</option>
                             <option value="dueDate">Due Date</option>
@@ -338,13 +338,13 @@ export default function MyTasks() {
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                                 placeholderText="Filter by Due Date"
-                                className="flex-1 border border-border px-2 py-2 text-xs sm:text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white hover:border-zinc-300 transition-colors"
+                                className="flex-1 border border-border px-2 py-2 text-xs sm:text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
                                 wrapperClassName="flex-1"
                             />
                             {selectedDate && (
                                 <motion.button
                                     onClick={() => setSelectedDate(null)}
-                                    className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0"
+                                    className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0 cursor-pointer"
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                 >
@@ -358,12 +358,12 @@ export default function MyTasks() {
                     <div className="w-full">
                         <motion.button
                             onClick={() => setShowCompleted((v) => !v)}
-                            className="w-full inline-flex items-center justify-center gap-2 bg-white border border-border text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors text-xs sm:text-sm font-medium"
+                            className="w-full inline-flex items-center justify-center gap-2 bg-white dark:bg-neutral-900 border border-border text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors text-xs sm:text-sm font-medium cursor-pointer"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             title={showCompleted ? "Show Pending Tasks" : "Show Completed Tasks"}
                         >
-                            {showCompleted ? <FaToggleOn className="text-green-600" /> : <FaToggleOff className="text-gray-400" />}
+                            {showCompleted ? <FaToggleOn className="text-green-600" /> : <FaToggleOff className="text-neutral-400" />}
                             {showCompleted ? "Showing Completed" : "Show Completed"}
                         </motion.button>
                     </div>
@@ -383,7 +383,7 @@ export default function MyTasks() {
                                 </motion.h3>
 
                                 {pendingTasks.length === 0 ? (
-                                    <motion.p className="text-gray-600 italic text-center py-4">
+                                    <motion.p className="text-muted-foreground italic text-center py-4">
                                         No pending tasks found. Time to relax!
                                     </motion.p>
                                 ) : (
@@ -394,7 +394,7 @@ export default function MyTasks() {
                                           .map((task, index) => (
                                             <motion.li
                                                 key={task._id || index}
-                                                className={`bg-white border-l-4 ${getPriorityBorderColor(task.priority)} p-3 rounded-lg shadow-md transition-all duration-300`}
+                                                className={`bg-white dark:bg-neutral-900 border border-border border-l-4 ${getPriorityBorderColor(task.priority)} p-3 rounded-lg shadow-sm transition-all duration-300`}
                                                 variants={taskCardVariants}
                                                 initial="hidden"
                                                 animate="visible"
@@ -402,7 +402,7 @@ export default function MyTasks() {
                                             >
                                                 <div>
                                                     <h4 className="text-base font-semibold text-foreground break-words">{task.title}</h4>
-                                                    <p className="text-sm font-medium text-gray-600 break-words">{task.description}</p>
+                                                    <p className="text-sm font-medium text-muted-foreground break-words">{task.description}</p>
                                                     {task.recurringTaskId && (
                                                         <p className="text-xs text-accent font-medium flex items-center gap-1 mt-1">
                                                             <span className="bg-muted px-2 py-1 rounded text-xs">🔁 Recurring</span>
@@ -562,14 +562,14 @@ export default function MyTasks() {
 
             {/* Time Tracking Modal */}
             {showTimeModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-xl shadow-xs max-w-md w-full p-6"
+                        className="bg-white dark:bg-neutral-900 border border-border rounded-xl shadow-xl max-w-md w-full p-6 text-foreground"
                     >
                         <h3 className="text-2xl font-bold text-foreground mb-4">Track Your Time</h3>
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-muted-foreground mb-4">
                             Record what time you started and finished this task today.
                         </p>
                         <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6">
@@ -588,7 +588,7 @@ export default function MyTasks() {
                                     type="time"
                                     value={timeData.startTime}
                                     onChange={(e) => setTimeData({ ...timeData, startTime: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                                    className="w-full border border-border rounded-lg p-2.5 bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-accent/40 focus:border-accent"
                                 />
                             </div>
                             
@@ -600,7 +600,7 @@ export default function MyTasks() {
                                     type="time"
                                     value={timeData.endTime}
                                     onChange={(e) => setTimeData({ ...timeData, endTime: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                                    className="w-full border border-border rounded-lg p-2.5 bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-accent/40 focus:border-accent"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
                                     If you don't provide an end time, it will be set to now.

@@ -335,16 +335,16 @@ export default function TaskDetail() {
       {/* Task Details Card */}
       <motion.div 
         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-        className="bg-white rounded-xl shadow-xs border-t-2 border-border p-4 sm:p-6 hover:shadow-xs transition-shadow duration-300"
+        className="bg-white dark:bg-neutral-900 rounded-xl shadow-xs border border-border p-4 sm:p-6 transition-shadow duration-300"
       >
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
           <div className="flex-1 w-full">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">{task.title}</h1>
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-sm ${getPriorityColor(task.priority)}`}>
+              <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-xs ${getPriorityColor(task.priority)}`}>
                 {task.priority} Priority
               </span>
-              <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-sm ${getStatusColor(task.status)}`}>
+              <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-xs ${getStatusColor(task.status)}`}>
                 {task.status}
               </span>
             </div>
@@ -356,7 +356,7 @@ export default function TaskDetail() {
               {task.status === 'Pending' && (
                 <button
                   onClick={() => handleStatusChange('In Progress')}
-                  className="px-3 sm:px-4 py-2 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 transition-colors flex-1 sm:flex-initial whitespace-nowrap font-medium"
+                  className="px-3 sm:px-4 py-2 bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 transition-colors flex-1 sm:flex-initial whitespace-nowrap font-medium cursor-pointer"
                 >
                   Start Task
                 </button>
@@ -364,7 +364,7 @@ export default function TaskDetail() {
               {task.status === 'In Progress' && (
                 <button
                   onClick={() => handleStatusChange('Completed')}
-                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white text-sm sm:text-base rounded-lg hover:from-green-700 hover:to-green-800 shadow-md hover:shadow-lg transition-all duration-200 flex-1 sm:flex-initial whitespace-nowrap font-medium"
+                  className="px-3 sm:px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base rounded-lg shadow-xs transition-all duration-200 flex-1 sm:flex-initial whitespace-nowrap font-medium cursor-pointer"
                 >
                   Mark Complete
                 </button>
@@ -375,51 +375,53 @@ export default function TaskDetail() {
 
         {/* Task Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-border">
+          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
             <div className="bg-muted p-2 rounded-lg">
               <FiCalendar className="text-accent" size={18} />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-gray-500">Due Date</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Due Date</p>
               <p className="text-sm sm:text-base text-foreground font-medium">
                 {moment(task.dueDate).format('MMM DD, YYYY')}
-                <span className={`ml-2 text-xs sm:text-sm ${moment(task.dueDate).isBefore(moment(), 'day') && task.status !== 'Completed' ? 'text-red-600' : 'text-gray-500'}`}>
+                <span className={`ml-2 text-xs sm:text-sm ${moment(task.dueDate).isBefore(moment(), 'day') && task.status !== 'Completed' ? 'text-red-500 font-semibold' : 'text-muted-foreground'}`}>
                   ({moment(task.dueDate).fromNow()})
                 </span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <FiUser className="text-gray-400" size={18} />
+          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
+            <div className="bg-muted p-2 rounded-lg">
+              <FiUser className="text-muted-foreground" size={18} />
+            </div>
             <div>
-              <p className="text-xs sm:text-sm text-gray-500">Assigned To</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Assigned To</p>
               <p className="text-sm sm:text-base text-foreground font-medium">
                 {task.assignedTo?.displayName || task.assignedTo?.email}
-                {isAssignedToMe && <span className="ml-2 text-accent text-xs sm:text-sm">(You)</span>}
+                {isAssignedToMe && <span className="ml-2 text-accent text-xs sm:text-sm font-semibold">(You)</span>}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <FiUser className="text-green-600" size={18} />
+          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg">
+              <FiUser className="text-emerald-600 dark:text-emerald-400" size={18} />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-gray-500">Created By</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Created By</p>
               <p className="text-sm sm:text-base text-foreground font-medium">
                 {task.createdBy?.displayName || task.createdBy?.email}
-                {isCreatedByMe && <span className="ml-2 text-accent text-xs sm:text-sm">(You)</span>}
+                {isCreatedByMe && <span className="ml-2 text-accent text-xs sm:text-sm font-semibold">(You)</span>}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-100">
-            <div className="bg-gray-100 p-2 rounded-lg">
-              <FiClock className="text-gray-600" size={18} />
+          <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
+            <div className="bg-muted p-2 rounded-lg">
+              <FiClock className="text-muted-foreground" size={18} />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-gray-500">Created</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Created</p>
               <p className="text-sm sm:text-base text-foreground font-medium">{moment(task.createdAt).format('MMM DD, YYYY')}</p>
             </div>
           </div>
@@ -428,12 +430,12 @@ export default function TaskDetail() {
           {task.status === 'Completed' && (task.actualStartTime || task.actualEndTime) && (
             <>
               {task.actualStartTime && (
-                <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100">
-                  <div className="bg-cyan-100 p-2 rounded-lg">
-                    <FiClock className="text-cyan-600" size={18} />
+                <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
+                  <div className="bg-cyan-500/10 border border-cyan-500/20 p-2 rounded-lg">
+                    <FiClock className="text-cyan-600 dark:text-cyan-400" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-500">Work Started</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Work Started</p>
                     <p className="text-sm sm:text-base text-foreground font-medium">
                       {moment(task.actualStartTime).format('MMM DD, YYYY h:mm A')}
                     </p>
@@ -441,12 +443,12 @@ export default function TaskDetail() {
                 </div>
               )}
               {task.actualEndTime && (
-                <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-gradient-to-r from-teal-50 to-green-50 border border-teal-100">
-                  <div className="bg-teal-100 p-2 rounded-lg">
-                    <FiClock className="text-teal-600" size={18} />
+                <div className="flex items-center gap-2 sm:gap-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-950 border border-border">
+                  <div className="bg-teal-500/10 border border-teal-500/20 p-2 rounded-lg">
+                    <FiClock className="text-teal-600 dark:text-teal-400" size={18} />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-500">Work Finished</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Work Finished</p>
                     <p className="text-sm sm:text-base text-foreground font-medium">
                       {moment(task.actualEndTime).format('MMM DD, YYYY h:mm A')}
                     </p>
@@ -459,42 +461,42 @@ export default function TaskDetail() {
 
         {/* Description */}
         {task.description && (
-          <div className="border-t pt-4 mt-4">
+          <div className="border-t border-border pt-4 mt-4">
             <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-              <div className="w-1 h-5 bg-gradient-to-b bg-accent rounded-full"></div>
+              <div className="w-1 h-5 bg-accent rounded-full"></div>
               Description
             </h3>
-            <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-lg border border-gray-100">{task.description}</p>
+            <p className="text-sm sm:text-base text-foreground/90 whitespace-pre-wrap leading-relaxed bg-neutral-50 dark:bg-neutral-950 p-4 rounded-xl border border-border">{task.description}</p>
           </div>
         )}
 
         {/* Subtasks */}
         {(task.subtasks?.length > 0 || isAssignedToMe || isCreatedByMe) && (
-          <div className="border-t pt-4 mt-4">
+          <div className="border-t border-border pt-4 mt-4">
             <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-              <div className="w-1 h-5 bg-gradient-to-b bg-accent rounded-full"></div>
+              <div className="w-1 h-5 bg-accent rounded-full"></div>
               Follow-up Subtasks
             </h3>
             
             <div className="space-y-2 mb-4">
               {task.subtasks?.map((st) => (
-                <div key={st._id} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                <div key={st._id} className="flex items-center justify-between p-2.5 sm:p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-border rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <input 
                       type="checkbox" 
                       checked={st.isCompleted} 
                       onChange={() => handleToggleSubtask(st._id)}
                       disabled={!isAssignedToMe && !isCreatedByMe}
-                      className="w-5 h-5 text-accent rounded border-gray-300 focus:ring-accent/40 cursor-pointer"
+                      className="w-4 h-4 text-primary rounded border-border focus:ring-primary/40 cursor-pointer accent-primary"
                     />
-                    <span className={`text-sm sm:text-base text-foreground truncate ${st.isCompleted ? 'line-through text-gray-500' : ''}`}>
+                    <span className={`text-sm sm:text-base text-foreground truncate ${st.isCompleted ? 'line-through text-muted-foreground' : ''}`}>
                       {st.title}
                     </span>
                   </div>
                   {(isAssignedToMe || isCreatedByMe) && (
                     <button 
                       onClick={() => handleDeleteSubtask(st._id)}
-                      className="ml-2 text-gray-400 hover:text-red-500 p-1"
+                      className="ml-2 text-muted-foreground hover:text-rose-500 p-1 cursor-pointer transition-colors"
                     >
                       <FiTrash2 size={16} />
                     </button>
@@ -503,7 +505,7 @@ export default function TaskDetail() {
               ))}
               
               {task.subtasks?.length === 0 && (
-                <p className="text-sm text-gray-500 italic p-2">No subtasks added yet.</p>
+                <p className="text-sm text-muted-foreground italic p-2">No subtasks added yet.</p>
               )}
             </div>
 
@@ -514,12 +516,12 @@ export default function TaskDetail() {
                   value={newSubtask}
                   onChange={(e) => setNewSubtask(e.target.value)}
                   placeholder="Add a new subtask..."
-                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60"
+                  className="flex-1 px-3.5 py-2 text-sm border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
                   type="submit"
                   disabled={!newSubtask.trim()}
-                  className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   Add
                 </button>
@@ -532,7 +534,7 @@ export default function TaskDetail() {
       {/* Comments Section */}
       <motion.div 
         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-        className="bg-white rounded-xl shadow-xs border-t-2 border-border p-4 sm:p-6 hover:shadow-xs transition-shadow duration-300"
+        className="bg-white dark:bg-neutral-900 rounded-xl shadow-xs border border-border p-4 sm:p-6 transition-shadow duration-300"
       >
         <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
           <div className="bg-muted p-2 rounded-lg">
@@ -548,14 +550,14 @@ export default function TaskDetail() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={isAssignedToMe ? "Add a comment or update..." : "Add a follow-up comment..."}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60 transition-all"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-border rounded-xl bg-neutral-50 dark:bg-neutral-950 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all resize-none"
               rows="3"
             />
             <div className="flex justify-end mt-2 sm:mt-3">
               <button
                 type="submit"
                 disabled={submitting || !comment.trim()}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-primary-foreground text-sm sm:text-base rounded-lg hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer shadow-xs"
               >
                 {submitting ? 'Posting...' : 'Post Comment'}
               </button>
@@ -568,11 +570,11 @@ export default function TaskDetail() {
           <div className="space-y-3 sm:space-y-4">
           {updates.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
-              <div className="bg-gray-100 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <FiMessageSquare className="text-gray-400" size={32} />
+              <div className="bg-neutral-100 dark:bg-neutral-800 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <FiMessageSquare className="text-muted-foreground" size={32} />
               </div>
-              <p className="text-gray-500 text-sm sm:text-base">No comments or updates yet</p>
-              <p className="text-gray-400 text-xs sm:text-sm mt-1">Be the first to comment!</p>
+              <p className="text-muted-foreground text-sm sm:text-base">No comments or updates yet</p>
+              <p className="text-muted-foreground/60 text-xs sm:text-sm mt-1">Be the first to comment!</p>
             </div>
           ) : (
             updates.map((update, index) => (
@@ -581,13 +583,13 @@ export default function TaskDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                className="flex gap-2 sm:gap-3 p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-border hover:shadow-xs transition-shadow duration-200"
               >
                 {/* User Avatar */}
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0 shadow-md ring-2 ring-white ${getAvatarColor(update.userId?.email || update.userId?.displayName)}`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0 shadow-xs ring-2 ring-border ${getAvatarColor(update.userId?.email || update.userId?.displayName)}`}
                 >
                   {getInitials(update.userId?.displayName, update.userId?.email).toUpperCase()}
                 </motion.div>
@@ -603,12 +605,12 @@ export default function TaskDetail() {
                       {update.userId?._id === task.createdBy?._id && (
                         <span className="text-xs bg-muted text-foreground px-2 py-0.5 rounded-full font-medium">Creator</span>
                       )}
-                      <span className="text-xs sm:text-sm text-gray-500">
+                      <span className="text-xs sm:text-sm text-muted-foreground">
                         {moment(update.createdAt).fromNow()}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm sm:text-base text-muted-foreground break-words leading-relaxed">{formatUpdateMessage(update)}</p>
+                  <p className="text-sm sm:text-base text-foreground/90 break-words leading-relaxed">{formatUpdateMessage(update)}</p>
                   
                   {/* Reactions */}
                   <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -623,15 +625,15 @@ export default function TaskDetail() {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleReaction(update._id, emoji)}
-                            className={`px-2 py-1 rounded-full text-sm transition-all ${
+                            className={`px-2 py-1 rounded-full text-sm transition-all cursor-pointer ${
                               hasReacted 
-                                ? 'bg-muted border-2 border-accent/60' 
-                                : 'bg-gray-100 border border-gray-200 hover:bg-gray-200'
+                                ? 'bg-primary/10 border-2 border-primary' 
+                                : 'bg-neutral-100 dark:bg-neutral-800 border border-border hover:bg-neutral-200 dark:hover:bg-neutral-700'
                             }`}
                           >
                             {emoji}
                             {reactors.length > 0 && (
-                              <span className={`ml-1 text-xs font-medium ${hasReacted ? 'text-accent' : 'text-gray-600'}`}>
+                              <span className={`ml-1 text-xs font-semibold ${hasReacted ? 'text-primary' : 'text-muted-foreground'}`}>
                                 {reactors.length}
                               </span>
                             )}
@@ -650,17 +652,17 @@ export default function TaskDetail() {
 
       {/* Time Tracking Modal */}
       {showTimeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xs max-w-md w-full p-6"
+            className="bg-white dark:bg-neutral-900 border border-border rounded-2xl shadow-xl max-w-md w-full p-6"
           >
             <h3 className="text-2xl font-bold text-foreground mb-4">Track Your Time</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4 text-sm">
               Record what time you started and finished this task today.
             </p>
-            <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6">
+            <div className="bg-neutral-50 dark:bg-neutral-950 border border-border rounded-xl p-3 mb-6">
               <p className="text-sm text-foreground flex items-center gap-2">
                 <FiCalendar className="text-accent" />
                 <span className="font-semibold">Date: {new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}</span>
@@ -669,28 +671,28 @@ export default function TaskDetail() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Start Time (Optional)
                 </label>
                 <input
                   type="time"
                   value={timeData.startTime}
                   onChange={(e) => setTimeData({ ...timeData, startTime: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                  className="w-full border border-border rounded-lg p-2.5 bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-primary/30"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   End Time (Optional)
                 </label>
                 <input
                   type="time"
                   value={timeData.endTime}
                   onChange={(e) => setTimeData({ ...timeData, endTime: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                  className="w-full border border-border rounded-lg p-2.5 bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-primary/30"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   If you don't provide an end time, it will be set to now.
                 </p>
               </div>
@@ -699,13 +701,13 @@ export default function TaskDetail() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleTimeModalCancel}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-muted-foreground hover:bg-gray-50 font-medium transition-colors"
+                className="flex-1 px-4 py-2.5 border border-border rounded-lg text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCompleteWithTime}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+                className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-zinc-800 font-medium transition-colors cursor-pointer shadow-xs"
               >
                 Complete Task
               </button>

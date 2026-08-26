@@ -37,9 +37,9 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
   };
 
   return (
-    <div className="relative z-10 p-4 sm:p-5 bg-white rounded-xl border border-border shadow-xs">
+    <div className="relative z-10 p-4 sm:p-5 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs">
       <div className="flex items-center gap-2 mb-3">
-        <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-50 text-emerald-600">
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
           <FaWhatsapp className="text-sm" />
         </span>
         <div>
@@ -59,13 +59,13 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="918660677696"
-            className="flex-1 h-9 px-3 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-zinc-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 h-9 px-3 rounded-lg border border-border bg-neutral-50 dark:bg-neutral-950 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={saving}
           />
           <button
             onClick={save}
             disabled={saving}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-zinc-800 active:bg-zinc-950 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition-all hover:bg-zinc-800 active:bg-zinc-950 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
           >
             <FaCheck className="text-xs" /> {saving ? "Saving..." : "Save"}
           </button>
@@ -84,7 +84,7 @@ const WhatsAppPhoneCard = ({ user, onUpdated }) => {
           </p>
           <button
             onClick={() => { setEditing(true); }}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-white px-3 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-zinc-50 active:bg-zinc-100"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-white dark:bg-neutral-900 px-3 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 active:bg-neutral-200 cursor-pointer"
           >
             <FaPencilAlt className="text-[10px]" /> {phone ? "Change" : "Add Number"}
           </button>

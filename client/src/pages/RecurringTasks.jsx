@@ -100,9 +100,9 @@ export default function RecurringTasks() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
+    <div className="min-h-screen bg-transparent p-2 sm:p-3 lg:p-4">
       <motion.div
-        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative overflow-hidden"
+        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -117,7 +117,7 @@ export default function RecurringTasks() {
             onClick={handleTriggerNow}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all shadow-lg text-sm font-medium"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all shadow-xs text-sm font-medium cursor-pointer"
           >
             <FaSync className="text-sm" />
             <span className="hidden sm:inline">Generate Now</span>
@@ -125,10 +125,10 @@ export default function RecurringTasks() {
         </motion.div>
 
         <motion.div 
-          className="bg-muted/50 p-3 sm:p-4 rounded-xl shadow-md border border-border mb-6 relative z-10"
+          className="bg-neutral-50 dark:bg-neutral-950 p-3 sm:p-4 rounded-xl shadow-xs border border-border mb-6 relative z-10"
           variants={itemVariants}
         >
-          <p className="text-sm text-foreground">
+          <p className="text-sm text-foreground leading-relaxed">
             <strong>About Recurring Reminders:</strong> These reminders automatically create tasks daily at 9 PM. Click "Generate Now" to manually create tasks. You have <strong>{tasks.length}</strong> recurring {tasks.length === 1 ? 'reminder' : 'reminders'}.
           </p>
         </motion.div>
@@ -138,16 +138,16 @@ export default function RecurringTasks() {
             className="text-center py-12"
             variants={itemVariants}
           >
-            <FaSync className="text-6xl text-gray-300 mx-auto mb-4" />
+            <FaSync className="text-6xl text-neutral-300 dark:text-neutral-700 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">No Recurring Reminders Yet</h3>
-            <p className="text-gray-600">Create your first recurring reminder to automate task generation</p>
+            <p className="text-muted-foreground">Create your first recurring reminder to automate task generation</p>
           </motion.div>
         ) : (
           <ul className="space-y-4">
             {tasks.map((task, index) => (
               <motion.li
                 key={task._id || index}
-                className="bg-white border-l-4 border-accent p-4 rounded-lg border-y-0 border-r-0 border-border bg-white relative z-10"
+                className="bg-white dark:bg-neutral-900 border border-border border-l-4 border-l-accent p-4 rounded-lg shadow-sm relative z-10"
                 variants={taskCardVariants}
                 initial="hidden"
                 animate="visible"
@@ -165,22 +165,22 @@ export default function RecurringTasks() {
                       </span>
                     )}
                     {!task.isActive && (
-                      <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-medium">Paused</span>
+                      <span className="text-xs bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-400 px-2 py-1 rounded font-medium">Paused</span>
                     )}
                   </div>
                   
                   {task.description && (
-                    <p className="text-sm text-gray-600 mb-2 break-words italic">"{task.description}"</p>
+                    <p className="text-sm text-muted-foreground mb-2 break-words italic">"{task.description}"</p>
                   )}
                   
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-600 flex items-center gap-1">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <FaUserCircle className="text-muted-foreground" />
                       <span>Assigned to:</span>
                       <span className="font-medium text-accent">{task.assignedTo?.displayName || task.assignedTo?.email}</span>
                     </p>
                     
-                    <p className="text-xs text-gray-600 flex items-center gap-1 flex-wrap">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
                       <FaCalendarAlt className="text-muted-foreground" />
                       <span><strong>From:</strong> {format(new Date(task.startDate), 'MMM dd, yyyy')}</span>
                       <span className="mx-1">•</span>
@@ -188,8 +188,8 @@ export default function RecurringTasks() {
                     </p>
                     
                     {(task.taskTemplate?.startTime || task.taskTemplate?.endTime) && (
-                      <p className="text-xs text-gray-600 flex items-center gap-1">
-                        <FaClock className="text-green-500" />
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <FaClock className="text-emerald-500" />
                         <span><strong>Time:</strong></span>
                         {task.taskTemplate.startTime && <span>{task.taskTemplate.startTime}</span>}
                         {task.taskTemplate.startTime && task.taskTemplate.endTime && <span> - </span>}

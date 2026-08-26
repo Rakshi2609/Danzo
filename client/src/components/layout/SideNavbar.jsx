@@ -12,10 +12,11 @@ import {
   FaPlus,
   FaUserCircle,
 } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
 // Contract:
 // props: { isOpen: boolean, onClose?: () => void }
-// Renders a responsive side navigation. On mobile, it overlays and can be closed.
+// Renders a responsive side navigation with crisp dark & light mode styling.
 const SideNavbar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const [openGroups, setOpenGroups] = useState({
@@ -29,10 +30,6 @@ const SideNavbar = ({ isOpen, onClose }) => {
       [index]: !prev[index]
     }));
   };
-
-  const linkBaseClasses =
-    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium hover:bg-muted/50 transition-colors";
-  const activeClasses = "bg-muted text-accent";
 
   const navGroups = useMemo(
     () => {
@@ -75,61 +72,71 @@ const SideNavbar = ({ isOpen, onClose }) => {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/30 transition-opacity z-30 ${
+        className={`fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity z-30 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       />
 
-      {/* Sidebar - Overlay Mode */}
+      {/* Sidebar - Drawer Overlay */}
       <aside
-        className={`bg-white border-r border-gray-200 w-72
-          fixed top-16 left-0 z-40 overflow-y-auto custom-scrollbar
-          h-[calc(100vh-4rem)]
+        className={`bg-white dark:bg-neutral-900 border-r border-border w-72
+          fixed top-14 left-0 z-40 overflow-y-auto custom-scrollbar
+          h-[calc(100vh-3.5rem)] shadow-xl shadow-black/10 dark:shadow-black/40
           transition-transform duration-300 ease-in-out
           ${
             isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
-        <div className="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
-          <span className="font-semibold text-foreground">Navigation</span>
+        {/* Sidebar Header */}
+        <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            Workspace Menu
+          </span>
           {onClose && (
             <button
-              className="inline-flex items-center px-2 py-1 text-sm rounded hover:bg-gray-100"
+              className="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
               onClick={onClose}
               aria-label="Close sidebar"
             >
-              ✕
+              <IoClose className="text-lg" />
             </button>
           )}
         </div>
-        <nav className="p-3 space-y-2">
+
+        {/* Nav Groups */}
+        <nav className="p-3 space-y-3">
           {navGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className="border-b border-gray-100 pb-2 last:border-b-0">
+            <div key={groupIndex} className="border-b border-border/60 pb-3 last:border-b-0">
               <button
                 onClick={() => toggleGroup(groupIndex)}
-                className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-gray-50 rounded-lg transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-bold text-neutral-500 dark:text-neutral-400 hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800/60 rounded-lg transition-colors cursor-pointer"
               >
-                <span className="uppercase tracking-wider">{group.title}</span>
+                <span className="uppercase tracking-wider text-[11px]">{group.title}</span>
                 {openGroups[groupIndex] ? (
-                  <FaChevronDown className="text-gray-400 text-xs" />
+                  <FaChevronDown className="text-neutral-400 dark:text-neutral-500 text-[10px]" />
                 ) : (
-                  <FaChevronRight className="text-gray-400 text-xs" />
+                  <FaChevronRight className="text-neutral-400 dark:text-neutral-500 text-[10px]" />
                 )}
               </button>
+
               {openGroups[groupIndex] && (
                 <div className="mt-1 space-y-1">
                   {group.links.map(({ to, label, icon }) => (
                     <NavLink
                       key={to}
                       to={to}
-                      className={({ isActive }) =>
-                        `${linkBaseClasses} ${isActive ? activeClasses : "text-muted-foreground"}`
-                      }
                       onClick={onClose}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                          isActive
+                            ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
+                            : "text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800/80 hover:text-foreground"
+                        }`
+                      }
                     >
-                      <span className="text-base">{icon}</span>
-                      <span>{label}</span>
+                      <span className="text-base shrink-0 opacity-80">{icon}</span>
+                      <span className="truncate">{label}</span>
                     </NavLink>
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '../services/taskService';
 import toast from 'react-hot-toast';
-import { FaCrown } from 'react-icons/fa';
+import { FaCrown, FaUserShield, FaUserTie, FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -37,117 +37,165 @@ export default function AdminPanel() {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'Admin':
-        return 'bg-red-100 text-red-800';
+        return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
       case 'Manager':
-        return 'bg-muted text-foreground';
+        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
       case 'Member':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
       default:
-        return 'bg-gray-100 text-foreground';
+        return 'bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 border border-neutral-500/20';
     }
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-3 border-neutral-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <FaCrown className="text-yellow-500 text-3xl" />
-        <h2 className="text-3xl font-bold text-foreground">Admin Panel</h2>
+    <div className="space-y-6 max-w-6xl mx-auto pb-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xs">
+            <FaCrown className="text-xl" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Admin Console</h2>
+            <p className="text-xs text-muted-foreground">Manage workspace members, roles, and permissions</p>
+          </div>
+        </div>
+        <span className="text-xs font-bold px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-border">
+          {users.length} Registered User{users.length === 1 ? '' : 's'}
+        </span>
       </div>
 
-      <p className="text-gray-600">Manage user roles and permissions</p>
-
-      {/* Users Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Current Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Change Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    {user.photoURL && (
-                      <img
-                        src={user.photoURL}
-                        alt={user.displayName}
-                        className="h-10 w-10 rounded-full mr-3"
-                      />
-                    )}
-                    <div className="text-sm font-medium text-foreground">
-                      {user.displayName}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{user.email}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <select
-                    value={user.role}
-                    onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
-                  >
-                    <option value="Member">Member</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    user.isActive 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
+      {/* Users Table Card */}
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-border shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-neutral-50/80 dark:bg-neutral-950/60">
+              <tr>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Member
+                </th>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  WhatsApp Phone
+                </th>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Current Role
+                </th>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Change Role
+                </th>
+                <th className="px-6 py-3.5 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border bg-white dark:bg-neutral-900">
+              {users.map((u) => (
+                <tr key={u._id} className="hover:bg-muted/40 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      {u.photoURL ? (
+                        <img
+                          src={u.photoURL}
+                          alt={u.displayName}
+                          className="h-9 w-9 rounded-full object-cover border border-border"
+                        />
+                      ) : (
+                        <div className="h-9 w-9 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-foreground font-bold border border-border">
+                          {u.displayName ? u.displayName.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                      )}
+                      <div className="text-sm font-semibold text-foreground">
+                        {u.displayName || 'Unknown'}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-muted-foreground">{u.email}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-xs font-mono text-muted-foreground">
+                      {u.phone ? `+${u.phone}` : <span className="italic opacity-60">None</span>}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 inline-flex text-xs leading-4 font-bold rounded-lg ${getRoleBadgeColor(u.role)}`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                      className="border border-border rounded-lg px-2.5 py-1.5 text-xs font-medium bg-neutral-50 dark:bg-neutral-950 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+                    >
+                      <option value="Member">Member</option>
+                      <option value="Manager">Manager</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg ${
+                      u.isActive 
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
+                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                    }`}>
+                      {u.isActive ? <FaCheckCircle className="text-[10px]" /> : <FaTimesCircle className="text-[10px]" />}
+                      <span>{u.isActive ? 'Active' : 'Inactive'}</span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Role Descriptions */}
-      <div className="bg-muted/50 border border-border rounded-lg p-6">
-        <h3 className="font-semibold text-lg mb-3">Role Permissions</h3>
-        <div className="space-y-2 text-sm">
-          <div>
-            <span className="font-medium text-red-700">Admin:</span>
-            <span className="text-muted-foreground"> Full access. Can manage user roles and permissions.</span>
+      <div className="bg-white dark:bg-neutral-900 border border-border rounded-2xl p-6 shadow-xs">
+        <h3 className="font-bold text-base text-foreground mb-4 flex items-center gap-2">
+          <FaUserShield className="text-primary" />
+          <span>Role Permission Matrix</span>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+              <h4 className="text-sm font-bold text-rose-600 dark:text-rose-400">Admin</h4>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Full workspace control. Manage user roles, access control, recurring bots, and workspace settings.
+            </p>
           </div>
-          <div>
-            <span className="font-medium text-accent">Manager:</span>
-            <span className="text-muted-foreground"> Can create and manage tasks for team members.</span>
+
+          <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              <h4 className="text-sm font-bold text-blue-600 dark:text-blue-400">Manager</h4>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Delegate and assign tasks to teammates, monitor follow-up completion, and configure recurring schedules.
+            </p>
           </div>
-          <div>
-            <span className="font-medium text-green-700">Member:</span>
-            <span className="text-muted-foreground"> Can create tasks, update own task status, and add comments.</span>
+
+          <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <h4 className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Member</h4>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Create and execute tasks, log actual task time, update progress, and maintain login check-in streaks.
+            </p>
           </div>
         </div>
       </div>

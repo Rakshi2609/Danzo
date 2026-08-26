@@ -185,7 +185,7 @@ export default function EditTask() {
               Edit Task
             </h1>
           </div>
-          <p className="text-sm sm:text-base text-gray-600 ml-16">Update the task details below</p>
+          <p className="text-sm sm:text-base text-muted-foreground ml-16">Update the task details below</p>
         </div>
 
         {/* Form Card */}
@@ -193,18 +193,18 @@ export default function EditTask() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden"
+          className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xs border border-border overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-zinc-700 to-zinc-900 p-6">
+          <div className="bg-neutral-900 dark:bg-neutral-950 p-6 border-b border-border">
             <h2 className="text-white text-xl font-semibold">Task Information</h2>
-            <p className="text-zinc-300 text-sm mt-1">Modify the fields you want to update</p>
+            <p className="text-neutral-400 text-sm mt-1">Modify the fields you want to update</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
             
             {/* Title Field */}
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-muted-foreground mb-2">
+              <label htmlFor="title" className="block text-sm font-semibold text-foreground mb-2">
                 Task Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -215,13 +215,13 @@ export default function EditTask() {
                 onChange={handleChange}
                 placeholder="Enter task title..."
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/30 transition-all outline-none"
               />
             </div>
 
             {/* Description Field */}
             <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-muted-foreground mb-2">
+              <label htmlFor="description" className="block text-sm font-semibold text-foreground mb-2">
                 Description
               </label>
               <textarea
@@ -231,7 +231,7 @@ export default function EditTask() {
                 onChange={handleChange}
                 placeholder="Enter task description..."
                 rows="5"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none resize-none"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/30 transition-all outline-none resize-none"
               />
             </div>
 
@@ -240,7 +240,7 @@ export default function EditTask() {
               
               {/* Due Date */}
               <div>
-                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
                   <FaCalendar className="text-accent" />
                   Due Date
                 </label>
@@ -250,13 +250,13 @@ export default function EditTask() {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
+                  className="w-full px-4 py-3 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-primary/30 transition-all outline-none"
                 />
               </div>
 
               {/* Priority */}
               <div>
-                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+                <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
                   <FaFlag className="text-orange-500" />
                   Priority
                 </label>
@@ -266,7 +266,7 @@ export default function EditTask() {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
+                    className={`w-full px-4 py-3 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 focus:ring-2 focus:ring-primary/30 transition-all outline-none appearance-none cursor-pointer font-semibold ${getPriorityColor(formData.priority)}`}
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -285,7 +285,7 @@ export default function EditTask() {
 
             {/* Assign To */}
             <div>
-              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-2">
+              <label htmlFor="assignedTo" className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
                 <FaUser className="text-muted-foreground" />
                 Assign To <span className="text-red-500">*</span>
               </label>
@@ -295,7 +295,7 @@ export default function EditTask() {
                 value={formData.assignedTo}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground focus:ring-2 focus:ring-primary/30 transition-all outline-none appearance-none cursor-pointer"
               >
                 <option value="">Select a user...</option>
                 {users.map(user => (
@@ -308,7 +308,7 @@ export default function EditTask() {
 
             {/* Subtasks */}
             <div>
-              <label className="block text-sm font-semibold text-muted-foreground mb-2">
+              <label className="block text-sm font-semibold text-foreground mb-2">
                 Follow-up Subtasks
               </label>
               <div className="flex gap-2 mb-3">
@@ -323,13 +323,13 @@ export default function EditTask() {
                     }
                   }}
                   placeholder="Add a subtask..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent/40  transition-all outline-none"
+                  className="flex-1 px-4 py-2 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary/30 transition-all outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleAddSubtask}
                   disabled={!subtaskInput.trim()}
-                  className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-zinc-800 transition-all disabled:opacity-50"
+                  className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-zinc-800 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   Add
                 </button>
@@ -337,15 +337,15 @@ export default function EditTask() {
               {formData.subtasks.length > 0 && (
                 <ul className="space-y-2">
                   {formData.subtasks.map((subtask, index) => (
-                    <li key={index} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                    <li key={index} className="flex justify-between items-center bg-neutral-50 dark:bg-neutral-950 px-3.5 py-2.5 rounded-lg border border-border">
                       <div className="flex items-center gap-2">
-                        {subtask.isCompleted && <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Completed</span>}
-                        <span className={`text-muted-foreground text-sm ${subtask.isCompleted ? 'line-through text-gray-400' : ''}`}>{subtask.title}</span>
+                        {subtask.isCompleted && <span className="text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Completed</span>}
+                        <span className={`text-foreground text-sm ${subtask.isCompleted ? 'line-through text-muted-foreground' : ''}`}>{subtask.title}</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveSubtask(index)}
-                        className="text-red-500 hover:text-red-700 text-sm font-semibold"
+                        className="text-rose-500 hover:text-rose-600 text-xs font-semibold cursor-pointer"
                       >
                         Remove
                       </button>
@@ -356,13 +356,13 @@ export default function EditTask() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-6 border-t border-gray-200">
+            <div className="flex gap-4 pt-6 border-t border-border">
               <motion.button
                 type="submit"
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r bg-primary text-primary-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs"
               >
                 {loading ? (
                   <>
@@ -371,7 +371,6 @@ export default function EditTask() {
                   </>
                 ) : (
                   <>
-                    {/* <FaSave /> */}
                     <span>Update Task</span>
                   </>
                 )}
@@ -383,7 +382,7 @@ export default function EditTask() {
                 disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-muted-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-muted text-foreground text-sm sm:text-base font-semibold rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-border cursor-pointer"
               >
                 <FaTimes />
                 Cancel
@@ -398,7 +397,7 @@ export default function EditTask() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-purple-50 border border-border rounded-xl"
+          className="mt-6 p-5 bg-neutral-50 dark:bg-neutral-950 border border-border rounded-xl"
         >
           <div className="flex items-start gap-3">
             <div className="bg-muted p-2 rounded-lg">
@@ -410,7 +409,7 @@ export default function EditTask() {
               <p className="text-sm text-foreground font-medium mb-1">
                 <strong>Note:</strong> Only the task creator can edit task details.
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground">
                 The assignee will be notified of any changes made to this task.
               </p>
             </div>

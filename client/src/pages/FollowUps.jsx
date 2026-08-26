@@ -169,9 +169,9 @@ export default function FollowUps() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-3 lg:p-4">
+    <div className="min-h-screen bg-transparent p-2 sm:p-3 lg:p-4">
       <motion.div
-        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white rounded-xl border border-border shadow-xs relative overflow-hidden"
+        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -184,7 +184,7 @@ export default function FollowUps() {
           </h2>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200"
+            className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200 cursor-pointer"
             title="Toggle Filters"
           >
             <FaFilter className="text-accent text-lg" />
@@ -192,7 +192,7 @@ export default function FollowUps() {
         </motion.div>
 
         <motion.p 
-          className="text-center text-gray-600 mb-4 relative z-10"
+          className="text-center text-muted-foreground mb-4 relative z-10"
           variants={itemVariants}
         >
           Tasks you created and assigned to others
@@ -200,7 +200,7 @@ export default function FollowUps() {
 
         {showFilters && (
         <motion.div
-          className="bg-muted/50 p-3 rounded-xl shadow-md border border-border mb-4 space-y-3 relative z-10"
+          className="bg-neutral-50 dark:bg-neutral-950 p-3 rounded-xl shadow-xs border border-border mb-4 space-y-3 relative z-10"
           variants={itemVariants}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -216,12 +216,12 @@ export default function FollowUps() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by task name, assignee name or email..."
-                className="flex-1 border border-zinc-300 px-3 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
+                className="flex-1 border border-border px-3 py-2 text-xs sm:text-sm rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
               />
               {searchTerm && (
                 <motion.button
                   onClick={() => setSearchTerm('')}
-                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0"
+                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0 cursor-pointer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -237,7 +237,7 @@ export default function FollowUps() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
+              className="flex-1 border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
             >
               <option value="none">Sort: Default</option>
               <option value="dueDate">Due Date</option>
@@ -255,13 +255,13 @@ export default function FollowUps() {
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 placeholderText="Filter by Due Date"
-                className="flex-1 border border-zinc-300 px-2 py-2 text-xs sm:text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40  text-muted-foreground bg-white hover:border-zinc-300 transition-colors"
+                className="flex-1 border border-border px-2 py-2 text-xs sm:text-sm rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
                 wrapperClassName="flex-1"
               />
               {selectedDate && (
                 <motion.button
                   onClick={() => setSelectedDate(null)}
-                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0"
+                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0 cursor-pointer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -276,7 +276,7 @@ export default function FollowUps() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-muted-foreground bg-white"
+              className="border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900"
             >
               <option value="all">All Status</option>
               <option value="Pending">Pending</option>
@@ -288,7 +288,7 @@ export default function FollowUps() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="border border-zinc-300 rounded-lg px-2 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 text-muted-foreground bg-white"
+              className="border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900"
             >
               <option value="all">All Priority</option>
               <option value="Urgent">Urgent</option>
@@ -305,9 +305,9 @@ export default function FollowUps() {
             className="text-center py-12 relative z-10"
             variants={itemVariants}
           >
-            <FaTasks className="text-6xl text-gray-300 mx-auto mb-4" />
+            <FaTasks className="text-6xl text-neutral-300 dark:text-neutral-700 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">No Follow Ups Found</h3>
-            <p className="text-gray-600">You haven't assigned any tasks yet</p>
+            <p className="text-muted-foreground">You haven't assigned any tasks yet</p>
           </motion.div>
         ) : (
           <>
@@ -315,7 +315,7 @@ export default function FollowUps() {
               {paginatedTasks.map((task, index) => (
                 <motion.li
                   key={task._id || index}
-                  className={`bg-white border-l-4 ${getPriorityBorderColor(task.priority)} p-4 rounded-lg shadow-md relative z-10`}
+                  className={`bg-white dark:bg-neutral-900 border border-border border-l-4 ${getPriorityBorderColor(task.priority)} p-4 rounded-lg shadow-sm relative z-10`}
                   variants={taskCardVariants}
                   initial="hidden"
                   animate="visible"
@@ -337,7 +337,7 @@ export default function FollowUps() {
                     </div>
 
                     {task.description && (
-                      <p className="text-sm text-gray-600 mb-2 break-words">{task.description}</p>
+                      <p className="text-sm text-muted-foreground mb-2 break-words">{task.description}</p>
                     )}
 
                     {task.recurringTaskId && (
@@ -347,7 +347,7 @@ export default function FollowUps() {
                     )}
 
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-600 flex items-center gap-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <FaCalendarAlt className="text-muted-foreground" />
                         <span>Due: {format(new Date(task.dueDate), 'MMM dd, yyyy')}</span>
                       </p>
@@ -359,7 +359,7 @@ export default function FollowUps() {
                         </span>
                       </p>
 
-                      <p className="text-xs text-gray-600 flex items-center gap-1 min-w-0">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 min-w-0">
                         <FaUserCircle className="text-muted-foreground flex-shrink-0" />
                         <span>Assigned to:</span>
                         <span className="font-medium text-accent break-all">
@@ -371,13 +371,13 @@ export default function FollowUps() {
                     <div className="mt-3 flex gap-2 justify-end">
                       <Link
                         to={`/tasks/${task._id}`}
-                        className="flex items-center justify-center bg-primary hover:bg-zinc-800 text-primary-foreground px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
+                        className="flex items-center justify-center bg-primary hover:bg-zinc-800 text-primary-foreground px-3 py-2 rounded-full shadow-xs text-xs font-medium transition-all duration-300"
                       >
                         <FaEye className="sm:mr-1" /> <span className="hidden sm:inline">View Details</span>
                       </Link>
                       <Link
                         to={`/edit-task/${task._id}`}
-                        className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-full shadow text-xs font-medium transition-all duration-300"
+                        className="flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-full shadow-xs text-xs font-medium transition-all duration-300"
                       >
                         <FaEdit className="sm:mr-1" /> <span className="hidden sm:inline">Edit</span>
                       </Link>

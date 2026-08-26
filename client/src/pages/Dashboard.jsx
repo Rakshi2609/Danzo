@@ -281,14 +281,14 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+    <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6">
       <motion.div
-        className="max-w-7xl mx-auto p-3 sm:p-5 lg:p-6 bg-white rounded-xl border border-border shadow-xs relative"
+        className="max-w-7xl mx-auto p-3 sm:p-5 lg:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-                <motion.h2
+        <motion.h2
           className="text-xl sm:text-2xl font-semibold tracking-tight mb-4 sm:mb-5 text-foreground flex items-center gap-2 relative z-10"
           variants={itemVariants}
         >
@@ -304,7 +304,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4 relative z-10">
           {/* Today's Due Tasks Section */}
           <motion.div
-            className="p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs"
+            className="p-3 sm:p-4 bg-neutral-50/70 dark:bg-neutral-950/50 rounded-xl border border-border shadow-xs"
             variants={itemVariants}
           >
             <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
@@ -323,7 +323,7 @@ const Dashboard = () => {
                   {(showAllToday ? todayTasks : todayTasks.slice(0, 3)).map((task, index) => (
                   <motion.li
                     key={task._id || index}
-                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
+                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -377,12 +377,12 @@ const Dashboard = () => {
 
           {/* Overdue Tasks Section */}
           <motion.div
-            className="p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs"
+            className="p-3 sm:p-4 bg-neutral-50/70 dark:bg-neutral-950/50 rounded-xl border border-border shadow-xs"
             variants={itemVariants}
           >
             <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
               <span className="flex items-center gap-1">
-                <FaExclamationTriangle className="text-xs" /> Overdue Tasks
+                <FaExclamationTriangle className="text-xs text-amber-500" /> Overdue Tasks
               </span>
               <Link to="/my-tasks" className="text-xs font-medium text-accent hover:underline">View all</Link>
             </h3>
@@ -396,7 +396,7 @@ const Dashboard = () => {
                   {(showAllOverdue ? overdueTasks : overdueTasks.slice(0, 3)).map((task, index) => (
                   <motion.li
                     key={task._id || index}
-                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
+                    className="border border-border p-2 sm:p-2.5 rounded-lg bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -450,7 +450,7 @@ const Dashboard = () => {
 
         {/* CALENDAR SECTION */}
         <motion.div
-          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs relative z-10"
+          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-neutral-50/70 dark:bg-neutral-950/50 rounded-xl border border-border shadow-xs relative z-10"
           variants={itemVariants}
         >
           <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center gap-2">
@@ -487,7 +487,7 @@ const Dashboard = () => {
           {/* Month selector */}
           <div className="flex items-center justify-between mb-3">
             <button
-              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))}
             >
               Prev
@@ -496,7 +496,7 @@ const Dashboard = () => {
               {monthCursor.toLocaleString(undefined, { month: 'long', year: 'numeric' })}
             </div>
             <button
-              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              className="h-8 px-2.5 sm:px-3 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-border rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))}
             >
               Next
@@ -524,8 +524,8 @@ const Dashboard = () => {
                 <button
                   key={idx}
                   onClick={() => navigate(`/my-tasks?date=${key}`)}
-                  className={`relative h-10 sm:h-12 rounded-md border text-left p-0.5 sm:p-1 flex flex-col justify-between transition-colors
-                    ${isCurrentMonth ? 'bg-white border-border text-foreground' : 'bg-muted/40 border-border/60 text-muted-foreground/50'}
+                  className={`relative h-10 sm:h-12 rounded-md border text-left p-0.5 sm:p-1 flex flex-col justify-between transition-colors cursor-pointer
+                    ${isCurrentMonth ? 'bg-white dark:bg-neutral-900 border-border text-foreground' : 'bg-muted/40 border-border/60 text-muted-foreground/50'}
                     ${isToday ? 'ring-2 ring-accent/50 border-accent/40' : ''}
                     hover:bg-muted/70`}
                   title={`${pending.length} pending, ${completed.length} completed`}
@@ -555,7 +555,7 @@ const Dashboard = () => {
           <div className="mt-2 sm:mt-3 grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2">
             <Link to="/my-tasks">
               <motion.button
-                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
+                className="w-full bg-white dark:bg-neutral-900 border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors cursor-pointer"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -565,7 +565,7 @@ const Dashboard = () => {
             </Link>
             <Link to="/recurring-tasks">
               <motion.button
-                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
+                className="w-full bg-white dark:bg-neutral-900 border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors cursor-pointer"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -575,7 +575,7 @@ const Dashboard = () => {
             </Link>
             <Link to="/follow-ups">
               <motion.button
-                className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
+                className="w-full bg-white dark:bg-neutral-900 border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors cursor-pointer"
                 variants={linkButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -586,7 +586,7 @@ const Dashboard = () => {
             {user?.role === 'Admin' && (
               <Link to="/admin">
                 <motion.button
-                  className="w-full bg-white border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors"
+                  className="w-full bg-white dark:bg-neutral-900 border border-border text-foreground px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-muted transition-colors cursor-pointer"
                   variants={linkButtonVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -600,7 +600,7 @@ const Dashboard = () => {
 
         {/* FOLLOWUPS - TASKS ASSIGNED BY ME */}
         <motion.div
-          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white rounded-xl border border-border shadow-xs relative z-10"
+          className="mb-3 sm:mb-4 p-3 sm:p-4 bg-neutral-50/70 dark:bg-neutral-950/50 rounded-xl border border-border shadow-xs relative z-10"
           variants={itemVariants}
         >
           <h3 className="text-sm font-semibold mb-3 text-foreground flex items-center justify-between gap-2">
@@ -619,7 +619,7 @@ const Dashboard = () => {
                 {(showAllFollowups ? assignedByMeTasks : assignedByMeTasks.slice(0, 3)).map((task, index) => (
                 <motion.li
                   key={task._id || index}
-                  className="border border-border p-2 sm:p-2.5 rounded-lg bg-white hover:border-zinc-300 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
+                  className="border border-border p-2 sm:p-2.5 rounded-lg bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 hover:bg-muted/40 transition-colors duration-150 cursor-pointer"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}

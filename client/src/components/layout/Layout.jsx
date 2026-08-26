@@ -11,7 +11,7 @@ export default function Layout({ children }) {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground transition-colors">
       {/* Navbar */}
       <Navbar 
         onMenuClick={toggleSidebar} 
