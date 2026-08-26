@@ -29,8 +29,8 @@ export const AuthProvider = ({ children }) => {
           console.log('🔵 AuthContext: Backend response received', data);
           
           setUser({ ...firebaseUser, ...data.user });
-          localStorage.setItem('token', token);
-          console.log('🔵 AuthContext: User state updated, user logged in');
+          localStorage.setItem('token', data.token || token);
+          console.log('🔵 AuthContext: User state updated with 7-day session token, user logged in');
         } catch (error) {
           console.error('❌ AuthContext: Auth error:', error);
           setUser(null);

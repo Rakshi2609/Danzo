@@ -6,16 +6,21 @@ const api = axios.create({
   timeout: 10000
 });
 
-// Request interceptor: Add auth token
+// Request interceptor: Add auth token (7-day JWT or Firebase token)
 api.interceptors.request.use(async (config) => {
   console.log('🔶 API: Request to', config.url);
-  const user = auth.currentUser;
-  if (user) {
-    console.log('🔶 API: Adding auth token to request');
-    const token = await user.getIdToken(true);
-    config.headers.Authorization = `Bearer ${token}`;
+  const storedToken = localStorage.getItem('token');
+  if (storedToken) {
+    config.headers.Authorization = `Bearer ${storedToken}`;
   } else {
-    console.log('🔶 API: No user, sending request without token');
+    const user = auth.currentUser;
+    if (user) {
+      console.log('🔶 API: Adding auth token to request');
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.log('🔶 API: No user, sending request without token');
+    }
   }
   return config;
 });
