@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { recurringTaskService, userService } from '../services/taskService';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FaSync, FaCalendarAlt, FaUserCircle, FaFlag, FaClock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import LoadingScreen from '../components/common/LoadingScreen';
 
