@@ -9,6 +9,7 @@ import { HiOutlineMenu } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Sun, Moon } from "lucide-react";
 import InstallPWA from "../InstallPWA";
+import UserStreakPopover from "../UserStreakPopover";
 import { useTheme } from "../../contexts/ThemeContext";
 
 const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
@@ -42,7 +43,7 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
           <div className="flex items-center gap-2">
             {showMenu && user && (
               <button
-                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
                 onClick={onMenuClick}
                 aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
                 aria-expanded={isSidebarOpen}
@@ -61,20 +62,12 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
-                <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg border border-border bg-muted/50 mr-1">
-                  <FaUserCircle className="text-lg text-muted-foreground" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">{user.displayName || 'User'}</span>
-                    <span className="text-[10px] font-medium uppercase tracking-wide bg-accent/10 text-accent px-1.5 py-0.5 rounded-full">
-                      {user.role || 'Member'}
-                    </span>
-                  </div>
-                </div>
-
                 <InstallPWA />
+
+                <UserStreakPopover />
 
                 <button
                   onClick={toggleTheme}
@@ -83,14 +76,6 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
                 >
                   {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-700" />}
                 </button>
-
-                <motion.button
-                  onClick={handleLogout}
-                  className="inline-flex items-center gap-2 h-9 px-3.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground shadow-xs hover:bg-zinc-800 active:bg-zinc-950 transition-colors"
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <FaSignOutAlt className="text-xs" /> Logout
-                </motion.button>
               </>
             ) : (
               <>

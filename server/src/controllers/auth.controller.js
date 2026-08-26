@@ -30,13 +30,20 @@ export const login = async (req, res) => {
       user = await User.findOne({ email });
     }
 
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
     if (!user) {
       console.log('🟣 Backend Auth: Creating new user');
       user = await User.create({
         firebaseUid: firebaseUid || `user_${Date.now()}`,
         email,
         displayName,
-        photoURL
+        photoURL,
+        loginStreak: 1,
+        longestStreak: 1,
+        lastLoginDate: today,
+        loginHistory: [todayStr]
       });
       console.log('🟣 Backend Auth: User created:', user._id);
     } else {
@@ -46,8 +53,37 @@ export const login = async (req, res) => {
       }
       user.displayName = displayName || user.displayName;
       user.photoURL = photoURL || user.photoURL;
+
+      // Calculate and update login streak
+      if (!user.loginHistory) user.loginHistory = [];
+      const lastLogin = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
+      if (lastLogin) {
+        const lastDateStr = lastLogin.toISOString().split('T')[0];
+        if (lastDateStr !== todayStr) {
+          const lastMidnight = new Date(lastLogin.getFullYear(), lastLogin.getMonth(), lastLogin.getDate());
+          const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const diffDays = Math.round((todayMidnight - lastMidnight) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            user.loginStreak = (user.loginStreak || 0) + 1;
+          } else if (diffDays > 1) {
+            user.loginStreak = 1;
+          }
+        }
+      } else {
+        user.loginStreak = 1;
+      }
+
+      if (!user.loginHistory.includes(todayStr)) {
+        user.loginHistory.push(todayStr);
+      }
+
+      if ((user.loginStreak || 1) > (user.longestStreak || 1)) {
+        user.longestStreak = user.loginStreak;
+      }
+
+      user.lastLoginDate = today;
       await user.save();
-      console.log('🟣 Backend Auth: User updated');
+      console.log('🟣 Backend Auth: User updated with streak:', user.loginStreak);
     }
 
     // Generate 7-day JWT token
