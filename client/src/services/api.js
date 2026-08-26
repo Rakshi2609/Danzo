@@ -25,19 +25,51 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response interceptor: Handle errors
+// Response interceptor: Handle errors & automatic token refresh
 api.interceptors.response.use(
   (response) => {
-    console.log('🔶 API: Response received from', response.config.url, 'Status:', response.status);
     return response;
   },
   async (error) => {
-    console.error('❌ API: Request failed', error.config?.url, 'Status:', error.response?.status);
-    if (error.response?.status === 401) {
-      console.log('❌ API: 401 Unauthorized, signing out...');
-      await auth.signOut();
-      window.location.href = '/login';
+    const originalRequest = error.config;
+    console.error('❌ API: Request failed', originalRequest?.url, 'Status:', error.response?.status);
+    
+    // If 401 Unauthorized, attempt token refresh and retry once
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+      originalRequest._retry = true;
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          console.log('🔄 API: Attempting to refresh token with Firebase...');
+          const freshIdToken = await user.getIdToken(true);
+          
+          // Exchange for 7-day JWT
+          const refreshRes = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/auth/login', {
+            token: freshIdToken,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          });
+          
+          const newToken = refreshRes.data?.token || freshIdToken;
+          localStorage.setItem('token', newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          console.log('🔄 API: Token refreshed successfully, retrying request...');
+          return api(originalRequest);
+        }
+      } catch (refreshErr) {
+        console.error('❌ API: Token refresh failed:', refreshErr.message);
+      }
+
+      // If refresh failed and user is unauthenticated
+      if (window.location.pathname !== '/login') {
+        console.log('❌ API: 401 Unauthorized, clearing session...');
+        localStorage.removeItem('token');
+        await auth.signOut();
+        window.location.href = '/login';
+      }
     }
+    
     return Promise.reject(error);
   }
 );
