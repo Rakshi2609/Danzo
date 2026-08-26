@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaDownload } from 'react-icons/fa';
+import { Download } from 'lucide-react';
 
 export default function InstallPWA() {
   const [supportsPWA, setSupportsPWA] = useState(false);
@@ -30,14 +30,19 @@ export default function InstallPWA() {
 
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`flex items-center gap-2 px-4 py-2 text-white rounded-full shadow-md transition-all font-semibold text-sm ${supportsPWA ? 'bg-primary hover:bg-zinc-700' : 'bg-gray-700/50 border border-gray-600 hover:bg-gray-700'}`}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold shadow-xs border transition-all cursor-pointer ${
+        supportsPWA
+          ? 'bg-neutral-900 text-white border-neutral-800 hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:border-neutral-200 dark:hover:bg-neutral-200'
+          : 'bg-neutral-100 text-neutral-800 border-neutral-300 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-700'
+      }`}
       onClick={onClick}
       title="Install App"
     >
-      <FaDownload className="text-sm" />
-      <span className="hidden md:inline">Install App</span>
+      <Download className="w-3.5 h-3.5" />
+      <span>Install App</span>
     </motion.button>
   );
 }
+
