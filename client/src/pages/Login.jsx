@@ -39,6 +39,7 @@ export default function Login() {
       setIsSigningIn(true);
       const result = await signInWithPopup(auth, googleProvider);
       toast.success(`Welcome back, ${result.user.displayName || 'User'}!`);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to sign in with Google');

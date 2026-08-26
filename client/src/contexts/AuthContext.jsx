@@ -17,23 +17,32 @@ export const AuthProvider = ({ children }) => {
         try {
           console.log('🔵 AuthContext: Getting Firebase token...');
           const token = await firebaseUser.getIdToken();
-          console.log('🔵 AuthContext: Token obtained, sending to backend...');
+          console.log('🔵 AuthContext: Token obtained, syncing with backend...');
           
-          // Send token to backend to sync user
-          const { data } = await api.post('/auth/login', { 
-            token,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL
-          });
-          console.log('🔵 AuthContext: Backend response received', data);
+          let backendUser = {};
+          let sessionToken = token;
+
+          try {
+            // Send token to backend to sync user and receive 7-day JWT
+            const { data } = await api.post('/auth/login', { 
+              token,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL
+            });
+            console.log('🔵 AuthContext: Backend response received', data);
+            if (data?.user) backendUser = data.user;
+            if (data?.token) sessionToken = data.token;
+          } catch (apiErr) {
+            console.warn('⚠️ AuthContext: Backend sync warning (using Firebase auth fallback):', apiErr.message);
+          }
           
-          setUser({ ...firebaseUser, ...data.user });
-          localStorage.setItem('token', data.token || token);
-          console.log('🔵 AuthContext: User state updated with 7-day session token, user logged in');
+          setUser({ ...firebaseUser, ...backendUser });
+          localStorage.setItem('token', sessionToken);
+          console.log('🔵 AuthContext: User state updated, user logged in');
         } catch (error) {
           console.error('❌ AuthContext: Auth error:', error);
-          setUser(null);
+          setUser(firebaseUser);
         }
       } else {
         console.log('🔵 AuthContext: No user, clearing state');
