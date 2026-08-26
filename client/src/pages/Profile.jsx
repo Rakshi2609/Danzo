@@ -193,26 +193,26 @@ export default function Profile() {
 
           {/* Profile Info Header */}
           <div className="px-5 sm:px-8 pb-6 pt-0 relative">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-12 sm:-mt-16 mb-4 gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-5">
-                {/* Avatar */}
-                <div className="relative self-start sm:self-auto shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                {/* Avatar with negative top margin so ONLY avatar floats over the cover banner */}
+                <div className="relative -mt-12 sm:-mt-16 shrink-0 self-start sm:self-auto">
                   {profileData?.photoURL || user?.photoURL ? (
                     <img
                       src={profileData?.photoURL || user?.photoURL}
                       alt={profileData?.displayName || user?.displayName || 'User'}
-                      className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-lg bg-neutral-100 dark:bg-neutral-800"
+                      className="w-22 h-22 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl bg-neutral-100 dark:bg-neutral-800"
                     />
                   ) : (
-                    <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center border-4 border-white dark:border-neutral-900 shadow-lg text-neutral-600 dark:text-neutral-300">
+                    <div className="w-22 h-22 sm:w-28 sm:h-28 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center border-4 border-white dark:border-neutral-900 shadow-xl text-neutral-600 dark:text-neutral-300">
                       <User className="w-10 h-10 sm:w-12 sm:h-12" />
                     </div>
                   )}
                   <span className="absolute bottom-1 right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-900" title="Online"></span>
                 </div>
 
-                {/* Name & Details - Positioned cleanly in the card body */}
-                <div className="mt-1 sm:mb-1">
+                {/* Name & Details - ALWAYS fully within the card body, zero slicing on laptop/mobile */}
+                <div className="pt-2 sm:pt-4 pb-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                       {profileData?.displayName || user?.displayName || 'User'}
@@ -229,7 +229,7 @@ export default function Profile() {
               </div>
 
               {/* Edit Profile Toggle Button */}
-              <div className="self-start sm:self-auto mt-2 sm:mt-0">
+              <div className="self-start sm:self-center mt-2 sm:mt-0">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer shadow-xs ${
