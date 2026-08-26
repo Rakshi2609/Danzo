@@ -145,6 +145,16 @@ router.get('/reminders/pending', async (req, res) => {
   });
 });
 
+// GET /api/bot/users/check?phone=918660677696 — is this phone a registered user?
+// Used by the WhatsApp bridge as a dynamic allowlist fallback.
+router.get('/users/check', async (req, res) => {
+  const phone = String(req.query.phone || '').replace(/[^0-9]/g, '');
+  if (!phone) return res.status(400).json({ error: 'phone query param required' });
+
+  const user = await User.findOne({ phone, isActive: true }).select('displayName phone role').lean();
+  res.json({ allowed: !!user, user: user ? { name: user.displayName, phone: user.phone, role: user.role } : null });
+});
+
 // GET /api/bot/summary — quick stats for "how are we doing?" questions
 router.get('/summary', async (req, res) => {
   const [total, pending, inProgress, completed, overdue] = await Promise.all([
