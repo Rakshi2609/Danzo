@@ -157,42 +157,44 @@ export default function Profile() {
           </div>
 
           {/* Profile Info Header */}
-          <div className="px-6 sm:px-8 pb-6 pt-0 relative">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-16 sm:-mt-14 mb-4 gap-4">
-              <div className="flex items-end gap-4">
-                <div className="relative">
+          <div className="px-5 sm:px-8 pb-6 pt-0 relative">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-12 sm:-mt-16 mb-4 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-5">
+                {/* Avatar */}
+                <div className="relative self-start sm:self-auto shrink-0">
                   {profileData?.photoURL || user?.photoURL ? (
                     <img
                       src={profileData?.photoURL || user?.photoURL}
                       alt={profileData?.displayName || user?.displayName || 'User'}
-                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-md bg-neutral-100 dark:bg-neutral-800"
+                      className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-lg bg-neutral-100 dark:bg-neutral-800"
                     />
                   ) : (
-                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center border-4 border-white dark:border-neutral-900 shadow-md text-neutral-600 dark:text-neutral-300">
-                      <User className="w-12 h-12" />
+                    <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center border-4 border-white dark:border-neutral-900 shadow-lg text-neutral-600 dark:text-neutral-300">
+                      <User className="w-10 h-10 sm:w-12 sm:h-12" />
                     </div>
                   )}
-                  <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-900" title="Online"></span>
+                  <span className="absolute bottom-1 right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-900" title="Online"></span>
                 </div>
 
-                <div className="mb-1">
+                {/* Name & Details - Positioned cleanly in the card body */}
+                <div className="mt-1 sm:mb-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                       {profileData?.displayName || user?.displayName || 'User'}
                     </h1>
-                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground shadow-xs">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground shadow-xs">
                       {role}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5 font-medium">
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>{profileData?.email || user?.email}</span>
+                  <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 mt-1 font-medium">
+                    <Mail className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{profileData?.email || user?.email}</span>
                   </p>
                 </div>
               </div>
 
               {/* Edit Profile Toggle Button */}
-              <div>
+              <div className="self-start sm:self-auto mt-2 sm:mt-0">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer shadow-xs ${

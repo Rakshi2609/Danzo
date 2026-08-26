@@ -278,7 +278,7 @@ export default function FollowUps() {
 
         {showFilters && (
         <motion.div
-          className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-xl shadow-xs border border-border mb-5 space-y-3 relative z-10"
+          className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-xl shadow-xs border border-border mb-5 space-y-3 relative z-30"
           variants={itemVariants}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -373,7 +373,7 @@ export default function FollowUps() {
 
           {/* Date Picker & Pills */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-border">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto relative">
               <FaCalendarAlt className="text-muted-foreground text-xs flex-shrink-0" />
               <DatePicker
                 selected={selectedDate}
@@ -382,6 +382,9 @@ export default function FollowUps() {
                   setFilterOverdue(false);
                 }}
                 placeholderText="Filter by Due Date"
+                popperClassName="!z-[99999]"
+                popperPlacement="bottom-start"
+                portalId="root"
                 className="border border-border px-2.5 py-1.5 text-xs rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer w-36"
               />
               {selectedDate && (
@@ -433,7 +436,7 @@ export default function FollowUps() {
 
         {filteredAndSortedTasks.length === 0 ? (
           <motion.div 
-            className="text-center py-12 relative z-10"
+            className="text-center py-12"
             variants={itemVariants}
           >
             <FaTasks className="text-6xl text-neutral-300 dark:text-neutral-700 mx-auto mb-4" />
@@ -446,7 +449,7 @@ export default function FollowUps() {
               {paginatedTasks.map((task, index) => (
                 <motion.li
                   key={task._id || index}
-                  className={`bg-white dark:bg-neutral-900 border border-border border-l-4 ${getPriorityBorderColor(task.priority)} p-4 rounded-lg shadow-sm relative z-10`}
+                  className={`bg-white dark:bg-neutral-900 border border-border border-l-4 ${getPriorityBorderColor(task.priority)} p-4 rounded-lg shadow-sm`}
                   variants={taskCardVariants}
                   initial="hidden"
                   animate="visible"

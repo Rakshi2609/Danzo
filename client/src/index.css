@@ -181,7 +181,11 @@ body {
   }
 }
 
-/* React DatePicker Dark Mode support */
+/* React DatePicker Dark Mode support & high z-index popper */
+.react-datepicker-popper {
+  z-index: 99999 !important;
+}
+
 .dark .react-datepicker {
   background-color: #171717 !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
