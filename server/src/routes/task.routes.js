@@ -6,6 +6,7 @@ import {
   getTaskById,
   createTask,
   updateTask,
+  reassignTask,
   updateTaskStatus,
   deleteTask,
   getTaskUpdates,
@@ -28,6 +29,7 @@ router.get('/follow-ups', verifyToken, getFollowUps);
 router.get('/:id', verifyToken, getTaskById);
 router.post('/', verifyToken, createTask);
 router.put('/:id', verifyToken, canEditTask, updateTask);
+router.patch('/:id/reassign', verifyToken, canEditTask, reassignTask);
 router.patch('/:id/status', verifyToken, canUpdateStatus, updateTaskStatus);
 router.patch('/complete', verifyToken, completeTask);
 router.delete('/delete', verifyToken, deleteTaskByBody);

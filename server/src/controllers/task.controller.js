@@ -1,5 +1,6 @@
 import Task from '../models/Task.js';
 import TaskUpdate from '../models/TaskUpdate.js';
+import User from '../models/User.js';
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -110,24 +111,24 @@ export const updateTask = async (req, res) => {
   try {
     const { title, description, dueDate, startTime, endTime, priority, assignedTo, subtasks } = req.body;
 
-    let task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.id);
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Prevent future task updates
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    if (task.dueDate && new Date(task.dueDate) > today) {
-      return res.status(403).json({ error: 'Cannot update tasks with future dates' });
-    }
+    const oldAssigneeId = task.assignedTo?.toString();
+    const newAssigneeId = assignedTo ? assignedTo.toString() : null;
+    const isReassigned = newAssigneeId && oldAssigneeId && oldAssigneeId !== newAssigneeId;
 
-    const updateData = { title, description, dueDate, startTime, endTime, priority, assignedTo };
+    const updateData = { title, description, dueDate, startTime, endTime, priority };
+    if (assignedTo) {
+      updateData.assignedTo = assignedTo;
+    }
     if (subtasks !== undefined) {
       updateData.subtasks = subtasks;
     }
 
-    task = await Task.findByIdAndUpdate(
+    const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
@@ -135,14 +136,90 @@ export const updateTask = async (req, res) => {
       .populate('assignedTo', 'displayName email')
       .populate('createdBy', 'displayName email');
 
+    if (isReassigned) {
+      const [oldUser, newUser] = await Promise.all([
+        User.findById(oldAssigneeId),
+        User.findById(newAssigneeId)
+      ]);
+      const oldName = oldUser?.displayName || oldUser?.email || 'Previous Assignee';
+      const newName = newUser?.displayName || newUser?.email || 'New Assignee';
+      const reassignContent = `Reassigned task from ${oldName} to ${newName}`;
+
+      await TaskUpdate.create({
+        taskId: task._id,
+        userId: req.user._id,
+        type: 'Assignment',
+        oldValue: oldName,
+        newValue: newName,
+        content: reassignContent
+      });
+    } else {
+      await TaskUpdate.create({
+        taskId: task._id,
+        userId: req.user._id,
+        type: 'Update',
+        content: 'Task updated'
+      });
+    }
+
+    res.json(updatedTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const reassignTask = async (req, res) => {
+  try {
+    const { assignedTo } = req.body;
+    if (!assignedTo) {
+      return res.status(400).json({ error: 'New assignee is required' });
+    }
+
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const oldAssigneeId = task.assignedTo?.toString();
+    const newAssigneeId = assignedTo.toString();
+
+    if (oldAssigneeId === newAssigneeId) {
+      const populated = await Task.findById(task._id)
+        .populate('assignedTo', 'displayName email')
+        .populate('createdBy', 'displayName email');
+      return res.json(populated);
+    }
+
+    const [oldUser, newUser] = await Promise.all([
+      User.findById(oldAssigneeId),
+      User.findById(newAssigneeId)
+    ]);
+
+    if (!newUser) {
+      return res.status(404).json({ error: 'New assignee user not found' });
+    }
+
+    task.assignedTo = newAssigneeId;
+    await task.save();
+
+    const oldName = oldUser?.displayName || oldUser?.email || 'Previous Assignee';
+    const newName = newUser?.displayName || newUser?.email || 'New Assignee';
+    const reassignContent = `Reassigned task from ${oldName} to ${newName}`;
+
     await TaskUpdate.create({
       taskId: task._id,
       userId: req.user._id,
-      type: 'Update',
-      content: 'Task updated'
+      type: 'Assignment',
+      oldValue: oldName,
+      newValue: newName,
+      content: reassignContent
     });
 
-    res.json(task);
+    const populatedTask = await Task.findById(task._id)
+      .populate('assignedTo', 'displayName email')
+      .populate('createdBy', 'displayName email');
+
+    res.json(populatedTask);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

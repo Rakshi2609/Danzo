@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import User from './src/models/User.js';
 import Task from './src/models/Task.js';
 import TaskUpdate from './src/models/TaskUpdate.js';
+import RecurringTask from './src/models/RecurringTask.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -289,10 +290,85 @@ async function seed() {
       }
     }
 
+    // 4. Seed Recurring Reminders for Rakshith
+    console.log('Seeding recurring reminders...');
+    const recurringTasksToInsert = [
+      {
+        title: '🌅 Daily Standup & Sprint Blocker Check',
+        description: 'Daily morning review of in-progress PRs, sprint blockers, and deployment pipeline health.',
+        frequency: 'Daily',
+        startDate: todayDate,
+        assignedTo: rakshith._id,
+        createdBy: rakshith._id,
+        isActive: true,
+        taskTemplate: {
+          priority: 'High',
+          startTime: '09:30',
+          endTime: '10:00',
+          tags: ['Standup', 'Daily', 'Sprint'],
+          subtasks: [
+            { title: 'Review open PRs on GitHub', isCompleted: false },
+            { title: 'Check WhatsApp bot notification queue', isCompleted: false },
+            { title: 'Update sprint task status', isCompleted: false }
+          ]
+        }
+      },
+      {
+        title: '🛡️ Weekly Security Audit & Database Backup Verification',
+        description: 'Verify automated MongoDB database snapshots and review audit trail logs.',
+        frequency: 'Weekly',
+        startDate: todayDate,
+        assignedTo: rakshith._id,
+        createdBy: rakshith._id,
+        isActive: true,
+        taskTemplate: {
+          priority: 'Urgent',
+          startTime: '16:00',
+          endTime: '17:00',
+          tags: ['Security', 'Weekly', 'Backup'],
+          subtasks: [
+            { title: 'Verify MongoDB Atlas backup snapshot', isCompleted: false },
+            { title: 'Rotate API access secrets if required', isCompleted: false }
+          ]
+        }
+      },
+      {
+        title: '🎨 Daily UI Design System Consistency Check',
+        description: 'Daily verification of dark mode contrast, responsive layouts, and Framer Motion micro-interactions.',
+        frequency: 'Daily',
+        startDate: todayDate,
+        assignedTo: teamUsers['sarah.chen@danzo.io']._id,
+        createdBy: rakshith._id,
+        isActive: true,
+        taskTemplate: {
+          priority: 'Medium',
+          startTime: '11:00',
+          endTime: '11:30',
+          tags: ['Design', 'Daily', 'UI'],
+          subtasks: [
+            { title: 'Check color contrast ratios', isCompleted: false }
+          ]
+        }
+      }
+    ];
+
+    for (const rt of recurringTasksToInsert) {
+      const existingRt = await RecurringTask.findOne({ title: rt.title });
+      if (!existingRt) {
+        await RecurringTask.create(rt);
+        console.log(`Created recurring reminder: ${rt.title}`);
+      } else {
+        Object.assign(existingRt, rt);
+        await existingRt.save();
+        console.log(`Updated recurring reminder: ${rt.title}`);
+      }
+    }
+
     console.log('\n✨ Database successfully seeded with:');
     console.log('1. Primary Admin User: Rakshith Ganjimut (rakshithganjimut@gmail.com)');
     console.log('2. 4 Team Members (Sarah, Alex, Priya, Marcus)');
     console.log('3. Curated tasks assigned to you & created by you for your team!');
+    console.log('4. Recurring reminders for testing daily/weekly automated scheduling!');
 
     await mongoose.disconnect();
     process.exit(0);

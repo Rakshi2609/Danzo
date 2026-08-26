@@ -19,6 +19,9 @@ export const taskService = {
   // Update task
   updateTask: (id, taskData) => api.put(`/tasks/${id}`, taskData),
   
+  // Reassign task to another user
+  reassignTask: (id, assignedTo) => api.patch(`/tasks/${id}/reassign`, { assignedTo }),
+  
   // Update task status
   updateTaskStatus: (id, status) => api.patch(`/tasks/${id}/status`, { status }),
   

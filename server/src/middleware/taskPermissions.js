@@ -8,8 +8,11 @@ export const canEditTask = async (req, res, next) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    if (task.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Only task creator can edit' });
+    const isCreator = task.createdBy.toString() === req.user._id.toString();
+    const isPrivileged = req.user.role === 'Admin' || req.user.role === 'Manager';
+
+    if (!isCreator && !isPrivileged) {
+      return res.status(403).json({ error: 'Only task creator or Admin/Manager can edit this task' });
     }
 
     req.task = task;
