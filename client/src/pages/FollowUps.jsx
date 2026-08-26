@@ -3,12 +3,13 @@ import { taskService, userService } from '../services/taskService';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { FaTasks, FaSpinner, FaCalendarAlt, FaUserCircle, FaFlag, FaSort, FaFilter, FaEye, FaSearch, FaEdit } from 'react-icons/fa';
+import { FaTasks, FaSpinner, FaCalendarAlt, FaUserCircle, FaFlag, FaSort, FaFilter, FaEye, FaSearch, FaEdit, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Pagination from '../components/Pagination';
+import moment from 'moment';
 
 export default function FollowUps() {
   const [tasks, setTasks] = useState([]);
@@ -16,11 +17,13 @@ export default function FollowUps() {
   const { user: currentUser } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('none');
+  const [sortBy, setSortBy] = useState('dueDate');
   const [selectedDate, setSelectedDate] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const [filterType, setFilterType] = useState('all');
+  const [filterOverdue, setFilterOverdue] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -42,11 +45,11 @@ export default function FollowUps() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'In Progress': return 'bg-muted text-foreground';
-      case 'Completed': return 'bg-green-100 text-green-800';
-      case 'Cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-foreground';
+      case 'Pending': return 'bg-yellow-100 dark:bg-yellow-950/50 text-yellow-800 dark:text-yellow-400';
+      case 'In Progress': return 'bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-400';
+      case 'Completed': return 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400';
+      case 'Cancelled': return 'bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-400';
+      default: return 'bg-gray-100 dark:bg-neutral-800 text-foreground';
     }
   };
 
@@ -74,45 +77,79 @@ export default function FollowUps() {
   const filteredAndSortedTasks = (() => {
     let result = [...tasks];
 
-    // Search filter (by task name, assignee name, or assignee email)
+    // 1. Search filter
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
       result = result.filter(task => 
         task.title?.toLowerCase().includes(searchLower) ||
         task.description?.toLowerCase().includes(searchLower) ||
         task.assignedTo?.displayName?.toLowerCase().includes(searchLower) ||
-        task.assignedTo?.email?.toLowerCase().includes(searchLower)
+        task.assignedTo?.email?.toLowerCase().includes(searchLower) ||
+        task.tags?.some(tag => tag.toLowerCase().includes(searchLower))
       );
     }
 
-    // Date filter
+    // 2. Date filter
     if (selectedDate) {
+      const targetDateStr = moment(selectedDate).format('YYYY-MM-DD');
       result = result.filter(
-        task => new Date(task.dueDate).toDateString() === selectedDate.toDateString()
+        task => moment(task.dueDate).format('YYYY-MM-DD') === targetDateStr
       );
     }
 
-    // Status filter
+    // 3. Overdue filter
+    if (filterOverdue && !selectedDate) {
+      const today = moment().startOf('day');
+      result = result.filter(
+        task => moment(task.dueDate).isBefore(today) && task.status !== 'Completed'
+      );
+    }
+
+    // 4. Status filter
     if (filterStatus !== 'all') {
       result = result.filter(task => task.status === filterStatus);
     }
 
-    // Priority filter
+    // 5. Priority filter
     if (filterPriority !== 'all') {
       result = result.filter(task => task.priority === filterPriority);
     }
 
-    // Sorting
+    // 6. Type / Frequency filter
+    if (filterType === 'recurring') {
+      result = result.filter(task => !!task.recurringTaskId);
+    } else if (filterType === 'regular') {
+      result = result.filter(task => !task.recurringTaskId);
+    } else if (filterType === 'daily') {
+      result = result.filter(task => 
+        task.taskFrequency === 'Daily' || task.recurringTaskId?.frequency === 'Daily'
+      );
+    } else if (filterType === 'weekly') {
+      result = result.filter(task => 
+        task.taskFrequency === 'Weekly' || task.recurringTaskId?.frequency === 'Weekly'
+      );
+    } else if (filterType === 'monthly') {
+      result = result.filter(task => 
+        task.taskFrequency === 'Monthly' || task.recurringTaskId?.frequency === 'Monthly'
+      );
+    }
+
+    // 7. Sorting
+    const priorityOrder = { Urgent: 1, High: 2, Medium: 3, Low: 4 };
     if (sortBy === 'dueDate') {
       result.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    } else if (sortBy === 'dueDateDesc') {
+      result.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
     } else if (sortBy === 'priority') {
-      const priorityOrder = { Urgent: 1, High: 2, Medium: 3, Low: 4 };
       result.sort((a, b) => (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5));
     } else if (sortBy === 'status') {
       const statusOrder = { 'In Progress': 1, 'Pending': 2, 'Completed': 3, 'Cancelled': 4 };
       result.sort((a, b) => (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5));
+    } else if (sortBy === 'title') {
+      result.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    } else if (sortBy === 'created') {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (sortBy === 'all') {
-      const priorityOrder = { Urgent: 1, High: 2, Medium: 3, Low: 4 };
       result.sort((a, b) => {
         const dateDiff = new Date(a.dueDate) - new Date(b.dueDate);
         if (dateDiff !== 0) return dateDiff;
@@ -122,6 +159,26 @@ export default function FollowUps() {
 
     return result;
   })();
+
+  const activeFiltersCount = [
+    searchTerm ? 1 : 0,
+    selectedDate ? 1 : 0,
+    filterOverdue ? 1 : 0,
+    filterPriority !== 'all' ? 1 : 0,
+    filterStatus !== 'all' ? 1 : 0,
+    filterType !== 'all' ? 1 : 0,
+    sortBy !== 'dueDate' ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedDate(null);
+    setFilterOverdue(false);
+    setFilterPriority('all');
+    setFilterStatus('all');
+    setFilterType('all');
+    setSortBy('dueDate');
+  };
 
   const paginatedTasks = filteredAndSortedTasks.slice((page - 1) * pageSize, page * pageSize);
 
@@ -154,7 +211,7 @@ export default function FollowUps() {
   const taskCardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
-    hover: { scale: 1.02, boxShadow: "0px 6px 20px rgba(59, 130, 246, 0.15)" },
+    hover: { scale: 1.01, boxShadow: "0px 6px 20px rgba(59, 130, 246, 0.15)" },
   };
 
   if (loading) {
@@ -171,131 +228,205 @@ export default function FollowUps() {
   return (
     <div className="min-h-screen bg-transparent p-2 sm:p-3 lg:p-4">
       <motion.div
-        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative overflow-hidden"
+        className="max-w-4xl mx-auto mt-2 p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-xs relative"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         <div className="absolute inset-0 "></div>
 
-        <motion.div className="flex items-center justify-center gap-3 mb-6" variants={itemVariants}>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-foreground drop-shadow-md flex items-center gap-2">
+        <motion.div className="flex items-center justify-between mb-4" variants={itemVariants}>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground drop-shadow-md flex items-center gap-2">
             <FaTasks className="text-accent text-2xl sm:text-3xl" /> Follow Ups
           </h2>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="p-2 bg-muted hover:bg-border rounded-lg transition-colors duration-200 cursor-pointer"
-            title="Toggle Filters"
-          >
-            <FaFilter className="text-accent text-lg" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs sm:text-sm font-medium transition-colors cursor-pointer ${
+                showFilters 
+                  ? 'bg-primary text-primary-foreground border-primary' 
+                  : 'bg-muted hover:bg-neutral-200 dark:hover:bg-neutral-800 text-foreground border-border'
+              }`}
+              title="Toggle Filters"
+            >
+              <FaFilter className="text-xs" />
+              <span>Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 bg-emerald-500 text-white rounded-full text-[10px] font-bold">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+            {activeFiltersCount > 0 && (
+              <button
+                onClick={handleResetFilters}
+                className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer font-medium"
+                title="Reset all filters"
+              >
+                Reset
+              </button>
+            )}
+          </div>
         </motion.div>
 
         <motion.p 
-          className="text-center text-muted-foreground mb-4 relative z-10"
+          className="text-muted-foreground text-sm mb-4 relative z-10"
           variants={itemVariants}
         >
-          Tasks you created and assigned to others
+          Tasks you created and assigned to team members
         </motion.p>
 
         {showFilters && (
         <motion.div
-          className="bg-neutral-50 dark:bg-neutral-950 p-3 rounded-xl shadow-xs border border-border mb-4 space-y-3 relative z-10"
+          className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-xl shadow-xs border border-border mb-5 space-y-3 relative z-10"
           variants={itemVariants}
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
-          {/* Search Section */}
+          {/* Search Bar */}
           <div className="flex items-center gap-2 w-full">
-            <FaSearch className="text-lg sm:text-xl text-accent flex-shrink-0" />
+            <FaSearch className="text-muted-foreground flex-shrink-0 text-sm" />
             <div className="flex-1 flex items-center gap-2">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by task name, assignee name or email..."
-                className="flex-1 border border-border px-3 py-2 text-xs sm:text-sm rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
+                placeholder="Search follow ups by title, assignee, tags, or description..."
+                className="flex-1 border border-border px-3 py-2 text-xs sm:text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 placeholder:text-muted-foreground/60 transition-colors"
               />
               {searchTerm && (
-                <motion.button
+                <button
                   onClick={() => setSearchTerm('')}
-                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0 cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className="text-muted-foreground hover:text-foreground text-xs p-1 cursor-pointer"
                 >
-                  Clear
-                </motion.button>
+                  <FaTimes />
+                </button>
               )}
             </div>
           </div>
 
-          {/* Sort Section */}
-          <div className="flex items-center gap-2 w-full">
-            <FaSort className="text-lg sm:text-xl text-accent flex-shrink-0" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
-            >
-              <option value="none">Sort: Default</option>
-              <option value="dueDate">Due Date</option>
-              <option value="priority">Priority</option>
-              <option value="status">Status</option>
-              <option value="all">Due Date & Priority</option>
-            </select>
+          {/* Controls Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer"
+              >
+                <option value="all">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Priority</label>
+              <select
+                value={filterPriority}
+                onChange={(e) => setFilterPriority(e.target.value)}
+                className="w-full border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer"
+              >
+                <option value="all">All Priorities</option>
+                <option value="Urgent">🚨 Urgent</option>
+                <option value="High">🔴 High</option>
+                <option value="Medium">🟡 Medium</option>
+                <option value="Low">🟢 Low</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Type / Frequency</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="w-full border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer"
+              >
+                <option value="all">All Types</option>
+                <option value="regular">Regular Tasks</option>
+                <option value="recurring">🔁 Recurring Only</option>
+                <option value="daily">Daily Schedule</option>
+                <option value="weekly">Weekly Schedule</option>
+                <option value="monthly">Monthly Schedule</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer"
+              >
+                <option value="dueDate">Due Date (Earliest)</option>
+                <option value="dueDateDesc">Due Date (Latest)</option>
+                <option value="priority">Priority (High to Low)</option>
+                <option value="status">Status</option>
+                <option value="title">Title (A-Z)</option>
+                <option value="created">Recently Created</option>
+              </select>
+            </div>
           </div>
 
-          {/* Date Filter */}
-          <div className="flex items-center gap-2 w-full">
-            <FaCalendarAlt className="text-lg sm:text-xl text-accent flex-shrink-0" />
-            <div className="flex-1 flex items-center gap-2">
+          {/* Date Picker & Pills */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-border">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <FaCalendarAlt className="text-muted-foreground text-xs flex-shrink-0" />
               <DatePicker
                 selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
+                onChange={(date) => {
+                  setSelectedDate(date);
+                  setFilterOverdue(false);
+                }}
                 placeholderText="Filter by Due Date"
-                className="flex-1 border border-border px-2 py-2 text-xs sm:text-sm rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900 hover:border-neutral-400 dark:hover:border-neutral-700 transition-colors"
-                wrapperClassName="flex-1"
+                className="border border-border px-2.5 py-1.5 text-xs rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/40 text-foreground bg-white dark:bg-neutral-900 cursor-pointer w-36"
               />
               {selectedDate && (
-                <motion.button
+                <button
                   onClick={() => setSelectedDate(null)}
-                  className="text-red-500 hover:text-red-700 font-medium text-xs px-2 py-1 transition-colors duration-200 flex-shrink-0 cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className="text-rose-500 hover:text-rose-700 text-xs px-1.5 py-0.5 cursor-pointer font-medium"
                 >
-                  Clear
-                </motion.button>
+                  Clear Date
+                </button>
               )}
             </div>
-          </div>
 
-          {/* Status and Priority Filters */}
-          <div className="grid grid-cols-2 gap-2">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900"
-            >
-              <option value="all">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  setSelectedDate(today);
+                  setFilterOverdue(false);
+                }}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                  selectedDate && moment(selectedDate).isSame(moment(), 'day')
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-white dark:bg-neutral-900 border-border text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                }`}
+              >
+                Today
+              </button>
 
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              className="border border-border rounded-lg px-2 py-2 text-xs sm:text-sm shadow-xs focus:outline-none focus:ring-2 focus:ring-accent/40 text-foreground bg-white dark:bg-neutral-900"
-            >
-              <option value="all">All Priority</option>
-              <option value="Urgent">Urgent</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterOverdue(!filterOverdue);
+                  setSelectedDate(null);
+                }}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                  filterOverdue
+                    ? 'bg-rose-600 text-white border-rose-600'
+                    : 'bg-white dark:bg-neutral-900 border-border text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                }`}
+              >
+                ⚠️ Overdue
+              </button>
+            </div>
           </div>
         </motion.div>
         )}

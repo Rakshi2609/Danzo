@@ -180,7 +180,7 @@ export default function RecurringTasks() {
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <FaUserCircle className="text-muted-foreground" />
                       <span>Assigned to:</span>
-                      <span className="font-medium text-accent">{task.assignedTo?.displayName || task.assignedTo?.email}</span>
+                      <span className="font-semibold text-foreground">{task.assignedTo?.displayName || task.assignedTo?.email}</span>
                     </p>
                     
                     <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
