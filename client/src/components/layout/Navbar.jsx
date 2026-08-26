@@ -35,7 +35,7 @@ const Navbar = ({ onMenuClick, isSidebarOpen = false, showMenu = true }) => {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-neutral-950/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           {/* Logo + sidebar toggle */}

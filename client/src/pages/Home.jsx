@@ -109,7 +109,7 @@ export default function Home() {
     <div className={isDark ? "dark" : ""}>
       <KineticGrid 
         globalColor={themeMode}
-        className={`min-h-screen font-sans overflow-x-hidden transition-colors duration-300 ${
+        className={`min-h-screen font-sans overflow-x-clip transition-colors duration-300 ${
           isDark ? "bg-black text-white" : "bg-white text-black"
         }`}
       >
@@ -228,22 +228,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center">
-          {/* Minimalist Monochrome Pill Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border mb-8 ${
-              isDark 
-                ? "bg-neutral-900 border-neutral-800 text-neutral-200" 
-                : "bg-neutral-100 border-neutral-300 text-neutral-900 shadow-sm"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-black dark:bg-white animate-pulse"></span>
-            <span>Danzo Workspace 2.0</span>
-            <span className="text-neutral-400 dark:text-neutral-600">/</span>
-            <span className="font-bold">Kinetic Grid System</span>
-          </motion.div>
+
 
           {/* Headline - Sharp High-Contrast Black & White */}
           <motion.h1

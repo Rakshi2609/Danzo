@@ -404,7 +404,7 @@ export default function KineticGrid({
   return (
     <div
       className={cn(
-        "relative w-full min-h-screen overflow-hidden",
+        "relative w-full min-h-screen",
         globalColor === "light"
           ? "bg-white text-black"
           : "bg-black text-white",
