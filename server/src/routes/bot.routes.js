@@ -155,6 +155,43 @@ router.get('/users/check', async (req, res) => {
   res.json({ allowed: !!user, user: user ? { name: user.displayName, phone: user.phone, role: user.role } : null });
 });
 
+// GET /api/bot/users/verified — bulk verified Danzo users for WhatsApp allowlist.
+// Returns only phones for active, non-deactivated users (Admin/Manager/Member).
+// The Hermes WhatsApp bridge can call this once and cache the result, instead of
+// polling /users/check for every incoming group message. Optional ?role= filter
+// narrows the result (e.g. ?role=Admin,Manager). Response shape is stable and
+// safe to persist to a local JSON file for offline bridging.
+router.get('/users/verified', async (req, res) => {
+  const filter = { isActive: true };
+  const roleParam = String(req.query.role || '').trim();
+  if (roleParam) {
+    const roles = roleParam.split(',').map((r) => r.trim()).filter(Boolean);
+    if (roles.length) filter.role = { $in: roles };
+  }
+
+  const users = await User.find(filter)
+    .select('displayName phone role email')
+    .lean();
+
+  const phones = users
+    .map((u) => toNumber(u))
+    .filter((p) => p && /^\d{10,15}$/.test(p));
+
+  res.json({
+    count: phones.length,
+    totalUsers: users.length,
+    generatedAt: new Date().toISOString(),
+    roles: roleParam || 'all-active',
+    phones,
+    users: users.map((u) => ({
+      name: u.displayName,
+      phone: toNumber(u),
+      role: u.role,
+      email: u.email || null,
+    })),
+  });
+});
+
 // GET /api/bot/summary — quick stats for "how are we doing?" questions
 router.get('/summary', async (req, res) => {
   const [total, pending, inProgress, completed, overdue] = await Promise.all([
